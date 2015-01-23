@@ -101,9 +101,11 @@ if (Meteor.isServer){
             var userId = Accounts.createUser({username : alias, email : email});
             check(userId, String);
             var user = Meteor.users.findOne(userId);
+            var params = {price : price}
             if(btcAddress){
-                Meteor.users.update({ _id : userId }, {$set : {btc_address : btcAddress}} )
+                params['btc_address'] = btcAddress;
             }
+            Meteor.users.update({ _id : userId }, {$set : params} )
             return true
         },
         is_alias_taken : function(alias){
