@@ -3,14 +3,39 @@
 </head>
 
 <body>
-  <h1>Mail protected by Bitcoin payment</h1>
+    <div fit horizontal center-justified layout center>
+        {{> signup2}}
+    </div>
+    
+<!--
+    {{> signup}}
+-->
+
+    <!--  <h1>Mail protected by Bitcoin payment</h1>
   <p> Create an email alias @bost.me. It has to be paid to send a message to this email.
   All unpaid emails are rejected with "pay form" reply. Whitelist sender to make sender free to send messages 
-  </p>
-
-  {{> signup}}
+  </p>-->
 
 </body>
+
+<template name="intro">
+    <div style="width: 620px" class="align_center">
+        <h1>Make people think twice before they send you an email</h1>
+        <h3>Charge for each mail you have read</h3>
+        <button>Get your public email</button>
+    </div>
+</template>
+
+<template name="signup2">
+    <div style="width: 620px; line-height: 1.4" class="align_center">
+        <h2>Forward emails from<br> 
+            <div class="input" id="alias" contenteditable="true">your.name</div>@wrte.io<br>
+            to <div class="input" id="email" contenteditable="true">your.private@email.com</div><br>
+            when <div class="input" id="price" contenteditable="true">0.1</div> bitcoin was paid
+        </h2>
+        <button>Create an account</button>
+    </div>
+</template>
 
 <template name="signup">
   {{> step1}}
@@ -20,6 +45,7 @@
   {{/if}}
   <button>sign up</button>
 </template>
+
 <template name="step1">
 <p>
     <input type="text" id="alias" placeholder="john.smith"/>@bost.me forwards to 
