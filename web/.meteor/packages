@@ -10,3 +10,5 @@ reactive-var
 http
 accounts-base
 accounts-password
+fourseven:scss@=0.9.6
+wolves:bourbon
