@@ -3,7 +3,9 @@
 @import "lib/animate.css";
 @import url(http://fonts.googleapis.com/css?family=Lato:100,300,400);
 
-$blue: #0079FF;
+//$blue: #0079FF;
+$blue: #2778C3;
+$blue-light: #0079FF;
 
 * { margin: 0; padding: 0; list-style: none; box-sizing: border-box; }
 
@@ -38,16 +40,21 @@ h2 {
 h3 {
     margin: 5px 0px;
     font-size: 30px;
-    font-weight: 100;
+    font-weight: 300;
 }
 
 .align_center {
     text-align: center;
 }
 
+.t50 { opacity: 0.5 }
+.t65 { opacity: 0.65 }
+
 .input {
     //height: 40px;
-    //max-width: 500px;
+    min-width: 40px;
+    width: auto;
+    //float: left;
     display: inline;
     //float: left;
     //border-top: 0px;
@@ -62,19 +69,52 @@ h3 {
     //font-size: 50px;
     font-weight: 100;
     color: #fff;
+    //opacity: 0.3;
+}
+.input:focus {
+    box-shadow: 0px 8px 15px 0px rgba(0,0,0,0.18);
+    outline: none;
+    //@include user-select(element);
+}
+
+[contentEditable=true]:empty:before{
+    content:attr(data-ph);
+    color: rgba(255, 255, 255, 0.3);
+}
+
+[contentEditable=true]:empty:focus{
+    @include user-select(element);
+}
+
+#estimation {
+    visibility: hidden;
+    display: inline-block;
+    position: fixed;
+    margin-top: -30px;
+    margin-left: -65px;
+    padding: 5px 10px;
+    font-size: 18px;
+    background: #61DA46;
+    box-shadow: 0px 4px 12px 0px rgba(0,0,0,0.25);
+    border-radius: 5px;
+    font-family: "Lato";
+    font-weight: 400;
 }
 
 button {
+    margin: 20px;
     color: $blue;
     font-size: 20px;
     font-weight: 200px;
     background-color: #fff;
-    padding: 15px 25px;
+    padding: 13px 25px 15px 25px;
     border: none;
     border-radius: 5px;
-    box-shadow: 0px 8px 15px 0px rgba(0,0,0,0.17);
+    box-shadow: 0px 8px 15px 0px rgba(0,0,0,0.18);
 }
 
 button:hover {
-    background-color: #eee;
+    //background-color: #eee;
+    //color: $blue-light;
+    box-shadow: 0px 12px 25px 0px rgba(0,0,0,0.18);
 }

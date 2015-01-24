@@ -4,7 +4,7 @@
 
 <body>
     <div fit horizontal center-justified layout center>
-        {{> signup2}}
+        {{> UI.dynamic template=subscribeStage }} <!-- intro | signup | signup_done | signup_fail -->
     </div>
     
 <!--
@@ -21,23 +21,43 @@
 <template name="intro">
     <div style="width: 620px" class="align_center">
         <h1>Make people think twice before they send you an email</h1>
-        <h3>Charge for each mail you have read</h3>
-        <button>Get your public email</button>
+        <h3 class="t50">Charge for each mail you have read</h3>
+        <span style="display: block; height:50px"></span>
+        <button id="getEmail">Get your public email</button>
     </div>
 </template>
 
-<template name="signup2">
+<template name="signup">
     <div style="width: 620px; line-height: 1.4" class="align_center">
         <h2>Forward emails from<br> 
-            <div class="input" id="alias" contenteditable="true">your.name</div>@wrte.io<br>
-            to <div class="input" id="email" contenteditable="true">your.private@email.com</div><br>
-            when <div class="input" id="price" contenteditable="true">0.1</div> bitcoin was paid
+            <div class="input" id="alias" contenteditable="true" data-ph="your.name" spellcheck="false"></div>@wrte.io<br>
+            to <div class="input" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div><br>
+            when <div class="input" id="price" contenteditable="true" data-ph="0.1" spellcheck="false"></div><div id="estimation">≈ ${{mBTCRate}}</div> bitcoin was paid
         </h2>
         <button>Create an account</button>
     </div>
 </template>
 
-<template name="signup">
+<template name="signup_done">
+    <div style="width: 620px; line-height: 1.4" class="align_center">
+        <h1>Done!</h1>
+        <h3>You have succesfully created ivanpashenko@wrte.io</h3>
+        <h3>We are developing it right now, so we would forward all emails.</h3>
+        <a href="">How does it work</a>
+    </div>
+</template>
+
+<template name="signup_fail">
+    <div style="width: 620px; line-height: 1.4" class="align_center">
+        <h1>Fail</h1>
+        <h3>Sorry, it occurs the fail.</h3>
+        <a href="">Try again</a>
+    </div>
+</template>
+
+
+
+<template name="signup2">
   {{> step1}}
   {{> step2}}
   {{#if lastError}}

@@ -5,7 +5,7 @@ if (Meteor.isClient) {
     emailValidateStatus = new ReactiveVar("");
     validateEmail = inputValidator("is_email_taken", emailValidateStatus);
 
-    Template.step1.events({
+    Template.signup.events({
         "input #alias" : function(event){
             alias.set(event.currentTarget.value);
             validateAlias(alias.get());
@@ -13,6 +13,52 @@ if (Meteor.isClient) {
         "input #email" : function(event){
             email.set(event.currentTarget.value);
             validateEmail(email.get());
+        },
+        "input #price" : function(event){
+            $("#estimation").css("visibility", "visible");
+            w = $(event.currentTarget).width();
+            we = $("#estimation").width();
+            $("#estimation").css("margin-left", -w/2-we/2-10);
+            $("#estimation").addClass("animated fadeInUp");
+            //console.log("input div:", event.currentTarget.textContent);
+            var lprice = parseFloat(event.currentTarget.textContent) || 1;
+            lprice*= 0.001;
+            price.set(lprice)
+        },
+        "mouseover #price" : function(event){
+            w = $(event.currentTarget).width();
+            we = $("#estimation").width();
+            //console.log("div price width:", w);
+            $("#estimation").css("margin-left", -w/2-we/2-10);
+            $("#estimation").css("visibility", "visible");
+            $("#estimation").addClass("animated fadeInUp");
+        },
+        "mouseout #price" : function(event){
+            $("#estimation").css("visibility", "hidden");
+            $("#estimation").removeClass("animated fadeInUp");
+        },
+        "focusout #price" : function(event){
+            $("#estimation").css("visibility", "hidden");
+            $("#estimation").removeClass("animated fadeInUp");
+        },
+        "input #btcAddress" : function(event){
+            event.preventDefault();
+            btcAddress.set(event.currentTarget.value);
+        },
+        "change input" : function(event){
+            useOrCreate = event.currentTarget.value;
+        },
+        "click button" : function(event, template){
+            event.preventDefault();
+            var address = (useOrCreate == 'use') ? btcAddress.get() : undefined;
+
+            Meteor.call("signup", alias.get(), email.get(), price.get(), address, function(error, result){
+                if (error){
+                    lastError.set(error.error);
+                    return;
+                }
+
+            });
         }
     });
 
@@ -34,44 +80,13 @@ if (Meteor.isClient) {
     var useOrCreate = "create";
     lastError = new ReactiveVar();
 
-    Template.step2.events({
-        "input #price" : function(event){
-            //console.log(event.currentTarget.value);
-            var lprice = parseFloat(event.currentTarget.value) || 1;
-            lprice*= 0.001;
-            price.set(lprice)
-        },
-        "input #btcAddress" : function(event){
-            event.preventDefault();
-            btcAddress.set(event.currentTarget.value);
-        },
-        "change input" : function(event){
-            useOrCreate = event.currentTarget.value;
-        }
-    })
-
-    Template.step2.helpers({
+    Template.signup.helpers({
         mBTCRate : function(){
             if (_.isNumber(btc2usd.get())){
                 var result = price.get() * btc2usd.get();
                 return result.toFixed(2);
             }
             return "";
-        }
-    });
-
-    Template.signup.events({
-        "click button" : function(event, template){
-            event.preventDefault();
-            var address = (useOrCreate == 'use') ? btcAddress.get() : undefined;
-
-            Meteor.call("signup", alias.get(), email.get(), price.get(), address, function(error, result){
-                if (error){
-                    lastError.set(error.error);
-                    return;
-                }
-
-            });
         }
     });
 }

@@ -22,6 +22,19 @@ if (Meteor.isClient) {
         return null;
     });
     
+    subscribeStatus = new ReactiveVar("intro");
+    
+    Template.registerHelper("subscribeStage", function() {
+        return subscribeStatus.get()
+    });
+    
+    Template.intro.events({    
+        "click #getEmail" : function(event){
+            //console.log("input event started");
+            subscribeStatus.set("signup")
+         }
+    });
+    
 
     /*function daysInInterval(from, to) {
         var count = 1;
