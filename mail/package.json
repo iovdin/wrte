@@ -1,8 +1,10 @@
-{ 
-    "name":"haraka_local",
-    "description":"An SMTP Server",
-    "version":"0.0.1",
-    "dependencies":{
-        "mongodb": "~2.0"
-    }
+{
+  "name": "haraka_local",
+  "description": "An SMTP Server",
+  "version": "0.0.1",
+  "dependencies": {
+    "mongodb": "~2.0",
+    "bitcore": "~0.9.3",
+    "bitcore-explorers": "^0.9.1"
+  }
 }

@@ -6,6 +6,8 @@
 // type: `haraka -h Plugins` for documentation on how to create a plugin
 //
 var Address = require('./address').Address;
+var DSN = require('./dsn');
+
 exports.hook_init_master = function(next) {
     var MongoClient = require('mongodb').MongoClient;
     var config = this.config.get("rcpt_to.mongo.ini", "server");
@@ -20,6 +22,7 @@ exports.hook_init_master = function(next) {
         }
         server.notes.db = db;
         server.notes.users = db.collection('users');
+        //server.notes.messages = db.collection('messages');
         next();
     });
 }
@@ -28,24 +31,27 @@ exports.hook_rcpt = function (next, connection, params) {
     var rcpt = params[0];
 
     this.loginfo("Got recipient: " + JSON.stringify(params));
-    var inst = this;
-    if(rcpt.host == 'wrte.io') {
-        server.notes.users.findOne({ username : rcpt.user }, { fields : { "emails.address" : 1 } } , 
-                function(err, doc) {
-                    if(err) return next(DENY, "No such user 1");
-                    if(doc && doc.emails[0] && doc.emails[0].address) {
-                        var email = doc.emails[0].address;
-                        var addr = new Address(email);
-                        connection.transaction.header.add("X-Envelope-To", rcpt.user + "@" + rcpt.host);
-                        rcpt.host = addr.host;
-                        rcpt.user = addr.user;
-                        connection.relaying = true;
-                        next();
-                    } else {
-                        return next(DENY, "No such user 2");
-                    }
-                });
-        return;
-    } 
-    return next(DENY, "No such user");
+    var plugin = this;
+    var me = plugin.config.get('me');
+    if(rcpt.host != me) {
+        return next(DENY, DSN.no_such_user())
+    }
+    server.notes.users.findOne({ username : rcpt.user }, { fields : { "emails.address" : 1, price : 1 } } , function(err, user) {
+        if(err) {
+            plugin.lognotice("error looking up user " + JSON.stringify(err));
+            return next(DENY, DSN.no_such_user())
+        }
+        if (user && user.emails[0] && user.emails[0].address) {
+            var notes = connection.transaction.notes;
+            var forwardEmail = new Address(user.emails[0].address);
+            rcpt.user = forwardEmail.user; 
+            rcpt.host = forwardEmail.host; 
+            notes.user = user;
+            connection.relaying = true;
+            return next();
+        } 
+
+        return next(DENY, DSN.no_such_user());
+    });
 }
+
