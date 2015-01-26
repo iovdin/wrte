@@ -4,6 +4,10 @@
 
 <body>
     <div fit horizontal center-justified layout center>
+        <div class="top_bar">
+            <img src="img/logo.png" class="logo">
+            <!--<a href="">nav</a>-->
+        </div>
         {{> UI.dynamic template=subscribeStage }} <!-- intro | signup | signup_done | signup_fail -->
     </div>
     
@@ -20,8 +24,9 @@
 
 <template name="intro">
     <div style="width: 620px" class="align_center">
+        <span style="display: block; height:50px"></span>
         <h1>Make people think twice before they send you an email</h1>
-        <h3 class="t50">Charge for each mail you have read</h3>
+        <h3 class="comment">Charge for each mail you have read</h3>
         <span style="display: block; height:50px"></span>
         <button id="getEmail">Get your public email</button>
     </div>
@@ -29,11 +34,13 @@
 
 <template name="signup">
     <div style="width: 620px; line-height: 1.4" class="align_center">
+        <span style="display: block; height:30px"></span>
         <h2>Forward emails from<br> 
-            <div class="input" id="alias" contenteditable="true" data-ph="your.name" spellcheck="false"></div>@wrte.io<br>
-            to <div class="input" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div><br>
+            <div class="input" id="alias" contenteditable="true" data-ph="your.name" spellcheck="false"></div>@wrte.io to<br>
+            <div class="input" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div><br>
             when <div class="input" id="price" contenteditable="true" data-ph="0.1" spellcheck="false"></div><div id="estimation">≈ ${{mBTCRate}}</div> bitcoin was paid
         </h2>
+        <span style="display: block; height:30px"></span>
         <button>Create an account</button>
     </div>
 </template>
@@ -52,6 +59,15 @@
         <h1>Fail</h1>
         <h3>Sorry, it occurs the fail.</h3>
         <a href="">Try again</a>
+    </div>
+</template>
+
+<template name="howto">
+    <div style="width: 620px; line-height: 1.4" class="align_center">
+        <h1>1 A sender sends email to your account at wrte.io</h1>
+        <h1>2 We send him invoice</h1>
+        <h1>3 Once it was paid we forward his message to your personal email</h1>
+        <h1>4 When you open email we charge sender and transfer bitcoins to your account </h1>
     </div>
 </template>
 

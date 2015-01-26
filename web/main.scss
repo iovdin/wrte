@@ -40,7 +40,7 @@ h2 {
 h3 {
     margin: 5px 0px;
     font-size: 30px;
-    font-weight: 300;
+    font-weight: 100;
 }
 
 .align_center {
@@ -49,6 +49,22 @@ h3 {
 
 .t50 { opacity: 0.5 }
 .t65 { opacity: 0.65 }
+
+.comment { color: rgba(255,255,255,0.50) }
+
+.top_bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 40px;
+    width: 100%;
+    //border: 1px solid red;
+}
+
+.logo {
+    width: 100px;
+    margin: 20px;
+}
 
 .input {
     //height: 40px;
@@ -77,13 +93,14 @@ h3 {
     //@include user-select(element);
 }
 
-[contentEditable=true]:empty:before{
+[contentEditable=true]:empty:not(:focus):before{
     content:attr(data-ph);
     color: rgba(255, 255, 255, 0.3);
 }
 
-[contentEditable=true]:empty:focus{
-    @include user-select(element);
+[contentEditable=true]:empty:focus:before{
+    content:attr(data-ph);
+    color: rgba(255, 255, 255, 0.3);
 }
 
 #estimation {
@@ -96,7 +113,7 @@ h3 {
     font-size: 18px;
     background: #61DA46;
     box-shadow: 0px 4px 12px 0px rgba(0,0,0,0.25);
-    border-radius: 5px;
+    //border-radius: 5px;
     font-family: "Lato";
     font-weight: 400;
 }
