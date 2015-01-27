@@ -49,7 +49,18 @@ if (Meteor.isClient) {
             //console.log("input event started");
         }
     });
-    
+    Template.topBar.events({    
+        "click #linkToIntro" : function(event){
+            event.preventDefault();
+            //console.log("input event started");
+            subscribeStatus.set("intro")
+        },
+        "click #linkToHow" : function(event){
+            event.preventDefault();
+            //console.log("input event started");
+            subscribeStatus.set("how")
+        }
+    });
 
     /*function daysInInterval(from, to) {
         var count = 1;
