@@ -23,16 +23,31 @@ if (Meteor.isClient) {
     });
     
     subscribeStatus = new ReactiveVar("intro");
+    registredEmail = new ReactiveVar("");
     
     Template.registerHelper("subscribeStage", function() {
         return subscribeStatus.get()
     });
+    Template.registerHelper("registredEmail", function() {
+        return registredEmail.get()
+    });
+    Template.registerHelper("errorMessage", function() {
+        return lastError.get()
+    });
     
     Template.intro.events({    
         "click #getEmail" : function(event){
+            event.preventDefault();
             //console.log("input event started");
             subscribeStatus.set("signup")
          }
+    });
+    Template.signup_done.events({
+        "click  #linkToHow" : function(event){
+            event.preventDefault();
+            subscribeStatus.set("how");
+            //console.log("input event started");
+        }
     });
     
 

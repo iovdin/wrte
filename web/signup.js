@@ -7,11 +7,12 @@ if (Meteor.isClient) {
 
     Template.signup.events({
         "input #alias" : function(event){
-            alias.set(event.currentTarget.value);
-            validateAlias(alias.get());
+            alias.set(event.currentTarget.textContent);
+            validateAlias(alias.get()); 
+            //console.log("alias validate status:", aliasValidateStatus);
         },
         "input #email" : function(event){
-            email.set(event.currentTarget.value);
+            email.set(event.currentTarget.textContent);
             validateEmail(email.get());
         },
         "input #price" : function(event){
@@ -22,7 +23,7 @@ if (Meteor.isClient) {
             $("#estimation").addClass("animated fadeInUp");
             //console.log("input div:", event.currentTarget.textContent);
             var lprice = parseFloat(event.currentTarget.textContent) || 1;
-            lprice*= 0.001;
+            lprice*= 1;
             price.set(lprice)
         },
         "mouseover #price" : function(event){
@@ -45,7 +46,7 @@ if (Meteor.isClient) {
             event.preventDefault();
             btcAddress.set(event.currentTarget.value);
         },
-        "change input" : function(event){
+        "change .input" : function(event){
             useOrCreate = event.currentTarget.value;
         },
         "click button" : function(event, template){
@@ -54,10 +55,12 @@ if (Meteor.isClient) {
 
             Meteor.call("signup", alias.get(), email.get(), price.get(), address, function(error, result){
                 if (error){
+                    //console.log("Connected email:", email.get());
                     lastError.set(error.error);
                     return;
                 }
-
+                registredEmail.set(alias.get()+"@wrte.io")
+                subscribeStatus.set("signup_done");
             });
         }
     });
@@ -73,7 +76,7 @@ if (Meteor.isClient) {
 
     //var mBTCRate = new ReactiveVar("Unknown");
     var btc2usd = new ReactiveVar("Unknown");   
-    var price = new ReactiveVar(0.001);
+    var price = new ReactiveVar(0.1);
     var alias = new ReactiveVar("");
     var email = new ReactiveVar("");
     var btcAddress = new ReactiveVar();

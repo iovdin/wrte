@@ -8,7 +8,7 @@
             <img src="img/logo.png" class="logo">
             <!--<a href="">nav</a>-->
         </div>
-        {{> UI.dynamic template=subscribeStage }} <!-- intro | signup | signup_done | signup_fail -->
+        {{> UI.dynamic template=subscribeStage }} <!-- intro | signup | signup_done -->
     </div>
     
 <!--
@@ -35,12 +35,17 @@
 <template name="signup">
     <div style="width: 620px; line-height: 1.4" class="align_center">
         <span style="display: block; height:30px"></span>
-        <h2>Forward emails from<br> 
-            <div class="input" id="alias" contenteditable="true" data-ph="your.name" spellcheck="false"></div>@wrte.io to<br>
-            <div class="input" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div><br>
+        <h2>Forward emails from<br>
+            <div class="input input-{{aliasValidateStatus}}" id="alias" contenteditable="true" data-ph="your.name" spellcheck="false"></div>@wrte.io to
+            <div class="error error-{{aliasValidateStatus}}" id="aliasError">This name has been already taken</div>
+            <br>
+            <div class="input input-{{emailValidateStatus}}" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div>
+            <div class="error error-{{emailValidateStatus}}" id="aliasError">This email is already used</div>
+            <br>
             when <div class="input" id="price" contenteditable="true" data-ph="0.1" spellcheck="false"></div><div id="estimation">≈ ${{mBTCRate}}</div> bitcoin was paid
         </h2>
         <span style="display: block; height:30px"></span>
+        <div>{{errorMessage}}</div>
         <button>Create an account</button>
     </div>
 </template>
@@ -48,26 +53,26 @@
 <template name="signup_done">
     <div style="width: 620px; line-height: 1.4" class="align_center">
         <h1>Done!</h1>
-        <h3>You have succesfully created ivanpashenko@wrte.io</h3>
+        <h3>You have succesfully created {{registredEmail}}</h3>
         <h3>We are developing it right now, so we would forward all emails.</h3>
-        <a href="">How does it work</a>
+        <a href="" id="linkToHow">How does it work</a>
     </div>
 </template>
 
-<template name="signup_fail">
-    <div style="width: 620px; line-height: 1.4" class="align_center">
-        <h1>Fail</h1>
-        <h3>Sorry, it occurs the fail.</h3>
-        <a href="">Try again</a>
-    </div>
-</template>
-
-<template name="howto">
-    <div style="width: 620px; line-height: 1.4" class="align_center">
-        <h1>1 A sender sends email to your account at wrte.io</h1>
-        <h1>2 We send him invoice</h1>
-        <h1>3 Once it was paid we forward his message to your personal email</h1>
-        <h1>4 When you open email we charge sender and transfer bitcoins to your account </h1>
+<template name="how">
+    <div style="width: 100%; height: 100%; overflow-y: auto;">
+        <div style="width: 620px; line-height: 1.4; margin: 100px auto;" class="align_center">
+            <h4>How it will work</h4>
+            <span style="display: block; height:50px"></span>
+            <h1>1 A sender sends email to your account at wrte.io</h1><br>
+            <img src="img/how_1.png">
+            <h1>2 We send him an invoice</h1><br>
+            <img src="img/how_1.png">
+            <h1>3 Once he is paid it we forward his message to your personal email</h1><br>
+            <img src="img/how_1.png">
+            <h1>4 When you open email we charge sender and transfer bitcoins to your account </h1><br>
+            <img src="img/how_1.png">
+        </div>
     </div>
 </template>
 
