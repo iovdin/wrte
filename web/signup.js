@@ -5,7 +5,7 @@ if (Meteor.isClient) {
     emailValidateStatus = new ReactiveVar("");
     validateEmail = inputValidator("is_email_taken", emailValidateStatus);
 
-    priceValidateStatus = new ReactiveVar("price_valid");
+    priceValidateStatus = new ReactiveVar("");
     validatePrice = _.debounce(function(price){
         var isValid = isPriceValid(price);
         console.log("isValid", isValid);
