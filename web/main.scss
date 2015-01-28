@@ -3,6 +3,7 @@
 @import "lib/animate.css";
 @import url(http://fonts.googleapis.com/css?family=Lato:100,300,400);
 
+ 
 //$blue: #0079FF;
 $blue: #2778C3;
 $blue-light: #0079FF;
@@ -127,6 +128,10 @@ a:hover {
 .input-valid {
     border-bottom: 2px solid $green;
 }
+
+.input-alias_valid, .input-email_valid, .input-price_valid{
+    @extend .input-valid;
+}
 .input-invalid {
     border-bottom: 2px solid $red;
 }
@@ -141,6 +146,11 @@ a:hover {
     50% { border-bottom: 2px solid rgba(255, 255, 255, 0.5); }
     100% { border-bottom: 2px solid rgba(255, 255, 255, 1.0); }
 }
+
+.input-alias_empty, .input-alias_wrong_syntax, .input-alias_exists, .input-email_empty, .input-email_wrong_syntax, .input-email_exists, .input-price_nan, .input-price_toosmall {
+    @extend .input-invalid;
+}
+
 
 [contentEditable=true]:empty:not(:focus):before{
     content:attr(data-ph);
@@ -202,6 +212,10 @@ a:hover {
     color: #fff;
     background-color: $red;
     box-shadow: 0px 4px 12px 0px rgba(0,0,0,0.25);
+}
+
+.error-alias_empty, .error-alias_wrong_syntax, .error-alias_exists, .error-email_empty, .error-email_wrong_syntax, .error-email_exists, .error-price_nan, .error-price_toosmall{
+    @extend .error-invalid;
 }
 
 button {

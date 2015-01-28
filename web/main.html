@@ -47,22 +47,44 @@
         <h2>Forward emails from<br>
             <div class="input input-{{aliasValidateStatus}}" id="alias" contenteditable="true" data-ph="your.name" spellcheck="false"></div>@wrte.io to
             <div class="error error-{{aliasValidateStatus}}" id="aliasError">
-                <img src="img/icon_error.png" class="error_icon">
-                This name has <br>been already taken
+                {{#case aliasValidateStatus='alias_empty'}}
+                Name is empty
+                {{/case}}
+                {{#case aliasValidateStatus='alias_wrong_syntax'}}
+                No whitespaces allowed!
+                {{/case}}
+                {{#case aliasValidateStatus='alias_exists'}}
+                This name has been taken
+                {{/case}}
             </div>
             <br>
             <div class="input input-{{emailValidateStatus}}" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div>
-            <div class="error error-{{emailValidateStatus}}" id="aliasError">
-                <img src="img/icon_error.png" class="error_icon">
-                This email is <br>already in use
+            <div class="error error-{{emailValidateStatus}}" id="emailError">
+                {{#case emailValidateStatus='email_empty'}}
+                Email field is empty
+                {{/case}}
+                {{#case emailValidateStatus='email_wrong_syntax'}}
+                Wrong format
+                {{/case}}
+                {{#case emailValidateStatus='email_exists'}}
+                The email has already been registered
+                {{/case}}
             </div>
             <br>
-            when <div class="input" id="price" contenteditable="true" data-ph="0.1" spellcheck="false"></div><div id="estimation">≈ ${{mBTCRate}}</div> bitcoin was paid
+            when <div class="input input-{{priceValidateStatus}}" id="price" contenteditable="true" data-ph="0.1" spellcheck="false" ></div>
+            <div id="estimation">≈ ${{mBTCRate}}</div> 
+            <div class="error error-{{priceValidateStatus}}">
+                {{#case priceValidateStatus='price_nan'}}
+                Must be a number 
+                {{/case}}
+                {{#case priceValidateStatus='price_toosmall'}}
+                Can not be less than 1 satoshi (1 / 100 000 000 BTC)
+                {{/case}}
+
+            </div> bitcoin was paid
         </h2>
         <span style="display: block; height:30px"></span>
-        {{#if errorMessage}}
-            <div class="error_signup">{{errorMessage}}</div>
-        {{/if}}
+        <!--<div>{{errorMessage}}</div>-->
         <button>Create an account</button>
     </div>
 </template>
@@ -117,9 +139,9 @@
 <template name="signup2">
   {{> step1}}
   {{> step2}}
-  {{#if lastError}}
-  error: {{lastError}}
-  {{/if}}
+  <!--{{#if lastError}}-->
+  <!--error: {{lastError}}-->
+  <!--{{/if}}-->
   <button>sign up</button>
 </template>
 

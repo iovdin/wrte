@@ -5,6 +5,14 @@ if (Meteor.isClient) {
     emailValidateStatus = new ReactiveVar("");
     validateEmail = inputValidator("is_email_taken", emailValidateStatus);
 
+    priceValidateStatus = new ReactiveVar("price_valid");
+    validatePrice = _.debounce(function(price){
+        var isValid = isPriceValid(price);
+        console.log("isValid", isValid);
+        priceValidateStatus.set(isValid);
+    }, 500);
+
+
     Template.signup.events({
         "input #alias" : function(event){
             alias.set(event.currentTarget.textContent);
@@ -16,15 +24,21 @@ if (Meteor.isClient) {
             validateEmail(email.get());
         },
         "input #price" : function(event){
+            var priceText = event.currentTarget.textContent;
+            var lprice;
+            if(!priceText) {
+                lprice = 0.1;
+            } else {
+                lprice = parseFloat(priceText);
+            }
+            validatePrice(lprice);
+            price.set(lprice);
+
             $("#estimation").css("visibility", "visible");
             w = $(event.currentTarget).width();
             we = $("#estimation").width();
             $("#estimation").css("margin-left", -w/2-we/2-10);
             $("#estimation").addClass("animated fadeInUp");
-            //console.log("input div:", event.currentTarget.textContent);
-            var lprice = parseFloat(event.currentTarget.textContent) || 1;
-            lprice*= 1;
-            price.set(lprice)
         },
         "mouseover #price" : function(event){
             w = $(event.currentTarget).width();
@@ -56,7 +70,15 @@ if (Meteor.isClient) {
             Meteor.call("signup", alias.get(), email.get(), price.get(), address, function(error, result){
                 if (error){
                     //console.log("Connected email:", email.get());
+                    var e = error.error;
                     lastError.set(error.error);
+                    if(e.indexOf("price_") >= 0) {
+                        priceValidateStatus.set(e);
+                    } else if(e.indexOf("email_") >= 0) {
+                        emailValidateStatus.set(e);
+                    } else if(e.indexOf("alias_") >= 0){
+                        aliasValidateStatus.set(e);
+                    }
                     return;
                 }
                 registredEmail.set(alias.get()+"@wrte.io")
@@ -99,47 +121,66 @@ Accounts.config({
 forbidClientAccountCreation : true,
 });
 
+isPriceValid = function(price){
+    if(!_.isNumber(price) || _.isNaN(price))
+        return "price_nan";
+
+    // minimum 1 satoshi
+    // also take in account a fee, show a warning
+    if ( price < 0.00000001 ) 
+        return "price_toosmall";
+    return "price_valid";
+}
 
 if (Meteor.isServer){
+    function isEmailTaken(email){
+        if(!email) 
+            return "email_empty";
+        if( !/^\S+@\S+$/.test(email)) 
+            return "email_wrong_syntax";
+        var count = Meteor.users.find({"emails.address" : email}).count();
+        return (count == 0) ? "email_valid" : "email_exists" ;
+    }
+    function isAliasTaken(alias){
+        if (!alias) 
+            return "alias_empty";
+
+        if (!/^\S+$/.test(alias)) 
+            return "alias_wrong_syntax";
+
+        var count = Meteor.users.find({username : alias}).count();
+        return (count == 0) ? "alias_valid" : "alias_exists";
+    }
     Meteor.methods({
         signup: function (alias, email, price, btcAddress) {
-            check(alias, String);
-            check(email, String);
-            check(price, Number);
-            //check(arg2, [Number]);
-
-            if(!alias) throw new Meteor.Error("signup.noalias");
-            if(!email) throw new Meteor.Error("signup.noemail");
-            if(!price) throw new Meteor.Error("signup.noprice");
-
-            var count = Meteor.users.find({$or : [{emails : email}, {username : alias}]}).count();
-            if(count > 0){
-                throw new Meteor.Error("signup.userexists");
+            var aliasCheckStatus = isAliasTaken(alias);
+            if(aliasCheckStatus != "alias_valid") {
+                throw new Meteor.Error(aliasCheckStatus);
             }
+
+            var emailCheckStatus = isEmailTaken(email);
+            if(emailCheckStatus != "email_valid") {
+                throw new Meteor.Error(emailCheckStatus);
+            }
+
+            var priceCheckStatus = isPriceValid(price);
+            if(priceCheckStatus != "price_valid") {
+                throw new Meteor.Error(priceCheckStatus);
+                return priceCheckStatus;
+            }
+
             var userId = Accounts.createUser({username : alias, email : email});
             check(userId, String);
             var user = Meteor.users.findOne(userId);
             var params = {price : price}
-            if(btcAddress){
+            if (btcAddress) {
                 params['btc_address'] = btcAddress;
             }
             Meteor.users.update({ _id : userId }, {$set : params} )
-            return true
+            return "done";
         },
-        is_alias_taken : function(alias){
-            check(alias, Match.Where(function(value){
-                return /^\S+$/.test(value)
-            }));
-
-            var count = Meteor.users.find({username : alias}).count();
-            return count == 0;
-        },
-        is_email_taken : function(email){
-            check(email, Match.Where(function(value){
-                return /^\S+@\S+$/.test(value)
-            }));
-            var count = Meteor.users.find({"emails.address" : email}).count();
-            return count == 0;
-        }
-    })
+        is_alias_taken : isAliasTaken,
+        is_email_taken : isEmailTaken,
+        is_price_valid : isPriceValid
+    });
 }

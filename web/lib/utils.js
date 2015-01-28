@@ -24,7 +24,7 @@ if(Meteor.isClient){
             Meteor.call(serverMethodName, value, function(error, result){
                 //this call of serverMethodName is expired, new one has been made
                 if(myCheckSeq != checkSeq) return;
-                statusVar.set(result ? "valid" : "invalid");
+                statusVar.set(result);
                 checkSeq = 0;
             });
         }, 500);
