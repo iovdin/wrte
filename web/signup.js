@@ -82,7 +82,8 @@ if (Meteor.isClient) {
                     return;
                 }
                 registredEmail.set(alias.get()+"@wrte.io")
-                subscribeStatus.set("signup_done");
+                location.href="/#/signup_done"
+                //subscribeStatus.set("signup_done");
             });
         }
     });

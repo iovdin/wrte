@@ -6,7 +6,7 @@
     <div fit horizontal center-justified layout center>
         {{> topBar}}
         
-        {{> UI.dynamic template=subscribeStage }} <!-- intro | signup | signup_done -->
+        {{> UI.dynamic template=subscribeStatus }} <!-- intro | signup | signup_done -->
     </div>
     
 <!--
@@ -23,10 +23,10 @@
 <template name="topBar">
     <div class="top_bar">
         <div>
-            <a href="" id="linkToIntro"><img src="img/logo.png" class="logo"></a>
+            <a href="/"><img src="img/logo.png" class="logo"></a>
         </div>
         <div class="align_right" style="float: right">
-            <a href="" id="linkToHow">How it will work</a>
+            <a href="/#/howitworks" >How it will work</a>
         </div>
     </div>
 </template>

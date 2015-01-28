@@ -17,6 +17,20 @@ _.mixin({
 });
 
 if(Meteor.isClient){
+    Template.registerHelper("case", function(){
+        var pair =_.chain(this).pairs().first().value();
+        //console.log("case pair", pair);
+        var rvar = window[pair[0]];
+        if(!rvar){
+            //console.log("create var ", pair[0]);
+            rvar = window[pair[0]] = new ReactiveVar("default");
+        }
+        if(rvar instanceof ReactiveVar && rvar.get().toString() == pair[1]) {
+            return Template._case_default;
+        }
+        return null;
+    });
+
     inputValidator = function(serverMethodName, statusVar){
         var checkSeq = 0;
         var handler = _.debounce(function(value){
