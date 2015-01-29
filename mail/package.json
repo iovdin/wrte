@@ -5,6 +5,7 @@
   "dependencies": {
     "mongodb": "~2.0",
     "bitcore": "~0.9.3",
-    "bitcore-explorers": "^0.9.1"
+    "bitcore-explorers": "^0.9.1",
+    "underscore": "^1.7.0"
   }
 }

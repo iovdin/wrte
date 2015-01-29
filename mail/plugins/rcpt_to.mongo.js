@@ -8,6 +8,10 @@
 var Address = require('./address').Address;
 var DSN = require('./dsn');
 
+exports.register = function() {
+    this.register_hook('rcpt', 'wrte_sent_by_myself');
+    this.register_hook('rcpt', 'wrte_user_exists');
+};
 exports.hook_init_master = function(next) {
     var MongoClient = require('mongodb').MongoClient;
     var config = this.config.get("rcpt_to.mongo.ini", "server");
@@ -27,12 +31,45 @@ exports.hook_init_master = function(next) {
     });
 }
 
-exports.hook_rcpt = function (next, connection, params) {
+exports.wrte_sent_by_myself = function (next, connection, params) {
     var rcpt = params[0];
 
-    this.loginfo("Got recipient: " + JSON.stringify(params));
     var plugin = this;
     var me = plugin.config.get('me');
+    //allow web server and mail server to send messages
+    if(connection.remote_ip == "127.0.0.1" ){
+        this.loginfo("remote_ip == 127.0.0.1, (from web server or myself?), allow relay");
+
+        if(rcpt.host != me) {
+            connection.relaying = true;
+            return next(OK);
+        }
+
+        if(rcpt.user == "noreply") {
+            return next(DENY, DSN.no_such_user()) 
+        }
+
+
+        return next(OK);
+    }
+
+    if(rcpt.user == "support" && rcpt.host == me) {
+        rcpt.user = "iovdin";
+        rcpt.host = "gmail.com";
+        connection.relaying = true;
+        return next(OK);
+    }
+
+    next();
+}
+exports.wrte_user_exists = function (next, connection, params) {
+    var rcpt = params[0];
+
+    //this.loginfo("Got recipient: " + JSON.stringify(params));
+    var plugin = this;
+    var me = plugin.config.get('me');
+
+    
     if(rcpt.host != me) {
         return next(DENY, DSN.no_such_user())
     }

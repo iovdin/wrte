@@ -27,6 +27,7 @@
 (command ssh-cmd "ssh")
 (command scp-cmd "scp")
 (command tar "tar")
+(command mup "mup")
 
 
 (setq ssh-key "~/.aws_ubuntu.pem")
@@ -59,15 +60,21 @@
 
 (define (web-deploy)
  (change-dir "web")
+ (mup "deploy")
  )
 
 (define (mail-deploy)
- (change-dir "mail")
- (tar "-cz --exclude queue -f ../build/mail.tgz *")
- (change-dir "..")
- (scp "build/mail.tgz" "~/")
- (ssh "sudo tar xfz mail.tgz -C /var/mail/")
- (ssh "sudo chown -R mail:mail /var/mail/*")
+ (and
+  (change-dir "mail")
+  (tar "-cz --exclude queue --exclude node_modules -f ../build/mail.tgz *")
+  (change-dir "..")
+  (scp "build/mail.tgz" "~/")
+  (ssh "sudo tar xfz mail.tgz -C /var/mail/")
+  (ssh "'cd /var/mail/; sudo npm install'")
+  (ssh "sudo chown -R mail:mail /var/mail/*")
+ )
+ (ssh "'cat /var/run/haraka.pid | xargs sudo kill -9; sudo rm /var/run/haraka.pid'")
+ (ssh "sudo haraka -c /var/mail")
  )
 
 (setq make-map 
