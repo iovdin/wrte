@@ -1,5 +1,6 @@
 <head>
-  <title>Email, Bitcoin</title>
+    <title>Email, Bitcoin</title>
+    <link rel="icon" type="image/png" href="img/favico.png">
 </head>
 
 <body>
@@ -35,7 +36,7 @@
     <div class="content align_center">
         <span style="display: block; height:50px"></span>
         <h1>Make people think twice before they send you an email</h1>
-        <h3 class="comment">Charge for each mail you have read</h3>
+        <h3 class="comment">Charge for each mail you read</h3>
         <span style="display: block; height:50px"></span>
         <button id="getEmail">Get your public email</button>
     </div>
@@ -47,41 +48,43 @@
         <h2>Forward emails from<br>
             <div class="input input-{{aliasValidateStatus}}" id="alias" contenteditable="true" data-ph="your.name" spellcheck="false"></div>@wrte.io to
             <div class="error error-{{aliasValidateStatus}}" id="aliasError">
+                <img src="img/icon_error.png" class="error_icon">
                 {{#case aliasValidateStatus='alias_empty'}}
                 Name is empty
                 {{/case}}
                 {{#case aliasValidateStatus='alias_wrong_syntax'}}
-                No whitespaces allowed!
+                No whitespace<br>allowed!
                 {{/case}}
                 {{#case aliasValidateStatus='alias_exists'}}
-                This name has been taken
+                This name has<br>been taken
                 {{/case}}
             </div>
             <br>
             <div class="input input-{{emailValidateStatus}}" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div>
             <div class="error error-{{emailValidateStatus}}" id="emailError">
+                <img src="img/icon_error.png" class="error_icon">
                 {{#case emailValidateStatus='email_empty'}}
-                Email field is empty
+                Email field<br>is empty
                 {{/case}}
                 {{#case emailValidateStatus='email_wrong_syntax'}}
-                Wrong format
+                Wrong email format
                 {{/case}}
                 {{#case emailValidateStatus='email_exists'}}
-                The email has already been registered
+                This email has<br>been already registered
                 {{/case}}
             </div>
             <br>
             when <div class="input input-{{priceValidateStatus}}" id="price" contenteditable="true" data-ph="0.1" spellcheck="false" ></div>
-            <div id="estimation">≈ ${{mBTCRate}}</div> 
+            <div id="estimation">≈ ${{mBTCRate}}</div> bitcoin is paid
             <div class="error error-{{priceValidateStatus}}">
+                <img src="img/icon_error.png" class="error_icon">
                 {{#case priceValidateStatus='price_nan'}}
-                Must be a number 
+                Must be<br>a number
                 {{/case}}
                 {{#case priceValidateStatus='price_toosmall'}}
-                Can not be less than 1 satoshi (1 / 100 000 000 BTC)
+                Can not be less than<br>satoshi (1 / 100 000 000 BTC)
                 {{/case}}
-
-            </div> bitcoin was paid
+            </div>
         </h2>
         <span style="display: block; height:30px"></span>
         <!--<div>{{errorMessage}}</div>-->
@@ -114,13 +117,13 @@
                 <h2 class="numbering">2</h2>
                 <h2 class="align_left">We send him an invoice</h2>
             </div>
-            <img src="img/how_1.png">
+            <img src="img/how_2.png">
             <span style="display: block; height:80px"></span>
             <div horizontal layout center>
                 <h2 class="numbering">3</h2>
                 <h2 class="align_left">Once he has paid it we forward his message to your personal email</h2>
             </div>
-            <img src="img/how_1.png">
+            <img src="img/how_3.png">
             <span style="display: block; height:80px"></span>
             <div horizontal layout center>
                 <h2 class="numbering">4</h2>
