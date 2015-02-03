@@ -26,6 +26,8 @@ exports.hook_init_master = function(next) {
         }
         server.notes.db = db;
         server.notes.users = db.collection('users');
+        server.notes.invoices = db.collection('Invoice');
+        server.notes.tests = db.collection('Test');
         //server.notes.messages = db.collection('messages');
         next();
     });
@@ -36,31 +38,30 @@ exports.wrte_sent_by_myself = function (next, connection, params) {
 
     var plugin = this;
     var me = plugin.config.get('me');
-    //allow web server and mail server to send messages
-    if(connection.remote_ip == "127.0.0.1" ){
-        this.loginfo("remote_ip == 127.0.0.1, (from web server or myself?), allow relay");
 
-        if(rcpt.host != me) {
+    if(rcpt.host == me){
+        if(rcpt.user == "support") {
+            rcpt.user = "iovdin";
+            rcpt.host = "gmail.com";
             connection.relaying = true;
             return next(OK);
         }
-
         if(rcpt.user == "noreply") {
             return next(DENY, DSN.no_such_user()) 
         }
+        return next();
+    }
 
+    //allow web server and mail server to send messages
+    if(connection.remote_ip == "127.0.0.1" ){
+        this.loginfo("remote_ip == 127.0.0.1, (from web server or myself?), allow relay");
+        if(rcpt.host != me) {
+            connection.relaying = true;
+        }
 
         return next(OK);
     }
 
-    if(rcpt.user == "support" && rcpt.host == me) {
-        rcpt.user = "iovdin";
-        rcpt.host = "gmail.com";
-        connection.relaying = true;
-        return next(OK);
-    }
-
-    next();
 }
 exports.wrte_user_exists = function (next, connection, params) {
     var rcpt = params[0];
@@ -85,10 +86,49 @@ exports.wrte_user_exists = function (next, connection, params) {
             rcpt.host = forwardEmail.host; 
             notes.user = user;
             connection.relaying = true;
+            //to get subject
             return next();
         } 
+
+        //set to catch invoice email in queue_ok
+        if(rcpt.user.indexOf("test") == 0) {
+            //connection.transaction.notes.test_invoice = true;
+            return next(OK);
+        }
 
         return next(DENY, DSN.no_such_user());
     });
 }
 
+exports.hook_queue_ok = function(next, connection, msg){
+    var plugin = this;
+    var t = connection.transaction;
+
+
+    var rcpt = t.rcpt_to[0];
+    var rcptUser = rcpt.user;
+
+    plugin.lognotice("queue_ok for " + rcpt.user + "@" + rcpt.host);
+    if(rcptUser.indexOf("test") == 0){
+        var testId = rcptUser.substr(rcptUser.lastIndexOf("-") + 1);
+        var tests = server.notes.tests;
+        //bounce or invoice
+        if(rcptUser.indexOf("test-sender-email") == 0) {
+            var url = t.header.get("X-Invoice");
+            //invoice
+            if(url) {
+                plugin.loginfo("queue_ok sent invoice " + testId);
+                tests.update({_id: testId}, { $set: { url:url, status : "invoice" }});
+                //bounce
+            } else {
+                plugin.loginfo("queue_ok sent bounce " + testId);
+                tests.update({_id: testId}, { $set: { status : "bounce" }});
+            }
+        } 
+
+        if(rcptUser.indexOf("test-receiver-email") == 0 && ! t.notes.user) {
+            tests.update({_id: testId}, { $set: {  status : "delivered" }});
+        }
+    }
+    next();
+}

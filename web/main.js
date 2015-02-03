@@ -34,7 +34,19 @@ if (Meteor.isClient) {
 
     router.init();
 
+    /*
+    var invoiceId = "";
+    var address = ""
 
+    HTTP.call("POST", "http://localhost:3000/btc/callback/" + invoiceId + invoice, { 
+        data : {
+            address : address,
+            amount  : 0.1
+        }
+    }, function(err, result){
+        console.log(err, result);
+    });
+    */
 
     // this lines has to be last lines in the file
     _.chain(this).pairs().filter(function(pair){

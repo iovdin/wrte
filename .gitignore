@@ -2,3 +2,5 @@ build
 node_modules
 design
 3rdparties
+web/settings.json
+.npm

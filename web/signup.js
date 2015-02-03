@@ -134,6 +134,7 @@ isPriceValid = function(price){
 }
 
 if (Meteor.isServer){
+    var reservedNames = ["noreply", "support"];
     function isEmailTaken(email){
         if(!email) 
             return "email_empty";
@@ -148,6 +149,12 @@ if (Meteor.isServer){
 
         if (!/^\S+$/.test(alias)) 
             return "alias_wrong_syntax";
+
+        if(reservedNames.indexOf(alias) >= 0)
+            return "alias_exists";
+
+        if(alias.indexOf("test") == 0)
+            return "alias_exists";
 
         var count = Meteor.users.find({username : alias}).count();
         return (count == 0) ? "alias_valid" : "alias_exists";

@@ -12,3 +12,4 @@ accounts-password
 fourseven:scss@=0.9.6
 wolves:bourbon
 email
+body-parser

@@ -6,6 +6,7 @@ base64@1.0.2
 binary-heap@1.0.2
 blaze@2.0.4
 blaze-tools@1.0.2
+body-parser@0.0.0
 boilerplate-generator@1.0.2
 callback-hook@1.0.2
 check@1.0.4

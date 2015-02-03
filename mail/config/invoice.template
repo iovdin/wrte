@@ -1,5 +1,4 @@
 Subject: hello
 
 Your email message is in queue.
-Please send <%= priceBTC * 1000 %> mBTC (about <%= priceUSD %> )
-to <%= btcAddress %>. Then message will be delivered
+Please pay here  <%= url %> 
