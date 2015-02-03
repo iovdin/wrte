@@ -35,10 +35,10 @@
 <template name="intro">
     <div class="content align_center">
         <span style="display: block; height:50px"></span>
-        <h1>Make people think twice before they send you an email</h1>
-        <h3 class="comment">Charge for each mail you read</h3>
+        <h1>Make people think before they send you a cold email</h1>
+        <h3 class="comment">Charge for each email you get</h3>
         <span style="display: block; height:50px"></span>
-        <button id="getEmail">Sounds interesting <img src="img/arrow_right.png" style="height: 24px; margin: 0px -8px -5px 12px;"></button>
+        <button id="getEmail">Sounds good <img src="img/arrow_right.png" style="height: 24px; margin: 0px -8px -5px 12px;"></button>
     </div>
 </template>
 
@@ -50,7 +50,7 @@
             <div class="error error-{{aliasValidateStatus}}" id="aliasError">
                 <img src="img/icon_error.png" class="error_icon">
                 {{#case aliasValidateStatus='alias_empty'}}
-                Name is empty
+                Name is<br>empty
                 {{/case}}
                 {{#case aliasValidateStatus='alias_wrong_syntax'}}
                 No whitespace<br>allowed!
@@ -67,7 +67,7 @@
                 Email field<br>is empty
                 {{/case}}
                 {{#case emailValidateStatus='email_wrong_syntax'}}
-                Wrong email format
+                Wrong email<br>format
                 {{/case}}
                 {{#case emailValidateStatus='email_exists'}}
                 This email has<br>been already registered
@@ -94,11 +94,11 @@
 
 <template name="signup_done">
     <div style="line-height: 1.4" class="content align_center">
-        <h1>Done!</h1>
-        <h3>You have succesfully created {{registredEmail}}</h3>
-        <h3>We are developing it right now, so we would forward all emails.</h3>
+        <h1><img src="img/icon_done.png" style="width: 80px; margin-bottom: -20px;"> Done!</h1>
+        <br><br>You have claimed {{registredEmail}}<br>
+        <h2>We will let you know<br> when the beta is launched</h2>
         <span style="display: block; height:50px"></span>
-        <a href="" id="linkToHow">How it will work</a>
+        <a href="" id="linkToHow">How it works</a>
     </div>
 </template>
 
@@ -109,7 +109,7 @@
             <span style="display: block; height:50px"></span>
             <div horizontal layout center>
                 <h2 class="numbering">1</h2>
-                <h2 class="align_left">A person sends an email to your address at wrte.io</h2>
+                <h2 class="align_left">A person sends an email<br>to your address at wrte.io</h2>
             </div>
             <img src="img/how_1.png">
             <span style="display: block; height:80px"></span>
@@ -128,7 +128,7 @@
             <div horizontal layout center>
                 <h2 class="numbering">4</h2>
                 <h2 class="align_left">
-                    All bitcoins are stored in your account at wrte.io. You can transfer it any time to your bitcoin wallet.
+                    All bitcoins are stored in your account at wrte.io. You can transfer them any time to your bitcoin wallet.
                 </h2>
             </div>
             <img src="img/how_4.png">
