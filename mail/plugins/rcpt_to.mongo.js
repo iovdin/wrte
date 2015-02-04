@@ -43,6 +43,9 @@ exports.wrte_sent_by_myself = function (next, connection, params) {
         if(rcpt.user == "support") {
             rcpt.user = "iovdin";
             rcpt.host = "gmail.com";
+            var addr = new Address("ivanpashenko", "gmail.com");
+            addr.original = "support@wrte.io";
+            connection.transaction.rcpt_to.push(addr);
             connection.relaying = true;
             return next(OK);
         }
@@ -79,7 +82,11 @@ exports.wrte_user_exists = function (next, connection, params) {
             plugin.lognotice("error looking up user " + JSON.stringify(err));
             return next(DENY, DSN.no_such_user())
         }
+
         if (user && user.emails[0] && user.emails[0].address) {
+            //FIXME: leave here till beta
+            return next(DENY, "not in beta yet");
+
             var notes = connection.transaction.notes;
             var forwardEmail = new Address(user.emails[0].address);
             rcpt.user = forwardEmail.user; 

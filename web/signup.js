@@ -184,7 +184,17 @@ if (Meteor.isServer){
             if (btcAddress) {
                 params['btc_address'] = btcAddress;
             }
-            Meteor.users.update({ _id : userId }, {$set : params} )
+            Meteor.users.update({ _id : userId }, {$set : params});
+
+            var welcomeTemplate = _.template(Assets.getText("email_templates/welcome.txt"));
+
+            Email.send({
+                to : email,
+                from : "Wrte <support@wrte.io>",
+                subject : "Welcome to Wrte.io",
+                text : welcomeTemplate({email : alias + "@wrte.io"}),
+            });
+
             return "done";
         },
         is_alias_taken : isAliasTaken,

@@ -30,7 +30,7 @@ if (Meteor.isServer){
         console.log("create test " + testAccount.testId);
 
         Email.send({
-            to : testAccount.receiver
+            to : testAccount.receiver,
             from : testAccount.sender,
             subject : "Hello world",
             text : " Please reply, i've paid",

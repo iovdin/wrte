@@ -1,0 +1,9 @@
+Hi,
+
+You've just claimed an address: <%= email %>
+
+We will let you know when the beta is launched
+
+--
+wrte.io team
+Charge For Each Email You Get
