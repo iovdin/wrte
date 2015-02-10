@@ -15,8 +15,8 @@ var url      = require('url');
 
 //bitcore.Networks.defaultNework = bitcore.Networks.livenet;
 
-var Q_TIMEOUT = 2; //10; //how long keep email without invoice in queue
-var QI_TIMEOUT = 10; //60 * 24; //how long keep email with invoice in queue
+var Q_TIMEOUT = 10; //10; //how long keep email without invoice in queue
+var QI_TIMEOUT = 60; //60 * 24; //how long keep email with invoice in queue
 var CHECK_DELAY = 10; //60
 
 
@@ -47,9 +47,9 @@ exports.hook_send_email = function(next, hmail){
         var now = (new Date()).getTime();
         var qtime = hmail.todo.queue_time;
         // if user did not open invoice email for 10 min, remove it from queue
-        if(!invoice &&  (now - qtime) * 0.001 > Q_TIMEOUT * 60 ) {
+        if(!invoice.buttonCode &&  (now - qtime) * 0.001 > Q_TIMEOUT * 60 ) {
             plugin.lognotice("no invoice message pay timeout " + msgId);
-            hmail.todo.notes.paid_state = "timeout";
+            hmail.todo.notes.paid_state = "timeout1";
             //if(testId) tests.update({_id: testId}, { $set: {  status : "timeout" }});
             return next();
         }
@@ -68,7 +68,7 @@ exports.hook_send_email = function(next, hmail){
         //if user created invoice but not 
 
         if(invoice && (now - qtime) * 0.001 > QI_TIMEOUT * 60 ){
-            hmail.todo.notes.paid_state = "timeout";
+            hmail.todo.notes.paid_state = "timeout2";
             //if(testId) tests.update({_id: testId}, { $set: {  status : "timeout" }});
             plugin.lognotice("invoice message pay timeout " + msgId);
             return next();
@@ -80,13 +80,13 @@ exports.hook_send_email = function(next, hmail){
 
 exports.hook_get_mx = function(next, hmail, domain){
     switch (hmail.todo.notes.paid_state){
-        case "timeout":
+        case "timeout1":
+        case "timeout2":
             return next(DENY, "not_paid");
         case "error":
             return next(DENY, "error");
         case "paid":
             break;
-
     }
     var me = this.config.get('me');
     if(domain == me){
@@ -95,39 +95,103 @@ exports.hook_get_mx = function(next, hmail, domain){
     return next();
 }
 exports.hook_bounce = function(next, hmail, error){
-    //TODO: refund on bounce
-    if (!hmail.todo.notes.user) {
-        return next(OK);
+    var me = this.config.get('me');
+    var reason = "";
+    var plugin = this;
+    var notes = hmail.todo.notes;
+    if(notes.paid_state && notes.msgId){
+        server.notes.invoices.update({ msgId : notes.msgId }, {$set : { status : notes.paid_state }});
+    }
+    switch (notes.paid_state){
+        case "paid":
+            return next(OK);
+        case "timeout1":
+            return next(OK);
+        case "timeout2":
+            reason = "payment timeout";
+        case "error":
+            if(!reason) reason = "payment error";
+            this.lognotice("send delivery error to " + hmail.todo.mail_from);
+            plugin.send_email(hmail.todo.mail_from, new Address("delivery@wrte.io") , "notdelivered.template", {
+                email   : notes.user.username + "@" + me,
+                price   : notes.user.price,
+                subject : notes.subject,
+                msgId   : notes.msgId,
+                reason  : reason
+            });
+            return next(OK);
     }
     next();
 }
 
-exports.hook_data = function(next, connection) {
+exports.hook_data_post = function(next, connection) {
     var plugin = this; 
     var t = connection.transaction;
     var me = plugin.config.get('me');
 
     if(t.notes.user) {
-        this.loginfo("hook_data");
-        var query = {};
+        this.loginfo("hook_data_post");
+        //var query = {};
 
         var msgIds = t.header.get_all("Message-Id");
         var msgId = "";
-        if(!msgIds.length) {
+        //this.loginfo("hook_data_post msgIds:" + msgIds.length + " : " + msgIds.join(","));
+        //this.loginfo("hook_data_post headers " + t.header.toString());
+        if(msgIds.length == 0) {
             msgId = '<' + t.uuid + '@' + me + '>';
             t.add_header('Message-Id', msgId);
         } else {
-            msgId = msgIds[0];
+            msgId = msgIds[0].trim();
         }
 
-        query.msgId = msgId;
-        query.userId = t.notes.user._id;
-        query.from = t.mail_from.original;
-        query.subject = "";
-
+        //query.msgId = msgId;
+        //query.userId = t.notes.user._id;
+        //query.from = t.mail_from.original;
+        //query.subject = t.body.header.get("Subject").trim();
+        
+        t.notes.subject = t.body.header.get("Subject").trim();
         t.notes.msgId = msgId;
-        var u = url.format({ protocol : "http", hostname : "wrte.io", pathname : "/btc/create", query : query });
-        plugin.send_invoice(t.mail_from, msgId, u);
+
+        var invoice = {
+            msgId : msgId,
+            userId : t.notes.user._id, 
+            subject : t.notes.subject,
+            from : t.mail_from.original,
+            price : t.notes.user.price,
+            status : "created"
+        }
+
+        server.notes.invoices.insert([invoice], function(err, result){
+            //TODO: error?
+            if(err){
+                plugin.logerr("error invoice creation " + JSON.stringify(err));
+                t.notes.paid_state = "error";
+                return next(DENY, "server error");
+            }
+            if(!result.ops || result.ops.length == 0) {
+                plugin.logerr("error invoice creation : nothing is inserted");
+                t.notes.paid_state = "error";
+                return next(DENY, "server error");
+            }
+
+
+            var r = result.ops[0];
+            //plugin.loginfo("invoice creation result " + JSON.stringify(result.ops));
+            t.notes.invoiceId = r._id;
+
+            var u = url.format({ protocol : "http", hostname : "wrte.io", pathname : "/", hash :"/invoice/" + r._id});
+            plugin.loginfo("invoice url " + u);
+            plugin.lognotice("send invoice to " + t.mail_from);
+            plugin.send_email(t.mail_from, new Address("delivery@wrte.io") , "invoice.template", {
+                url : u,
+                email : t.notes.user.username + "@" + me,
+                price : t.notes.user.price,
+                subject : invoice.subject,
+                msgId : msgId
+            });
+            return next();
+        });
+        return;
     }
     next();
 }
@@ -136,26 +200,17 @@ exports.hook_data = function(next, connection) {
 var trans       = require('./transaction');
 var constants   = require('./constants');
 
-exports.send_invoice = function(to, msgId, url) {
-    this.loginfo("send invoice to " + to);
-    var config = this.config.get("invoice.template", "data").join("\n");
-
-    var content = _.template(config)({ url : url});
+exports.send_email = function(to, from, template, params) {
+    this.loginfo("send email to " + to);
+    var config = this.config.get(template, "data").join("\n");
+    var content = _.template(config)(params);
     var plugin = this;
-
-    var from = new Address("noreply@wrte.io");
-    from.original = "wrte.io <noreply@wrte.io>";
-    var to   = new Address(to);
-
+    //var from = new Address("delivery@wrte.io");
     var transaction = trans.createTransaction();
     transaction.mail_from = from;
     transaction.rcpt_to = [to];
-    transaction.add_header("In-Reply-To", msgId);
-    transaction.add_header("References", msgId);
-    transaction.add_header("X-Invoice", url);
 
     this.loginfo("Created transaction: " + transaction.uuid);
-
     // Set data_lines to lines in content
     var match;
     var re = /^([^\n]*\n?)/;
@@ -170,6 +225,6 @@ exports.send_invoice = function(to, msgId, url) {
     }
     transaction.message_stream.add_line_end();
     outbound.send_trans_email(transaction, function(code, msg){
-        plugin.loginfo("invoice sent " + code + " " + msg);
+        plugin.lognotice("email sent " + code + " " + msg);
     });
 }

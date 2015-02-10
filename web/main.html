@@ -6,8 +6,12 @@
 <body>
     <div fit horizontal center-justified layout center>
         {{> topBar}}
-        
-        {{> UI.dynamic template=subscribeStatus }} <!-- intro | signup | signup_done -->
+        {{#case main='subscribe'}}
+            {{> UI.dynamic template=subscribeStatus }} <!-- intro | signup | signup_done -->
+        {{/case}}
+        {{#case main='invoice'}}
+            {{>invoice}}
+        {{/case}}
     </div>
     
 <!--
@@ -88,7 +92,7 @@
         </h2>
         <span style="display: block; height:30px"></span>
         <!--<div>{{errorMessage}}</div>-->
-        <button>Create an account</button>
+        <button>Create account</button>
     </div>
 </template>
 
@@ -171,6 +175,26 @@ price per message <input id="price" type="text" placeholder="1">mBTC (≈{{mBTCR
 </ul>
 </p>
 </template>
+<template name="invoice">
+{{#case invoiceStatus='create'}}
+creating invoice
+{{/case}}
+{{#case invoiceStatus='timeout'}}
+invoice and email message have expired
+{{/case}}
+{{#case invoiceStatus='paid'}}
+invoice is paid and email message is delivered
+{{/case}}
+{{#case invoiceStatus='error'}}
+error creating invoice
+{{/case}}
+{{#case invoiceStatus='created'}}
+
+<iframe data-custom="myorderid" data-name="hello world" id="coinbase_inline_iframe_{{buttonId}}" src="https://www.coinbase.com/checkouts/{{buttonId}}/inline" style="width: 460px; height: 350px; border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.25);" allowtransparency="true" frameborder="0"></iframe>
+{{/case}}
+
+</template>
+
 
 <template name="_case_default">
   {{> UI.contentBlock}}

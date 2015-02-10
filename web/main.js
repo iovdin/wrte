@@ -1,4 +1,6 @@
 if (Meteor.isClient) {
+    invoiceStatus = new ReactiveVar("");
+    main = new ReactiveVar("subscribe");
     subscribeStatus = new ReactiveVar("intro");
     registredEmail = new ReactiveVar("");
 
@@ -8,6 +10,7 @@ if (Meteor.isClient) {
             location.href="/#/signup"
         }
     });
+
     Template.signup_done.events({
         "click  #linkToHow" : function(event){
             event.preventDefault();
@@ -17,16 +20,47 @@ if (Meteor.isClient) {
 
     var routes = {
         '/': function(){
+            main.set("subscribe");
             subscribeStatus.set("intro");
         },
         '/signup': function(){
+            main.set("subscribe");
             subscribeStatus.set("signup");
         },
         '/howitworks': function(){
+            main.set("subscribe");
             subscribeStatus.set("how");
         },
         '/signup_done': function(){
+            main.set("subscribe");
             subscribeStatus.set("signup_done");
+        },
+        '/invoice/:id': function(id) {
+            main.set("invoice");
+            invoiceStatus.set("create");
+            //var url = parseUri(window.location.href)
+            HTTP.get("/btc/create", {params : {id : id} }, function(err, result){
+                if(err){
+                    console.log(err);
+                    invoiceStatus.set("error");
+                    return;
+                }
+                console.log(result);
+                var data = JSON.parse(result.content);
+                switch(data.status){
+                    case "created":
+                        buttonId.set(data.button);
+                        invoiceStatus.set("created");
+                        break;
+                    case "timeout1":
+                    case "timeout2":
+                        invoiceStatus.set("timeout");
+                        break;
+                    case "paid":
+                        invoiceStatus.set("paid");
+                        break;
+                }
+            });
         }
     };
 

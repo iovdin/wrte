@@ -49,7 +49,14 @@ exports.wrte_sent_by_myself = function (next, connection, params) {
             connection.relaying = true;
             return next(OK);
         }
-        if(rcpt.user == "noreply") {
+        if( ["abuse", "delivery"].indexOf(rcpt.user) >= 0 ) {
+            rcpt.user = "iovdin";
+            rcpt.host = "gmail.com";
+            connection.relaying = true;
+            return next(OK);
+        }
+        var reserved = ["noreply"];
+        if(reserved.indexOf(rcpt.user) >= 0) {
             return next(DENY, DSN.no_such_user()) 
         }
         return next();
@@ -64,7 +71,7 @@ exports.wrte_sent_by_myself = function (next, connection, params) {
 
         return next(OK);
     }
-
+    return next(DENY, DSN.relaying_denied()) 
 }
 exports.wrte_user_exists = function (next, connection, params) {
     var rcpt = params[0];
@@ -77,18 +84,21 @@ exports.wrte_user_exists = function (next, connection, params) {
     if(rcpt.host != me) {
         return next(DENY, DSN.no_such_user())
     }
-    server.notes.users.findOne({ username : rcpt.user }, { fields : { "emails.address" : 1, price : 1 } } , function(err, user) {
+    server.notes.users.findOne({ username : rcpt.user }, { fields : { username : 1, "emails.address" : 1, price : 1 } } , function(err, user) {
         if(err) {
             plugin.lognotice("error looking up user " + JSON.stringify(err));
             return next(DENY, DSN.no_such_user())
         }
 
         if (user && user.emails[0] && user.emails[0].address) {
+            var address = user.emails[0].address;
             //FIXME: leave here till beta
-            return next(DENY, "not in beta yet");
+            if(address != "iovdin@gmail.com" && address != "ivanpashenko@gmail.com" && address.indexOf("test") != 0)
+                return next(DENY, "not in beta yet");
 
+            connection.transaction.parse_body = 1;
             var notes = connection.transaction.notes;
-            var forwardEmail = new Address(user.emails[0].address);
+            var forwardEmail = new Address(address);
             rcpt.user = forwardEmail.user; 
             rcpt.host = forwardEmail.host; 
             notes.user = user;

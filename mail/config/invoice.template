@@ -1,4 +1,15 @@
-Subject: hello
+From: wrte <delivery@wrte.io> 
+Subject: RE: <%= subject %> 
+In-Reply-To : <%= msgId %>
+References : <%= msgId %>
+X-Invoice : <%= url %>
 
-Your email message is in queue.
-Please pay here  <%= url %> 
+Recipient of <%= email %> has set a price <%= price %> BTC to see a message in his/her inbox.
+
+Please open the link to pay <%= url %> 
+The link will expire in 10 minutes and the message will be removed from queue.
+When you open it you have 24 hours to pay
+
+--
+wrte.io team
+Charge For Each Email You Get

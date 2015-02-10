@@ -1,0 +1,11 @@
+From: wrte <delivery@wrte.io> 
+Subject: RE: <%= subject %> 
+In-Reply-To : <%= msgId %>
+References : <%= msgId %>
+
+The message has not been delivered to <%= email %> 
+<%= reason %>
+
+--
+wrte.io team
+Charge For Each Email You Get
