@@ -1,8 +1,9 @@
 Hi,
 
-You've just claimed an address: <%= email %>
+You've just registred an address: <%= email %>
 
-We will let you know when the beta is launched
+We will let you know when the beta is launched.
+
 
 --
 wrte.io team
