@@ -10,6 +10,8 @@ var outbound = require('./outbound');
 var DSN      = require('./dsn');
 var _        = require('underscore');
 var url      = require('url');
+var mimelib  = require("mimelib");
+
 //var bitcore = require('bitcore');
 //var Insight = require('bitcore-explorers').Insight;
 
@@ -149,7 +151,7 @@ exports.hook_data_post = function(next, connection) {
         //query.from = t.mail_from.original;
         //query.subject = t.body.header.get("Subject").trim();
         
-        t.notes.subject = t.body.header.get("Subject").trim();
+        t.notes.subject = mimelib.decodeMimeWord(t.body.header.get("Subject").trim());
         t.notes.msgId = msgId;
 
         var invoice = {
