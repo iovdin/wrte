@@ -23,19 +23,13 @@
     <div fit horizontal center-justified layout center>
         {{> topBar}}
         {{> yield }}
-        <!--{{#case main='subscribe'}}
-            {{> UI.dynamic template=subscribeStatus }} [> intro | signup | signup_done <]
-        {{/case}}
-        {{#case main='invoice'}}
-            {{>invoice}}
-        {{/case}}-->
     </div>
 </template>
 
 <template name="topBar">
     <div class="top_bar">
         <div>
-            <a href="/"><img src="img/logo.png" class="logo"></a>
+            <a href="/"><img src="/img/logo.png" class="logo"></a>
         </div>
         <div class="align_right" style="float: right">
             <a href="/howitworks" >How it works</a>
@@ -151,37 +145,6 @@
 </template>
 
 
-
-<template name="signup2">
-  {{> step1}}
-  {{> step2}}
-  <!--{{#if lastError}}-->
-  <!--error: {{lastError}}-->
-  <!--{{/if}}-->
-  <button>sign up</button>
-</template>
-
-<template name="step1">
-<p>
-    <input type="text" id="alias" placeholder="john.smith"/>@bost.me forwards to 
-    <input type="text" id="email" placeholder="john.smith@gmail.com"/> 
-    <br> {{aliasValidateStatus}} / {{emailValidateStatus}}
-</p>
-</template>
-
-<template name="step2">
-<p>
-price per message <input id="price" type="text" placeholder="1">mBTC (≈{{mBTCRate}}$)  
-</p>
-<p>
-<ul>
-    <li><input type="radio" name="dest" checked value="create"/> create wallet on coinbase to receive payments </li>
-    <li><input type="radio" name="dest" value="use"/> specify existing bitcoin address
-    <input type="text" id="btcAddress" placeholder="17RaXYmZLVmLt2Gf2yo1MdTod7gEn4uKcW"/>  </li>
-    <!--<li><input type="radio" name="dest"/> send money to watsi.org charity</li>-->
-</ul>
-</p>
-</template>
 <template name="invoice">
 {{#case invoiceStatus='create'}}
 creating invoice

@@ -181,7 +181,7 @@ exports.hook_data_post = function(next, connection) {
             //plugin.loginfo("invoice creation result " + JSON.stringify(result.ops));
             t.notes.invoiceId = r._id;
 
-            var u = url.format({ protocol : "http", hostname : "wrte.io", pathname : "/", hash :"/invoice/" + r._id});
+            var u = url.format({ protocol : "http", hostname : "wrte.io", pathname : "/invoice/" + r._id});
             plugin.loginfo("invoice url " + u);
             plugin.lognotice("send invoice to " + t.mail_from);
             plugin.send_email(t.mail_from, new Address("delivery@wrte.io") , "invoice.template", {
