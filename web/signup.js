@@ -11,6 +11,11 @@ if (Meteor.isClient) {
         console.log("isValid", isValid);
         priceValidateStatus.set(isValid);
     }, 500);
+    resetValidator = function(){
+        aliasValidateStatus.set("");
+        emailValidateStatus.set("");
+        priceValidateStatus.set("");
+    }
 
 
     Template.signup.events({
@@ -82,7 +87,8 @@ if (Meteor.isClient) {
                     return;
                 }
                 registredEmail.set(alias.get()+"@wrte.io")
-                location.href="/#/signup_done"
+                resetValidator();
+                Router.go("/signup_done")
                 //subscribeStatus.set("signup_done");
             });
         }
@@ -115,6 +121,12 @@ if (Meteor.isClient) {
             return "";
         }
     });
+    Router.route('/signup', function(){
+        this.render("signup");
+    })
+    Router.route('/signup_done', function(){
+        this.render("signup_done");
+    })
 }
 
 Accounts.config({

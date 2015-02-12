@@ -1,24 +1,25 @@
 if (Meteor.isClient) {
     invoiceStatus = new ReactiveVar("");
-    main = new ReactiveVar("subscribe");
-    subscribeStatus = new ReactiveVar("intro");
     registredEmail = new ReactiveVar("");
 
     Template.intro.events({    
         "click #getEmail" : function(event){
             event.preventDefault();
-            location.href="/#/signup"
+            Router.go("/signup")
         }
     });
 
-    Template.signup_done.events({
-        "click  #linkToHow" : function(event){
-            event.preventDefault();
-            location.href="/#/howitworks";
-        }
+    Router.configure({
+        layoutTemplate: 'MainLayout'
+    });
+    Router.route('/', function(){
+        this.render("intro");
+    });
+    Router.route('/howitworks', function(){
+        this.render('howitworks');
     });
 
-    var routes = {
+    /*var routes = {
         '/': function(){
             main.set("subscribe");
             subscribeStatus.set("intro");
@@ -64,23 +65,9 @@ if (Meteor.isClient) {
         }
     };
 
-    var router = Router(routes);
-
-    router.init();
-
-    /*
-    var invoiceId = "";
-    var address = ""
-
-    HTTP.call("POST", "http://localhost:3000/btc/callback/" + invoiceId + invoice, { 
-        data : {
-            address : address,
-            amount  : 0.1
-        }
-    }, function(err, result){
-        console.log(err, result);
-    });
-    */
+    var router = new Router(routes);
+    //router.configure({html5history: true});
+    router.init();*/
 
     // this lines has to be last lines in the file
     _.chain(this).pairs().filter(function(pair){
