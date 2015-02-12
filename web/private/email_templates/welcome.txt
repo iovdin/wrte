@@ -1,6 +1,6 @@
 Hi,
 
-You've just registred an address: <%= email %>
+You've just registered an address: <%= email %>
 
 We will let you know when the beta is launched.
 
