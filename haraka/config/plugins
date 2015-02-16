@@ -8,22 +8,22 @@
 #access
 
 # block mails from known bad hosts (see config/dnsbl.zones for the DNS zones queried)
-#dnsbl
+dnsbl
 
 # Check mail headers are valid
-#data.headers
+data.headers
 
 # block mail from some known bad HELOs - see config/helo.checks.ini for configuration
-#helo.checks
+helo.checks
 
 # see 'haraka -h tls' for config instructions before enabling!
-# tls
+tls
 
 # Only accept mail where the MAIL FROM domain is resolvable to an MX record
-#mail_from.is_resolvable
+mail_from.is_resolvable
 
 # Disconnect client if they spew bad SMTP commands at us
-#max_unrecognized_commands
+max_unrecognized_commands
 
 # Only accept mail for your personal list of hosts. Edit config/host_list
 # NOTE: THIS IS REQUIRED for inbound email.

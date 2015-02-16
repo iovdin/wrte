@@ -21,8 +21,6 @@ var Q_TIMEOUT = 10; //10; //how long keep email without invoice in queue
 var QI_TIMEOUT = 60; //60 * 24; //how long keep email with invoice in queue
 var CHECK_DELAY = 10; //60
 
-
-
 exports.hook_send_email = function(next, hmail){
     //this.loginfo("hook_send_mail " + JSON.stringify(hmail, null, "  "));
     var user = hmail.todo.notes.user;
@@ -114,7 +112,7 @@ exports.hook_bounce = function(next, hmail, error){
         case "error":
             if(!reason) reason = "payment error";
             this.lognotice("send delivery error to " + hmail.todo.mail_from);
-            plugin.send_email(hmail.todo.mail_from, new Address("delivery@wrte.io") , "notdelivered.template", {
+            plugin.send_email_template(new Address("delivery@wrte.io"), hmail.todo.mail_from, "notdelivered.template", {
                 email   : notes.user.username + "@" + me,
                 price   : notes.user.price,
                 subject : notes.subject,
@@ -184,7 +182,7 @@ exports.hook_data_post = function(next, connection) {
             var u = url.format({ protocol : "http", hostname : "wrte.io", pathname : "/invoice/" + r._id});
             plugin.loginfo("invoice url " + u);
             plugin.lognotice("send invoice to " + t.mail_from);
-            plugin.send_email(t.mail_from, new Address("delivery@wrte.io") , "invoice.template", {
+            plugin.send_email_template(new Address("delivery@wrte.io"), t.mail_from , "invoice.template", {
                 url : u,
                 email : t.notes.user.username + "@" + me,
                 price : t.notes.user.price,
@@ -199,34 +197,8 @@ exports.hook_data_post = function(next, connection) {
 }
 
 
-var trans       = require('./transaction');
-var constants   = require('./constants');
-
-exports.send_email = function(to, from, template, params) {
-    this.loginfo("send email to " + to);
+exports.send_email_template = function(from, to, template, params, next){
     var config = this.config.get(template, "data").join("\n");
     var content = _.template(config)(params);
-    var plugin = this;
-    //var from = new Address("delivery@wrte.io");
-    var transaction = trans.createTransaction();
-    transaction.mail_from = from;
-    transaction.rcpt_to = [to];
-
-    this.loginfo("Created transaction: " + transaction.uuid);
-    // Set data_lines to lines in content
-    var match;
-    var re = /^([^\n]*\n?)/;
-    while (match = re.exec(content)) {
-        var line = match[1];
-        line = line.replace(/\n?$/, '\r\n'); // make sure it ends in \r\n
-        transaction.add_data(new Buffer(line));
-        content = content.substr(match[1].length);
-        if (content.length === 0) {
-            break;
-        }
-    }
-    transaction.message_stream.add_line_end();
-    outbound.send_trans_email(transaction, function(code, msg){
-        plugin.lognotice("email sent " + code + " " + msg);
-    });
+    outbound.send_email(from, to, content, next);
 }
