@@ -62,5 +62,12 @@ process.on('exit', function() {
 var cfg = config.get('smtp.json');
 
 logger.log("NOTICE", "Starting up Haraka version " + exports.version);
-
-server.createServer();
+var params = {};
+if(process.env.WRTE_DEBUG) {
+    params = {
+        user : null,
+        group : null,
+        daemonize : false,
+    }
+}
+server.createServer(params);

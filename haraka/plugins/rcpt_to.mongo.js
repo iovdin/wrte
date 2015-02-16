@@ -14,11 +14,17 @@ exports.register = function() {
 };
 exports.hook_init_master = function(next) {
     var MongoClient = require('mongodb').MongoClient;
-    var config = this.config.get("rcpt_to.mongo.ini", "server");
-
-    this.loginfo("mongo server " + config.main.server);
-    //this.loginfo("arguments " + JSON.stringify(arguments));
+    this.loginfo("environment " + process.env.WRTE_DEBUG);
+    var config = this.config.get("rcpt_to.mongo.ini");
     var dbURL = config.main.server;
+    if(process.env.WRTE_DEBUG) {
+        dbURL = config.debug.server;
+    }
+
+
+
+    this.loginfo("mongo server " + dbURL);
+    //this.loginfo("arguments " + JSON.stringify(arguments));
     var inst = this;
     MongoClient.connect(dbURL, function(err, db) {
         if(err) {
