@@ -65,7 +65,7 @@
 
 (define (mail-deploy)
  (and
-  (change-dir "mail")
+  (change-dir "haraka")
   (tar "-cz --exclude queue --exclude node_modules -f ../build/mail.tgz *")
   (change-dir "..")
   (scp "build/mail.tgz" "~/")
@@ -74,7 +74,8 @@
   (ssh "sudo chown -R mail:mail /var/mail/*")
  )
  (ssh "'cat /var/run/haraka.pid | xargs sudo kill -9; sudo rm /var/run/haraka.pid'")
- (ssh "sudo haraka -c /var/mail")
+ ;(ssh "sudo haraka -c /var/mail")
+ (ssh "'cd /var/mail/; sudo node haraka.js'")
  )
 
 (setq make-map 
