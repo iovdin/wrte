@@ -29,7 +29,7 @@ max_unrecognized_commands
 # NOTE: THIS IS REQUIRED for inbound email.
 
 rcpt_to.mongo
-#rcpt_to.in_host_list
+wrte
 bitcoin
 
 # Queue mail via smtp - see config/smtp_forward.ini for where your mail goes

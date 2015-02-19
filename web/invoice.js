@@ -14,8 +14,10 @@ if(Meteor.isClient){
             }
             console.log(result);
             var data = JSON.parse(result.content);
+            //TODO: timeouts
             switch(data.status){
                 case "created":
+                case "opened":
                     buttonId.set(data.button);
                     invoiceStatus.set("created");
                     break;

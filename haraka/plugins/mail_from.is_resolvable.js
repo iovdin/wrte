@@ -32,6 +32,10 @@ exports.hook_mail = function(next, connection, params) {
         return next();
     }
 
+    if(process.env.WRTE_DEBUG && mail_from.host == server.notes.config.test_domain){
+        return next();
+    }
+
     var called_next  = 0;
     var domain       = mail_from.host;
     var c            = plugin.cfg.main;

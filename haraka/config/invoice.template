@@ -2,13 +2,14 @@ From: wrte <delivery@wrte.io>
 Subject: RE: <%= subject %> 
 In-Reply-To : <%= msgId %>
 References : <%= msgId %>
-X-Invoice : <%= url %>
+x-test-mail : invoice
+x-test-invoice : <%= invoiceId %>
 
 Recipient of <%= email %> has set a price <%= price %> BTC to see a message in his/her inbox.
 
-Please open the link to pay <%= url %> 
+Please open the link to pay <%= invoiceUrl %> 
 The link will expire in 10 minutes and the message will be removed from queue.
-When you open it you have 24 hours to pay
+When you open it you have 1 hour to pay
 
 --
 wrte.io team

@@ -32,7 +32,7 @@ if (Meteor.isClient) {
             var priceText = event.currentTarget.textContent;
             var lprice;
             if(!priceText) {
-                lprice = 0.1;
+                lprice = 0.001;
             } else {
                 lprice = parseFloat(priceText);
             }

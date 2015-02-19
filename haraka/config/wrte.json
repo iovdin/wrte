@@ -1,0 +1,22 @@
+{
+    "main" : {
+        "delivery" : "iovdin@gmail.com",
+        "support" : [ "iovdin@gmail.com", "ivanpashenko@gmail.com" ],
+        "abuse" : "iovdin@gmail.com",
+        "open_invoice_timeout" : 600,
+        "pay_invoice_timeout" : 3600,
+        "check_time" : 10
+    },
+    "debug" : {
+        "delivery" : "delivery@test",
+        "support" : [ "support@test", "support2@test" ],
+        "abuse" : "abuse@test",
+
+        "test_mx" : "127.0.0.1:2500",
+        "test_domain" : "test",
+
+        "open_invoice_timeout" : 1,
+        "pay_invoice_timeout" : 2,
+        "check_time" : 0.5
+    }
+}

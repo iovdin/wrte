@@ -1,0 +1,12 @@
+From: wrte <delivery@wrte.io> 
+Subject: RE: <%= subject %> 
+In-Reply-To : <%= msgId %>
+References : <%= msgId %>
+
+The message has not been delivered to <%= email %>
+if you specified a return address coins will return shortly
+otherwise please follow the link to refund <%= refundUrl %>
+
+--
+wrte.io team
+Charge For Each Email You Get

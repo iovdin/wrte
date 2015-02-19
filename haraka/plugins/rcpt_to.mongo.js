@@ -8,20 +8,13 @@
 var Address = require('./address').Address;
 var DSN = require('./dsn');
 
-exports.register = function() {
-    this.register_hook('rcpt', 'wrte_sent_by_myself');
-    this.register_hook('rcpt', 'wrte_user_exists');
-};
 exports.hook_init_master = function(next) {
     var MongoClient = require('mongodb').MongoClient;
-    this.loginfo("environment " + process.env.WRTE_DEBUG);
     var config = this.config.get("rcpt_to.mongo.ini");
     var dbURL = config.main.server;
     if(process.env.WRTE_DEBUG) {
         dbURL = config.debug.server;
     }
-
-
 
     this.loginfo("mongo server " + dbURL);
     //this.loginfo("arguments " + JSON.stringify(arguments));
@@ -33,97 +26,13 @@ exports.hook_init_master = function(next) {
         server.notes.db = db;
         server.notes.users = db.collection('users');
         server.notes.invoices = db.collection('Invoice');
-        server.notes.tests = db.collection('Test');
+        //server.notes.tests = db.collection('Test');
         //server.notes.messages = db.collection('messages');
         next();
     });
 }
 
-exports.wrte_sent_by_myself = function (next, connection, params) {
-    var rcpt = params[0];
-
-    var plugin = this;
-    var me = plugin.config.get('me');
-
-    if(rcpt.host == me){
-        if(rcpt.user == "support") {
-            rcpt.user = "iovdin";
-            rcpt.host = "gmail.com";
-            var addr = new Address("ivanpashenko", "gmail.com");
-            addr.original = "support@wrte.io";
-            connection.transaction.rcpt_to.push(addr);
-            connection.relaying = true;
-            return next(OK);
-        }
-        if( ["abuse", "delivery"].indexOf(rcpt.user) >= 0 ) {
-            rcpt.user = "iovdin";
-            rcpt.host = "gmail.com";
-            connection.relaying = true;
-            return next(OK);
-        }
-        var reserved = ["noreply"];
-        if(reserved.indexOf(rcpt.user) >= 0) {
-            return next(DENY, DSN.no_such_user()) 
-        }
-        return next();
-    }
-
-    //allow web server and mail server to send messages
-    if(connection.remote_ip == "127.0.0.1" ){
-        this.loginfo("remote_ip == 127.0.0.1, (from web server or myself?), allow relay");
-        if(rcpt.host != me) {
-            connection.relaying = true;
-        }
-
-        return next(OK);
-    }
-    return next(DENY, DSN.relaying_denied()) 
-}
-exports.wrte_user_exists = function (next, connection, params) {
-    var rcpt = params[0];
-
-    //this.loginfo("Got recipient: " + JSON.stringify(params));
-    var plugin = this;
-    var me = plugin.config.get('me');
-
-    
-    if(rcpt.host != me) {
-        return next(DENY, DSN.no_such_user())
-    }
-    server.notes.users.findOne({ username : rcpt.user }, { fields : { username : 1, "emails.address" : 1, price : 1 } } , function(err, user) {
-        if(err) {
-            plugin.lognotice("error looking up user " + JSON.stringify(err));
-            return next(DENY, DSN.no_such_user())
-        }
-
-        if (user && user.emails[0] && user.emails[0].address) {
-            var address = user.emails[0].address;
-            //FIXME: leave here till beta
-            if(address != "iovdin@gmail.com" && address != "ivanpashenko@gmail.com" && address.indexOf("test") != 0)
-                return next(DENY, "not in beta yet");
-
-            connection.transaction.parse_body = 1;
-            var notes = connection.transaction.notes;
-            var forwardEmail = new Address(address);
-            rcpt.user = forwardEmail.user; 
-            rcpt.host = forwardEmail.host; 
-            notes.user = user;
-            connection.relaying = true;
-            //to get subject
-            return next();
-        } 
-
-        //set to catch invoice email in queue_ok
-        if(rcpt.user.indexOf("test") == 0) {
-            //connection.transaction.notes.test_invoice = true;
-            return next(OK);
-        }
-
-        return next(DENY, DSN.no_such_user());
-    });
-}
-
-exports.hook_queue_ok = function(next, connection, msg){
+/*exports.hook_queue_ok = function(next, connection, msg){
     var plugin = this;
     var t = connection.transaction;
 
@@ -154,4 +63,4 @@ exports.hook_queue_ok = function(next, connection, msg){
         }
     }
     next();
-}
+}*/

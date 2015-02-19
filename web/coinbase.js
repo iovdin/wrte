@@ -114,7 +114,7 @@ if(Meteor.isServer){
                 return;
             }
             invoice.buttonCode = createButton(user, params.id, invoice.subject);
-            invoices.update(invoiceId, {$set : {buttonCode : invoice.buttonCode}});
+            invoices.update(invoiceId, {$set : {buttonCode : invoice.buttonCode, status : "opened"}});
         }
 
         res.writeHead(200);
@@ -150,7 +150,7 @@ if(Meteor.isServer){
             //TODO: check fees
             //TODO: refund 
             //TODO: try to pay 2nd time
-            invoices.update(invoiceId, {$set : {status : "error", orderId : orderId}});
+            invoices.update(invoiceId, {$set : {status : "", orderId : orderId}});
         } 
         res.end("ok");
     }));

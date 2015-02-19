@@ -2,11 +2,11 @@ From: wrte <delivery@wrte.io>
 Subject: RE: <%= subject %> 
 In-Reply-To : <%= msgId %>
 References : <%= msgId %>
-x-test-mail : fail
+x-test-mail : delivered
 x-test-invoice : <%= invoiceId %>
 
-The message has not been delivered to <%= email %> 
-<%= failReason %>
+
+Your message has been delivered to <%= email %> 
 
 --
 wrte.io team
