@@ -212,7 +212,7 @@ exports.paid_delivery = {
         test.done();
     },
     'should send an invoice and fail if not paid' : function(test){
-        test.expect(10);
+        test.expect(9);
         var self = this;
         var client = this.client;
         client.send({ from : self.from, to: self.username + "@wrte.io"}, "Subject: Test\nHello world", function(err, info){
@@ -220,76 +220,114 @@ exports.paid_delivery = {
             self.client.quit();
         });
 
-        this.server.onMailFrom = function(address, session, callback){
+        this.e.on('mail_from', function(address){
+            console.log("mail_from", address.address);
             test.equals(address.address, "delivery@wrte.io");
-            setImmediate(callback);
-        }
+        });
 
-        this.server.onRcptTo = function(address, session, callback){
+        this.e.on('rcpt_to', function(address){
+            console.log("rcpt_to", address.address);
             test.equals(address.address, self.from);
-            setImmediate(callback);
-        }
+        });
 
         this.e.on('message', _.once(function(mail){
             var headers = mail.headers;
+            console.log("headers1", headers);
             self.invoice = headers['x-test-invoice'];
             test.ok(self.invoice);
             test.equals(headers['x-test-mail'], "invoice");
+            self.invoices.update({ _id : new ObjectID(self.invoice) } , 
+                { $set: { status : 'open' } }, function(err, result) {
 
+            });
         }));
 
         this.e.on('message', _.after(2, function(mail) {
             var headers = mail.headers;
+            console.log("headers2", headers);
             test.equals(headers['x-test-invoice'], self.invoice);
             test.equals(headers['x-test-mail'], "fail");
             test.done();
         }));
         setTimeout(function(){
             test.done();
-        }, 2000)
+        }, 3000);
 
     },
-    'should send an invoice and succeed when paid' : function(test){
-        test.expect(10);
+    'should send an invoice and succeed when paid' : function(test) {
+        test.expect(11);
         var client = this.client;
         var self = this;
-        client.send({ from : self.from, to: self.username + "@wrte.io"}, "Subject: Test\nHello world", function(err, info){
+        self.msg = genID();
+        var msg = [
+            "Subject: Test",
+            "x-test-message: " + self.msg,
+            "Hello world" ].join("\r\n");
+
+        client.send({ from : self.from, to: self.username + "@wrte.io"}, msg, function(err, info){
             test.ok(!err, "no error on sending");
             client.quit();
         });
 
-        this.e.on("rcpt_to", function(address){
+        //got invoice
+        this.e.on("rcpt_to", _.once(function(address){
+            test.equals(address.address, self.from);
             console.log("rcpt_to", address.address);
-        })
-        this.e.on("mail_from", function(address){
+        }))
+        this.e.on("mail_from", _.once(function(address){
+            test.equals(address.address, "delivery@wrte.io");
             console.log("mail_from", address.address);
-        })
+        }))
 
-        var self = this;
         this.e.on('message', _.once(function(mail){
             var headers = mail.headers;
             console.log("headers", headers);
             self.invoice = headers['x-test-invoice'];
             test.equals(headers['x-test-mail'], "invoice");
-
             self.invoices.update({ _id : new ObjectID(self.invoice) } , { $set: { status : 'paid' } }, function(err, result) {
 
             });
-
         }));
 
-        this.e.on('message', _.after(2, function(mail) {
-            var headers = mail.headers;
-            console.log("after 2", headers);
-        }));
+        //got email
+        this.e.on("rcpt_to", _.after(2, _.once(function(address){
+            test.equals(address.address, self.email);
+            console.log("rcpt_to", address.address);
+        })));
+        this.e.on("mail_from", _.after(2, _.once(function(address){
+            test.equals(address.address, self.from);
+            console.log("mail_from", address.address);
+        })));
 
-        this.e.on('message', _.after(3, function(mail) {
+        this.e.on('message', _.after(2, _.once(function(mail){
             var headers = mail.headers;
-            console.log("after 3", headers);
+            console.log("headers2", headers);
+            self.invoice = headers['x-test-invoice'];
+            var msg = headers['x-test-message'];
+            test.ok(msg, "message id is not empty");
+            test.equals(msg, self.msg);
+        })));
+
+        //got confirmation
+        this.e.on("rcpt_to", _.after(3, function(address){
+            test.equals(address.address, self.from);
+            console.log("rcpt_to", address.address);
+        }))
+        this.e.on("mail_from", _.after(3, function(address){
+            test.equals(address.address, "delivery@wrte.io");
+            console.log("mail_from", address.address);
+        }))
+
+        this.e.on('message', _.after(3, function(mail){
+            var headers = mail.headers;
+            console.log("headers3", headers);
+            self.invoice = headers['x-test-invoice'];
+            test.equals(headers['x-test-mail'], "delivered");
             test.done();
         }));
+
         setTimeout(function(){
             test.done();
-        }, 2000);
+        }, 3000);
     }
 }

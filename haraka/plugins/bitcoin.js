@@ -21,10 +21,22 @@ exports.hook_init_master = function(next) {
 }
 exports.on_check_payment = function(){
     var plugin = this;
-    var dbInvoices = server.notes.invoices;
-    dbInvoices.find({}, function(err, result){
-        plugin.loginfo("invoices", result);
-        //setTimeout(plugin.on_check_payment, server.notes.config.check_time * 1000);
+    var timeout = server.notes.config.pay_invoice_timeout;
+    //var timeout = 3600 * 24;
+    var since = (new Date()).getTime() -  timeout * 1000 * 2;
+    //TODO: only with status != "created"
+    server.notes.invoices.find({createdAt : {$gt : new Date(since)}}).toArray(function(err, results){
+        if(err){
+            plugin.logerror("error finding invoice ", err);
+            return;
+        }
+        var len = results.length;
+        for(var i = 0; i < len; i++){
+            var invoice = results[i];
+            plugin.invoices[invoice.msgId] = invoice.status;
+        }
+        //plugin.logdebug("invoices", JSON.stringify(plugin.invoices, null, "  "));
+        setTimeout(plugin.on_check_payment.bind(plugin), server.notes.config.check_time * 1000);
     });
 }
 exports.hook_data_post = function(next, connection) {
@@ -54,6 +66,7 @@ exports.hook_data_post = function(next, connection) {
             subject : t.notes.subject,
             from : t.mail_from.original,
             price : t.notes.user.price,
+            createdAt : new Date(),
             status : "created"
         }
 
@@ -93,7 +106,7 @@ exports.delay = function(hmail){
     var invoiceStatus = plugin.invoices[notes.msgId];
     var openTimeout = server.notes.config.open_invoice_timeout;
     var payTimeout = server.notes.config.pay_invoice_timeout;
-    this.logdebug("called delay " + invoiceStatus);
+    //this.logdebug("called delay " + invoiceStatus);
     var now = (new Date()).getTime();
     var qtime = hmail.todo.queue_time;
 
@@ -124,7 +137,10 @@ exports.hook_send_email = function(next, hmail){
     var notes = hmail.todo.notes;
     var user = notes.user;
     var msgId = notes.msgId;
-    if(!user || !msgId) return next();
+    if(!user || !msgId) {
+
+        return next();
+    }
     var rcpt = hmail.todo.rcpt_to[0];
     this.loginfo("hook_send_mail " + hmail.todo.mail_from.original + " -> " + rcpt.original);
     var plugin = this;
@@ -159,13 +175,15 @@ exports.hook_send_email = function(next, hmail){
     return next(STOP);
 }
 
-exports.hook_deliver = function(hmail){
+exports.hook_delivered = function(next, hmail, args){
     //TODO: bounce hook on not delivered but paid email 
+    //this.loginfo("hook_delivered ", arguments);
     var delivery = new Address("delivery@wrte.io");
-    if(notes.status == "invoice_paid") {
-        this.send_confirm(delivery, hmail.todo.mail_from, notes);
+    //var notes = hmail.todo.notes;
+    if(hmail.todo && hmail.todo.notes && hmail.todo.notes.status == "invoice_paid") {
+        this.send_confirm(delivery, hmail.todo.mail_from, hmail.todo.notes);
     } 
-    return next();
+    next();
 }
 exports.send_invoice = function(from, to, notes) {
     var plugin = this;
