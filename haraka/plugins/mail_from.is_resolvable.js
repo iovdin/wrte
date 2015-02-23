@@ -121,8 +121,10 @@ exports.hook_mail = function(next, connection, params) {
 
 exports.mxErr = function (connection, domain, type, err, mxDone) {
     var plugin = this;
-    connection.transaction.results.add(plugin,
-            {msg: domain + ':' + type + ':' + err.message});
+    if(connection.transaction){
+        connection.transaction.results.add(plugin,
+                {msg: domain + ':' + type + ':' + err.message});
+    }
     connection.logdebug(plugin, domain + ':' + type + ' => ' + err.message);
     switch (err.code) {
         case 'NXDOMAIN':
