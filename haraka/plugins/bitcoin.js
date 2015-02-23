@@ -11,7 +11,6 @@ var DSN      = require('./dsn');
 var _        = require('underscore');
 var url      = require('url');
 var mimelib  = require("mimelib");
-var ObjectID = require("bson-objectid");
 
 exports.hook_init_master = function(next) {
     this.invoices = {};
@@ -33,7 +32,7 @@ exports.on_check_payment = function(){
         var len = results.length;
         for(var i = 0; i < len; i++){
             var invoice = results[i];
-            plugin.invoices[invoice.msgId] = invoice.status;
+            plugin.invoices[invoice._id] = invoice.status;
         }
         //plugin.logdebug("invoices", JSON.stringify(plugin.invoices, null, "  "));
         setTimeout(plugin.on_check_payment.bind(plugin), server.notes.config.check_time * 1000);
@@ -61,13 +60,15 @@ exports.hook_data_post = function(next, connection) {
         t.notes.msgId = msgId;
 
         var invoice = {
-            msgId : msgId,
-            userId : t.notes.user._id, 
-            subject : t.notes.subject,
-            from : t.mail_from.original,
-            price : t.notes.user.price,
+            _id : t.uuid,
             createdAt : new Date(),
-            status : "created"
+            status : "created",
+            userId : t.notes.user._id, 
+            from : t.mail_from.user + "@" + t.mail_from.host,
+            to : t.notes.user.username + "@" + me,
+            subject : t.notes.subject,
+            amount : t.notes.user.amount,
+            currency : t.notes.user.currency
         }
 
         server.notes.invoices.insert([invoice], function(err, result){
@@ -89,7 +90,8 @@ exports.hook_data_post = function(next, connection) {
             t.notes.invoiceId = r._id;
             t.notes.invoiceUrl = url.format({ protocol : "http", hostname : me, pathname : "/invoice/" + r._id});
             t.notes.refundUrl = url.format({ protocol : "http", hostname : me, pathname : "/invoice/" + r._id + "/refund"});
-            t.notes.price = t.notes.user.price;
+            t.notes.amount = t.notes.user.amount;
+            t.notes.currency = t.notes.user.currency;
             t.notes.status = "invoice_sent";
             var from = new Address("delivery@wrte.io");
             plugin.send_invoice(from, t.mail_from, t.notes);
@@ -103,7 +105,7 @@ exports.hook_data_post = function(next, connection) {
 exports.delay = function(hmail){
     var plugin = this;
     var notes = hmail.todo.notes;
-    var invoiceStatus = plugin.invoices[notes.msgId];
+    var invoiceStatus = plugin.invoices[notes.invoiceId];
     var openTimeout = server.notes.config.open_invoice_timeout;
     var payTimeout = server.notes.config.pay_invoice_timeout;
     //this.logdebug("called delay " + invoiceStatus);
@@ -191,6 +193,7 @@ exports.send_invoice = function(from, to, notes) {
     var email = notes.user.username + "@" + me;
     var params = _.extend({email: email}, notes);
     plugin.lognotice("send invoice to " + to);
+    plugin.logdebug("invoice url " + notes.invoiceUrl);
     this.send_email_template(from, to , "invoice.template", params);
 }
 

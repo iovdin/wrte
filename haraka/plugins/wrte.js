@@ -90,7 +90,7 @@ exports.wrte_user_exists = function (next, connection, params) {
     var plugin = this;
     var me = plugin.config.get('me');
 
-    server.notes.users.findOne({ username : rcpt.user }, { fields : { username : 1, "emails.address" : 1, "emails.verified" : 1, price : 1 } } , function(err, user) {
+    server.notes.users.findOne({ username : rcpt.user }, { fields : { username : 1, "emails.address" : 1, "emails.verified" : 1, amount : 1, currency : 1 } } , function(err, user) {
         if(err) {
             plugin.lognotice("error looking up user " + JSON.stringify(err));
             return next(DENY, DSN.no_such_user())

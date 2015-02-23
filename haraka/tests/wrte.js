@@ -6,7 +6,6 @@ var _              = require('underscore');
 var SMTPConnection = require('smtp-connection');
 var SMTPServer     = require('smtp-server').SMTPServer;
 var MongoClient    = require('mongodb').MongoClient;
-var ObjectID       = require("bson-objectid");
 var MailParser     = require("mailparser").MailParser;
 var events         = require('events');
 var util           = require("util");
@@ -236,7 +235,7 @@ exports.paid_delivery = {
             self.invoice = headers['x-test-invoice'];
             test.ok(self.invoice);
             test.equals(headers['x-test-mail'], "invoice");
-            self.invoices.update({ _id : new ObjectID(self.invoice) } , 
+            self.invoices.update({ _id : self.invoice } , 
                 { $set: { status : 'open' } }, function(err, result) {
 
             });
@@ -284,7 +283,7 @@ exports.paid_delivery = {
             console.log("headers", headers);
             self.invoice = headers['x-test-invoice'];
             test.equals(headers['x-test-mail'], "invoice");
-            self.invoices.update({ _id : new ObjectID(self.invoice) } , { $set: { status : 'paid' } }, function(err, result) {
+            self.invoices.update({ _id : self.invoice } , { $set: { status : 'paid' } }, function(err, result) {
 
             });
         }));

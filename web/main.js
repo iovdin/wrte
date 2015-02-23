@@ -1,6 +1,7 @@
 if (Meteor.isClient) {
     invoiceStatus = new ReactiveVar("");
     registredEmail = new ReactiveVar("");
+    lastError = new ReactiveVar("");
 
     Template.intro.events({    
         "click #getEmail" : function(event){

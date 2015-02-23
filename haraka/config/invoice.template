@@ -5,7 +5,7 @@ References : <%= msgId %>
 x-test-mail : invoice
 x-test-invoice : <%= invoiceId %>
 
-Recipient of <%= email %> has set a price <%= price %> BTC to see a message in his/her inbox.
+Recipient of <%= email %> has set a price <%= amount %> <%= currency %> to see a message in his/her inbox.
 
 Please open the link to pay <%= invoiceUrl %> 
 The link will expire in 10 minutes and the message will be removed from queue.
