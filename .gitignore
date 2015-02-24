@@ -5,3 +5,6 @@ design
 web/settings.json
 .npm
 docs
+wrte.io.crt
+wrte.io.key
+ssl.pem

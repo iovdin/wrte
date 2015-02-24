@@ -1,6 +1,5 @@
 if(Meteor.isClient){
 stripePubKey = stripeTest ? Meteor.settings.public.stripe.testPublicKey : Meteor.settings.public.stripe.livePublicKey; 
-console.log("stripePubKey", stripePubKey);
     buttonId = new ReactiveVar("");
     stripeHandler = null;
     Meteor.startup(function () {

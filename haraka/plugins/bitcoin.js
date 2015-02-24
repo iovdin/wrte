@@ -88,10 +88,10 @@ exports.hook_data_post = function(next, connection) {
             var r = result.ops[0];
             //plugin.loginfo("invoice creation result " + JSON.stringify(result.ops));
             t.notes.invoiceId = r._id;
-            t.notes.invoiceUrl = url.format({ protocol : "http", hostname : me, pathname : "/invoice/" + r._id});
-            t.notes.refundUrl = url.format({ protocol : "http", hostname : me, pathname : "/invoice/" + r._id + "/refund"});
+            //t.notes.invoiceUrl = url.format({ protocol : "http", hostname : me, pathname : "/invoice/" + r._id});
+            //t.notes.refundUrl = url.format({ protocol : "http", hostname : me, pathname : "/invoice/" + r._id + "/refund"});
             t.notes.amount = t.notes.user.amount;
-            t.notes.currency = t.notes.user.currency;
+            t.notes.currency = t.notes.user.currency.toUpperCase();
             t.notes.status = "invoice_sent";
             var from = new Address("delivery@wrte.io");
             plugin.send_invoice(from, t.mail_from, t.notes);

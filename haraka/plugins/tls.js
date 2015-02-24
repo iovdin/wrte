@@ -12,8 +12,10 @@ exports.register = function () {
 
     // declare first, these opts might be updated by tls.ini
     plugin.tls_opts = {
-        key: plugin.load_pem('tls_key.pem'),
-        cert: plugin.load_pem('tls_cert.pem'),
+        //key: plugin.load_pem('tls_key.pem'),
+        //cert: plugin.load_pem('tls_cert.pem'),
+        key: plugin.load_pem('wrte.io.key'),
+        cert: plugin.load_pem('wrte.io.crt'),
     };
 
     plugin.load_tls_ini();

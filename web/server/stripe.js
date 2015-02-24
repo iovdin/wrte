@@ -1,6 +1,5 @@
 stripePrivKey = stripeTest ? Meteor.settings.stripe.testPrivateKey : Meteor.settings.stripe.livePrivateKey ;
 
-console.log("stripePrivKey", stripePrivKey);
 Meteor.methods({
     invoice_status : function(invoiceId){
         var invoice = invoices.findOne({_id : invoiceId });

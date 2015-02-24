@@ -70,7 +70,7 @@ exports.wrte_special_emails = function (next, connection, params) {
         return next(DENY, DSN.no_such_user()) 
     }
 
-    var specials = ["support", "delivery", "abuse"];
+    var specials = ["support", "delivery", "abuse", "postmaster"];
 
     if(specials.indexOf(rcpt.user) < 0) {
         return next();
