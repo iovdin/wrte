@@ -1,4 +1,5 @@
 if (Meteor.isClient) {
+    stripeClientId = stripeTest ? Meteor.settings.public.stripe.testClientId : Meteor.settings.public.stripe.liveClientId; 
     aliasValidateStatus = new ReactiveVar("");
     validateAlias = inputValidator("is_alias_taken", aliasValidateStatus);
 
@@ -131,6 +132,24 @@ if (Meteor.isClient) {
     Router.route('/signup_done', function(){
         this.render("signup_done");
     })
+    Router.route('/stripe/:state', function(){
+        //this.params.state
+        var stripeUrl = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=" + stripeClientId;
+        var data = {};
+        console.log("params", this.params);
+        switch(this.params.state){
+
+        }
+        
+        this.render("stripe", {
+            data : {
+                stripeUrl : stripeUrl,
+                state : this.params.state
+            }
+        });
+    });
+
+
 }
 
 Accounts.config({

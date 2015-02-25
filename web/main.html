@@ -107,6 +107,16 @@
     </div>
 </template>
 
+<template name="stripe">
+{{#case state='start'}}
+<a href="{{stripeUrl}}" class="stripe-connect light-blue dark"><span>Connect with Stripe</span></a>
+{{/case}}
+{{#case state='registered'}}
+registration succeed
+{{/case}}
+
+</template>
+
 <template name="howitworks">
     <div style="width: 100%; height: 100%; overflow-y: auto;">
         <div style="line-height: 1.4; margin: 100px auto;" class="content  align_center">

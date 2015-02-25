@@ -19,13 +19,22 @@ _.mixin({
 if(Meteor.isClient){
     Template.registerHelper("case", function(){
         var pair =_.chain(this).pairs().first().value();
-        //console.log("case pair", pair);
-        var rvar = window[pair[0]];
-        if(!rvar){
-            //console.log("create var ", pair[0]);
-            rvar = window[pair[0]] = new ReactiveVar("default");
+        var key = pair[0];
+        var value = pair[1];
+
+        delete this[key];
+
+        var pdata = Template.parentData(1);
+        _.extend(this, pdata);
+
+        if(pdata[key] && pdata[key] == value) {
+            return Template._case_default;
         }
-        if(rvar instanceof ReactiveVar && rvar.get().toString() == pair[1]) {
+        var rvar = window[key];
+        if(!rvar){
+            rvar = window[key] = new ReactiveVar("default");
+        }
+        if(rvar instanceof ReactiveVar && rvar.get().toString() == value) {
             return Template._case_default;
         }
         return null;
