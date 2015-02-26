@@ -8,64 +8,61 @@ stripePubKey = stripeTest ? Meteor.settings.public.stripe.testPublicKey : Meteor
         // code to run on server at startup
     });
 
+    var invoice = null;
 
-    Router.route('/invoice/:_id', function () {
-        invoiceStatus.set("create");
-        this.render('invoice');
+    var stripeHandler = null;
+    var invoiceRoute = function () {
+        var status = this.params.status;
         var invoiceId = this.params._id;
+        var invoice = null;
 
-        Meteor.call('invoice_status', invoiceId, function(err, result){
-            if(err){
-                invoiceStatus.set("error");
-                lastError.set(err.reason);
+        if(invoiceId == 'test'){
+            invoice = { subject : "Hello World", status : "opened", to : "to@test.com", from : "from@test.com", "amount" : 1, currency : "usd" };
+        }else {
+            this.wait(Meteor.subscribe('invoice', invoiceId));
+            if (!this.ready()) {
+                this.render('invoice_loading');
                 return;
             }
-            var stripeHandler = StripeCheckout.configure({
+            invoice = invoices.findOne({});
+        }
+        var data = {
+            openTimeout : moment.duration(Meteor.settings.public.openInvoiceTimeout, "seconds").humanize(),
+            payTimeout  : moment.duration(Meteor.settings.public.payInvoiceTimeout, "seconds").humanize()
+        };
+        _.extend(data, invoice);
+        if(!status){
+            status = invoice.status;
+        } 
+        this.render('invoice_' + status, { data : data });
+
+        if(status == "opened"){
+            stripeHandler = StripeCheckout.configure({
                 key: stripePubKey,
-              token: function(token) {
-                  //console.log("handler", token);
-                  Meteor.call('invoice_charge', invoiceId, token.id, function(err, result){
-                      switch(result.status) {
-                          case 'paid':
-                              invoiceStatus.set("paid");
-                              break;
-                           case 'mispaid':
-                              invoiceStatus.set("error");
-                              lastError.set("Payment error");
-
-                      }
-                  });
-              }
-            });
-            switch(result.status){
-                case "created":
-                case "opened":
-                    stripeHandler.open({
-                        name: 'To: ' + result.to,
-                        description: result.subject,
-                        currency: result.currency,
-                        amount: result.amount * 100, 
-                        bitcoin : true,
-                        email : result.from,
-                        opened : function(){
-
-                        }, 
-                        closed : function(){
-
-                        }
+                token: function(token) {
+                    Meteor.call('invoice_charge', invoiceId, token.id, function(err, result){
+                        console.log("invoice_charge", err, result);
                     });
-                    //buttonId.set(data.button);
-                    invoiceStatus.set("created");
-                    break;
-                //TODO:
-                case "timeout1":
-                case "timeout2":
-                    invoiceStatus.set("timeout");
-                    break;
-                case "paid":
-                    invoiceStatus.set("paid");
-                    break;
-            }
-        });
-    });
+                }
+            });
+
+            stripeHandler.open({
+                name: 'to ' + invoice.to,
+                description: invoice.subject,
+                currency: invoice.currency,
+                amount: invoice.amount * 100, 
+                bitcoin : true,
+                email : invoice.from,
+            });
+        } else if(stripeHandler){
+            stripeHandler.close();
+        }
+    }
+
+    Router.route('/invoice/:_id', invoiceRoute);
+    Router.route('/invoice/:_id/:status', invoiceRoute);
+}
+
+if (Meteor.isServer){
+
 }

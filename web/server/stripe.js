@@ -1,18 +1,25 @@
 stripePrivKey = stripeTest ? Meteor.settings.stripe.testPrivateKey : Meteor.settings.stripe.livePrivateKey ;
+Meteor.startup(function () {
+    Meteor.publish("invoice", function(id){
+        var invoice =  invoices.findOne({ _id : id });
+        if(invoice){
+            var invoiceId = invoice._id;
+            var delta = (new Date() - invoice.createdAt) * 0.001;
+            //console.log("delta " + delta);
+            var from = invoice.from;
+            if(invoice.status == 'created') {
+                invoice.status = "opened";
+                if(delta > Meteor.settings.public.openInvoiceTimeout) {
+                    invoice.status = "timeout_open";
+                } 
+                invoices.update({ _id : invoiceId }, {$set : {status : invoice.status}});
+            }
+        }
+        return invoices.find({_id : id});
+    });
+});
 
 Meteor.methods({
-    invoice_status : function(invoiceId){
-        var invoice = invoices.findOne({_id : invoiceId });
-        if(!invoice){
-            throw new Meteor.Error("not_found", "No such invoice");
-        }
-        var from = invoice.from;
-        if(invoice.status == 'created') {
-            invoices.update({ _id : invoiceId }, {$set : {status : "opened"}});
-        }
-        //console.log("invoice", this.userId, invoice);
-        return invoice;
-    },
     invoice_charge : function(invoiceId, source){
         var invoice = invoices.findOne({_id : invoiceId });
         if(invoice.status != 'opened'){
@@ -34,7 +41,6 @@ Meteor.methods({
             invoice.status = 'mispaid';
         }
         invoices.update({_id : invoiceId}, {$set : {status : invoice.status}});
-        //console.log("charge", charge);
         return invoice;
     }
 });

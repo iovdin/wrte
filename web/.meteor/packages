@@ -9,10 +9,11 @@ reactive-var
 http
 accounts-base
 accounts-password
-fourseven:scss@=0.9.6
+fourseven:scss
 wolves:bourbon
 email
 body-parser
 iron:router
 spiderable
 mrgalaxy:stripe
+momentjs:moment

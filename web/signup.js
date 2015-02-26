@@ -72,7 +72,12 @@ if (Meteor.isClient) {
             event.preventDefault();
             var address = (useOrCreate == 'use') ? btcAddress.get() : undefined;
 
-            Meteor.call("signup", alias.get(), email.get(), price.get(), address, function(error, result){
+            //FIXME:
+            var amount = (btc2usd.get() * price.get());
+            amount = parseFloat(amount.toFixed(2));
+            amount = Math.max(amount, 0.60);
+
+            Meteor.call("signup", alias.get(), email.get(), price.get(), amount, function(error, result){
                 if (error){
                     //console.log("Connected email:", email.get());
                     var e = error.error;
@@ -105,7 +110,7 @@ if (Meteor.isClient) {
 
     //var mBTCRate = new ReactiveVar("Unknown");
     var btc2usd = new ReactiveVar("Unknown");   
-    var price = new ReactiveVar(0.1);
+    var price = new ReactiveVar(0.001);
     var alias = new ReactiveVar("");
     var email = new ReactiveVar("");
     var btcAddress = new ReactiveVar();
@@ -172,7 +177,7 @@ if (Meteor.isServer){
         return (count == 0) ? "alias_valid" : "alias_exists";
     }
     Meteor.methods({
-        signup: function (alias, email, price, btcAddress) {
+        signup: function (alias, email, priceBTC, amountUSD) {
             var aliasCheckStatus = isAliasTaken(alias);
             if(aliasCheckStatus != "alias_valid") {
                 throw new Meteor.Error(aliasCheckStatus);
@@ -183,7 +188,7 @@ if (Meteor.isServer){
                 throw new Meteor.Error(emailCheckStatus);
             }
 
-            var priceCheckStatus = isPriceValid(price);
+            var priceCheckStatus = isPriceValid(priceBTC);
             if(priceCheckStatus != "price_valid") {
                 throw new Meteor.Error(priceCheckStatus);
                 return priceCheckStatus;
@@ -192,10 +197,7 @@ if (Meteor.isServer){
             var userId = Accounts.createUser({username : alias, email : email});
             check(userId, String);
             var user = Meteor.users.findOne(userId);
-            var params = {price : price}
-            if (btcAddress) {
-                params['btc_address'] = btcAddress;
-            }
+            var params = {price : priceBTC, amount : amountUSD, currency : "usd"}
             Meteor.users.update({ _id : userId }, {$set : params});
 
             var welcomeTemplate = _.template(Assets.getText("email_templates/welcome.txt"));

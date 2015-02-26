@@ -116,11 +116,6 @@ exports.delay = function(hmail){
         notes.status = "invoice_timeout_open";
         return true;
     }
-    if(invoiceStatus != "created" && (now - qtime) * 0.001 > payTimeout) {
-        notes.status = "invoice_timeout_pay";
-        notes.failReason = "Payment timeout";
-        return true;
-    }
 
     if(invoiceStatus == "paid") {
         notes.status = "invoice_paid";
@@ -128,6 +123,12 @@ exports.delay = function(hmail){
     }
     if(invoiceStatus == "mispaid") {
         notes.status = "invoice_mispaid";
+        return true;
+    }
+
+    if(invoiceStatus != "created" && (now - qtime) * 0.001 > payTimeout) {
+        notes.status = "invoice_timeout_pay";
+        notes.failReason = "Payment timeout";
         return true;
     }
 
@@ -155,6 +156,14 @@ exports.hook_send_email = function(next, hmail){
 
     if(notes.status == "invoice_timeout_open") {
         return next(STOP);
+    }
+
+    if(notes.status == "invoice_timeout_pay") {
+        server.notes.invoices.update({_id : notes.invoiceId}, {$set :{status : "timeout_pay"}}, 
+                function(err, result){
+            return next(STOP);
+        });
+        return;
     }
 
     if(notes.status == "invoice_mispaid") {
