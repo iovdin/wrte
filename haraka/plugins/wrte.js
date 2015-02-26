@@ -104,9 +104,9 @@ exports.wrte_user_exists = function (next, connection, params) {
 
             connection.transaction.parse_body = 1;
             var notes = connection.transaction.notes;
-            var forwardEmail = new Address(address);
-            rcpt.user = forwardEmail.user; 
-            rcpt.host = forwardEmail.host; 
+            //var forwardEmail = new Address(address);
+            //rcpt.user = forwardEmail.user; 
+            //rcpt.host = forwardEmail.host; 
             notes.user = user;
             connection.relaying = true;
             //to get subject
@@ -115,6 +115,25 @@ exports.wrte_user_exists = function (next, connection, params) {
 
         return next(DENY, DSN.no_such_user());
     });
+}
+
+exports.hook_data_post = function(next, connection) {
+    var plugin = this; 
+    var t = connection.transaction;
+    var me = plugin.config.get('me');
+    
+    if(t.notes.user) {
+        var fwd = new Address(t.notes.user.emails[0].address);
+        //rcpt.user = forwardEmail.user; 
+        //rcpt.host = forwardEmail.host; 
+        _.each(t.rcpt_to, function(rcpt){
+            if(rcpt.user == t.notes.user.username && rcpt.host == me) {
+                rcpt.user = fwd.user;
+                rcpt.host = fwd.host;
+            }
+        });
+    }
+    next();
 }
 
 exports.hook_get_mx = function(next, hmail, domain){
