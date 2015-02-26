@@ -56,7 +56,7 @@ exports.hook_data_post = function(next, connection) {
             msgId = msgIds[0].trim();
         }
 
-        t.notes.subject = mimelib.decodeMimeWord(t.body.header.get("Subject").trim());
+        t.notes.subject = mimelib.parseMimeWords(t.body.header.get("Subject").trim());
         t.notes.msgId = msgId;
 
         var invoice = {
