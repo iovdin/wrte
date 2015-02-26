@@ -140,6 +140,7 @@ exports.hook_send_email = function(next, hmail){
     var notes = hmail.todo.notes;
     var user = notes.user;
     var msgId = notes.msgId;
+    var plugin = this;
     if(!user || !msgId) {
 
         return next();
@@ -161,6 +162,7 @@ exports.hook_send_email = function(next, hmail){
     if(notes.status == "invoice_timeout_pay") {
         server.notes.invoices.update({_id : notes.invoiceId}, {$set :{status : "timeout_pay"}}, 
                 function(err, result){
+            plugin.send_fail(delivery, hmail.todo.mail_from, notes);
             return next(STOP);
         });
         return;
@@ -170,10 +172,10 @@ exports.hook_send_email = function(next, hmail){
         this.send_fail_refund(delivery, hmail.todo.mail_from, notes);
         return next(STOP);
     }
-    if(notes.failReason) {
+    /*if(notes.failReason) {
         this.send_fail(delivery, hmail.todo.mail_from, notes);
         return next(STOP);
-    }
+    }*/
 
     if(notes.status == 'invoice_sent') {
         var handler = _.bind(this.delay, this);

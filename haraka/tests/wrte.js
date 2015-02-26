@@ -180,7 +180,7 @@ exports.paid_delivery = {
         this.from     = genID() + "@test";
 
         setUpMongo.call(self, function(){
-            self.users.insert([{ username : self.username, _id : "test_" + self.username, emails : [ {address : self.email, verified : true}], price : 0.0001 }], function(err, result){
+            self.users.insert([{ username : self.username, _id : "test_" + self.username, emails : [ {address : self.email, verified : true}], price : 0.0001, amount : 1, currency : "usd" }], function(err, result){
 
                 setUpMail.call(self, done);
             });
@@ -236,9 +236,10 @@ exports.paid_delivery = {
             test.ok(self.invoice);
             test.equals(headers['x-test-mail'], "invoice");
             self.invoices.update({ _id : self.invoice } , 
-                { $set: { status : 'open' } }, function(err, result) {
-
-            });
+                { $set: { status : 'opened' } }, 
+                function(err, result) {
+                    //console.log("updated invoice");
+                });
         }));
 
         this.e.on('message', _.after(2, function(mail) {
