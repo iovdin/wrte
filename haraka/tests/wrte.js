@@ -255,7 +255,7 @@ exports.paid_delivery = {
 
     },
     'should send an invoice and succeed when paid' : function(test) {
-        test.expect(11);
+        test.expect(13);
         var client = this.client;
         var self = this;
         self.msg = genID();
@@ -323,7 +323,13 @@ exports.paid_delivery = {
             console.log("headers3", headers);
             self.invoice = headers['x-test-invoice'];
             test.equals(headers['x-test-mail'], "delivered");
-            test.done();
+
+            //verify it has changed status to "delivered"
+            self.invoices.findOne({ _id : self.invoice } , function(err, result) {
+                test.ok(!err, "cant find invoice ", self.invoice);
+                test.equals(result.status, "delivered");
+                test.done();
+            });
         }));
 
         setTimeout(function(){

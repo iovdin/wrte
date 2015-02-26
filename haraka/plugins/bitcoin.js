@@ -46,7 +46,6 @@ exports.hook_data_post = function(next, connection) {
     if(t.notes.user) {
         this.loginfo("hook_data_post");
         //var query = {};
-
         var msgIds = t.header.get_all("Message-Id");
         var msgId = "";
         if(msgIds.length == 0) {
@@ -194,8 +193,14 @@ exports.hook_delivered = function(next, hmail, args){
     var delivery = new Address("delivery@wrte.io");
     //var notes = hmail.todo.notes;
     if(hmail.todo && hmail.todo.notes && hmail.todo.notes.status == "invoice_paid") {
+        var notes = hmail.todo.notes;
         this.send_confirm(delivery, hmail.todo.mail_from, hmail.todo.notes);
-    } 
+        server.notes.invoices.update({ _id : notes.invoiceId } , { $set: { status : 'delivered' } }, function(err, result) {
+
+            return next();
+        });
+        return;
+    }  
     next();
 }
 exports.send_invoice = function(from, to, notes) {
@@ -213,7 +218,7 @@ exports.send_confirm = function(from, to, notes) {
     var me = plugin.config.get('me');
     var email = notes.user.username + "@" + me;
     var params = _.extend({email: email}, notes);
-    plugin.lognotice("send delivery succesed " + to);
+    plugin.lognotice("send delivery succeed " + to);
     this.send_email_template(from, to, "delivered.template", params);
 
 }
