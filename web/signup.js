@@ -79,7 +79,6 @@ if (Meteor.isClient) {
 
             Meteor.call("signup", alias.get(), email.get(), price.get(), amount, function(error, result){
                 if (error){
-                    //console.log("Connected email:", email.get());
                     var e = error.error;
                     lastError.set(error.error);
                     if(e.indexOf("price_") >= 0) {
@@ -163,6 +162,7 @@ if (Meteor.isServer){
     function isAliasTaken(alias){
         if (!alias) 
             return "alias_empty";
+        alias = alias.toLowerCase();
 
         if (!/^\S+$/.test(alias)) 
             return "alias_wrong_syntax";
@@ -194,6 +194,7 @@ if (Meteor.isServer){
                 return priceCheckStatus;
             }
 
+            alias = alias.toLowerCase();
             var userId = Accounts.createUser({username : alias, email : email});
             check(userId, String);
             var user = Meteor.users.findOne(userId);
