@@ -1,5 +1,5 @@
 Router.route("/allusers", function(){
-    var emails = Meteor.users.find({}, { fields : {username : 1, "emails.address" : 1 }}).map(function(user){
+    var emails = Meteor.users.find({}, { fields : {username : 1, "emails.address" : 1 }, sort : {createdAt : 1} }).map(function(user){
         return [user.username, user.emails[0].address]
     });
     var text = _.chain(emails).map(function(email, index){
