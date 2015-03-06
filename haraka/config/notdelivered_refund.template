@@ -2,10 +2,11 @@ From: wrte <delivery@wrte.io>
 Subject: RE: <%= subject %> 
 In-Reply-To : <%= msgId %>
 References : <%= msgId %>
+x-test-mail : fail_refund
+x-test-invoice : <%= invoiceId %>
 
-The message has not been delivered to <%= email %>
-if you specified a return address coins will return shortly
-otherwise please follow the link to refund <%= refundUrl %>
+The message delivery to <%= email %> has failed.
+Refund is in process...
 
 --
 wrte.io team
