@@ -27,7 +27,7 @@ if(Meteor.isClient){
         var pdata = Template.parentData(1);
         _.extend(this, pdata);
 
-        if(pdata[key] && pdata[key] == value) {
+        if(pdata && pdata[key] && pdata[key] == value) {
             return Template._case_default;
         }
         var rvar = window[key];

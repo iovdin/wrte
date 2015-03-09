@@ -20,7 +20,7 @@ Meteor.startup(function () {
 });
 
 Meteor.methods({
-    invoice_charge : function(invoiceId, source){
+    invoice_charge : function(invoiceId, source) {
         var invoice = invoices.findOne({_id : invoiceId });
         if(invoice.status != 'opened'){
             return invoice;
@@ -42,6 +42,14 @@ Meteor.methods({
         }
         invoices.update({_id : invoiceId}, {$set : {status : invoice.status}});
         return invoice;
+    }, 
+    auth_token : function(code){
+        var result = HTTP.post(stripeUrl +"/oauth/token", { params : { grant_type : "authorization_code", code : code, client_secret : stripePrivKey} });
+        var svc = _.pick(result, 'access_token', 'refresh_token', 'stripe_publishable_key', 'stripe_user_id');
+        Meteor.user
+        if(result.data)
+
+        return result;
     }
 });
         

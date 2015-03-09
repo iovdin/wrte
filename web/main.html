@@ -111,8 +111,11 @@
 {{#case state='start'}}
 <a href="{{stripeUrl}}" class="stripe-connect light-blue dark"><span>Connect with Stripe</span></a>
 {{/case}}
-{{#case state='registered'}}
-registration succeed
+{{#case state='back'}}
+...
+{{/case}}
+{{#case state='done'}}
+done
 {{/case}}
 
 </template>
