@@ -115,7 +115,7 @@ exports.wrte_user_exists = function (next, connection, params) {
 
         if (user && user.emails[0] && user.emails[0].address) {
             var address = user.emails[0].address;
-            //FIXME: leave here till beta
+            //TODO: leave here till beta
             if(!user.emails[0].verified)
                 return next(DENY, "not in beta yet");
 

@@ -28,11 +28,15 @@
 (command scp-cmd "scp")
 (command tar "tar")
 (command mup "mup")
+(command grep "grep")
 
 
 (setq ssh-key "~/.aws_ubuntu.pem")
 (setq host "54.172.249.200")
 (setq user "ubuntu")
+
+(define (find-fixme path)
+ (grep "-R FIXME --exclude-dir=node_modules --exclude-dir=.meteor" path))
 
 (define (ssh)
  (ssh-cmd "-i" ssh-key (string user "@" host) (join (map string (args)))))
@@ -59,23 +63,23 @@
 
 
 (define (web-deploy)
- (change-dir "web")
- (mup "deploy")
- )
+ (and 
+  (change-dir "web")
+  (not (find-fixme "*"))
+  (mup "deploy")))
 
 (define (mail-deploy)
  (and
   (change-dir "haraka")
+  (not (find-fixme "*"))
   (tar "-cz --exclude queue --exclude node_modules -f ../build/mail.tgz *")
   (change-dir "..")
   (scp "build/mail.tgz" "~/")
   (ssh "sudo tar xfz mail.tgz -C /var/mail/")
   (ssh "'cd /var/mail/; sudo npm install'")
   (ssh "sudo chown -R mail:mail /var/mail/*")
- )
- (ssh "'cat /var/run/haraka.pid | xargs sudo kill -9; sudo rm /var/run/haraka.pid'")
- ;(ssh "sudo haraka -c /var/mail")
- (ssh "'cd /var/mail/; sudo node haraka.js'")
+  (ssh "'cat /var/run/haraka.pid | xargs sudo kill -9; sudo rm /var/run/haraka.pid'")
+  (ssh "'cd /var/mail/; sudo node haraka.js'"))
  )
 
 (setq make-map 

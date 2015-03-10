@@ -73,7 +73,7 @@ if (Meteor.isClient) {
             event.preventDefault();
             var address = (useOrCreate == 'use') ? btcAddress.get() : undefined;
 
-            //FIXME:
+            //TODO: make usd as default
             var amount = (btc2usd.get() * price.get());
             amount = parseFloat(amount.toFixed(2));
             amount = Math.max(amount, 0.60);
