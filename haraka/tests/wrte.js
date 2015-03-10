@@ -172,6 +172,80 @@ exports.special_emails = {
     }
 }
 
+exports.auth = {
+    setUp : function(done){
+        this.clientOptions = { port : 25, host : "127.0.0.1" , name : 'wrte.test', secure : false, debug : true, ignoreTLS: true };
+        var client = this.client = new SMTPConnection(this.clientOptions);
+        this.client.on('log', function(text){
+            console.log(text.type + ": " + text.message);
+        });
+        this.server = new SMTPServer({
+            secure : false,
+            name : "wrte.test",
+            disabledCommands : ['AUTH', 'STARTTLS']
+        });
+        this.server.listen(2500, "127.0.0.1", function(){
+            done();
+        });
+    },
+    tearDown : function(done){
+        this.client.close();
+        this.server.server.on('close', function(){
+            done();
+        });
+        this.server.close();
+    },
+    'should reject email form wrte.io if not authenticated' : function(test){
+        test.expect(2);
+        var self = this;
+        var from = genID() + "@wrte.io";
+        var to = genID() + "@test";
+
+
+        self.client.connect(function(){
+            self.client.send({from : from , to : to}, "hello world", function(err, info){
+                test.ok(err, 'has error');
+                test.equals(err.responseCode, 550, 'response code is 550');
+                self.client.quit();
+                test.done();
+            });
+        });
+    },
+    'should pass email from wrte.io if authenticated': function(test){
+        test.expect(4);
+        var self = this;
+        var from = genID() + "@wrte.io";
+        var to = genID() + "@test";
+        self.client.connect(function(){
+            self.client.login({user : "wrte", pass : "es3KWvzzVE0K" }, function(err, result){
+                test.ok(result, 'authenticated');
+                self.client.send({ from : from , to : to }, "hello world", function(err, info){
+                    test.ok(!err, 'no error occured');
+                    self.client.quit();
+                });
+            });
+        });
+
+        var testDone = _.once(function(){
+            test.done();
+        });
+
+        this.server.onMailFrom = function(address, session, callback) {
+            test.equals(address.address, from);
+            setImmediate(callback);
+        }
+        this.server.onRcptTo = function(address, session, callback){
+            test.equals(address.address, to);
+            setImmediate(callback);
+            testDone();
+        };
+
+        setTimeout(function(){
+            testDone();
+        }, 1000);
+    }
+}
+
 exports.paid_delivery = {
     setUp : function(done){
         var self = this;

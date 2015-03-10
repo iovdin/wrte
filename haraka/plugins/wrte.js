@@ -3,11 +3,13 @@ var Address  = require('./address').Address;
 var DSN      = require('./dsn');
 
 exports.register = function() {
+    this.register_hook('mail', 'wrte_auth');
     this.register_hook('rcpt', 'wrte_test_emails');
     this.register_hook('rcpt', 'wrte_sent_by_localhost');
     this.register_hook('rcpt', 'wrte_special_emails');
     this.register_hook('rcpt', 'wrte_user_exists');
 };
+
 
 exports.hook_init_master = function(next) {
     var wrteConfig = this.config.get('wrte.json');
@@ -19,6 +21,16 @@ exports.hook_init_master = function(next) {
     return next()
 }
 
+exports.wrte_auth = function (next, connection, params) { 
+    var plugin = this;
+    var me = plugin.config.get('me');
+    var results = connection.results;
+    var from = params[0];
+    if(from.host == me && !results.has('relay', 'pass','auth')) {
+        return next(DENY, DSN.sec_unauthorized()) 
+    }
+    next();
+}
 exports.wrte_test_emails = function (next, connection, params) { 
     var rcpt = params[0];
     if(rcpt.host == server.notes.config.test_domain) {
@@ -37,6 +49,11 @@ exports.wrte_sent_by_localhost = function (next, connection, params) {
     if(rcpt.host != me){
         if(connection.remote_ip == "127.0.0.1"){
             this.loginfo("remote_ip == 127.0.0.1, (from web server or myself?), allow relay");
+            connection.relaying = true;
+            return next(OK);
+        }
+        if(connection.results.has('relay', 'pass','auth')) {
+            this.loginfo("allow relaying for authenticated user");
             connection.relaying = true;
             return next(OK);
         }

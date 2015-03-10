@@ -6,6 +6,7 @@
 # control which IPs, rDNS hostnames, HELO hostnames, MAIL FROM addresses, and
 # RCPT TO address you accept mail from. See 'haraka -h access'.
 #access
+auth/flat_file
 
 # block mails from known bad hosts (see config/dnsbl.zones for the DNS zones queried)
 dnsbl
