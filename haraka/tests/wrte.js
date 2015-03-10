@@ -411,3 +411,56 @@ exports.paid_delivery = {
         }, 3000);
     }
 }
+
+exports.free_delivery = {
+    setUp : function(done){
+        var self = this;
+        this.username = genID();
+        this.email    = genID() + "@test";
+        this.from     = genID() + "@test";
+
+        setUpMongo.call(self, function(){
+            self.users.insert([{ username : self.username, _id : "test_" + self.username, emails : [ {address : self.email, verified : true}], price : 0.0001, amount : 0, currency : "usd" }], function(err, result){
+
+                setUpMail.call(self, done);
+            });
+        });
+    },
+    tearDown : function(done){
+        var self = this;
+        self.users.remove([{username : self.username}], function(err, result){
+            tearDownMongo.call(self, function(){
+                tearDownMail.call(self, done);
+            });
+        })
+    },
+    'should pass email if amount is 0' : function(test) {
+        test.expect(3);
+        var client = this.client;
+        var self = this;
+        self.msg = genID();
+        var msg = [
+            "Subject: Test",
+            "x-test-message: " + self.msg,
+            "Hello world" ].join("\r\n");
+
+        client.send({ from : self.from, to: self.username + "@wrte.io"}, msg, function(err, info){
+            test.ok(!err, "no error on sending");
+            client.quit();
+        });
+
+        //got email
+        this.e.on("rcpt_to", function(address){
+            test.equals(address.address, self.email);
+            console.log("rcpt_to", address.address);
+        });
+        this.e.on("mail_from", function(address){
+            test.equals(address.address, self.from);
+            console.log("mail_from", address.address);
+        });
+
+        setTimeout(function(){
+            test.done();
+        }, 3000);
+    }
+}

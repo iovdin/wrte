@@ -45,6 +45,11 @@ exports.hook_data_post = function(next, connection) {
 
     if(t.notes.user) {
         this.loginfo("hook_data_post");
+
+        //pass free emails
+        if(t.notes.user.amount == 0) {
+            return next();
+        }
         //var query = {};
         var msgIds = t.header.get_all("Message-Id");
         var msgId = "";
