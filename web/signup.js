@@ -1,5 +1,4 @@
 if (Meteor.isClient) {
-    stripeClientId = stripeTest ? Meteor.settings.public.stripe.testClientId : Meteor.settings.public.stripe.liveClientId; 
     aliasValidateStatus = new ReactiveVar("default");
     validateAlias = inputValidator("is_alias_taken", aliasValidateStatus);
 
@@ -131,30 +130,8 @@ if (Meteor.isClient) {
     })
     Router.route('/signup_done', function(){
         this.render("signup_done");
-    })
-    Router.route('/stripe/:state', function(){
-        //this.params.state
-        var authUrl = stripeUrl + "/oauth/authorize?response_type=code&client_id=" + stripeClientId;
-        var data = {};
-        if(this.params.state == "back") {
-            Meteor.call("auth_token", this.params.query.code, function(err, result){
-                console.log("result", err, result);
-                Router.go("/stripe/done");
-            });
-        }
-        /*switch(this.params.state){
-
-        }*/
-        console.log("stripe state", this.params.state);
-        this.render("stripe", {
-            data : {
-                stripeUrl : authUrl,
-                state : this.params.state
-            }
-        });
     });
 }
-stripeUrl = "https://connect.stripe.com";
 
 Accounts.config({
     //sendVerificationEmail : true,

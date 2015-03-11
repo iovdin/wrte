@@ -1,0 +1,58 @@
+<template name="invoice_loading">
+<!--TODO: when invoice data is beging loaded from server -->
+loading...  
+</template>
+
+<template name="invoice_timeout_open">
+<h3> Timeout </h3>
+Your message "{{subject}}" to "{{to}}" is dropped.<br>
+Please send it again and open a payment link within {{openTimeout}}
+</template>
+
+<template name='invoice_timeout_pay'>
+<h3> Payment Timeout </h3>
+Your message "{{subject}}" to "{{to}}" is not delivered.<br>
+It is not being paid within {{payTimeout}}
+</template>
+
+<template name='invoice_paid'>
+<h3> Paid </h3>
+Your message "{{subject}}" to "{{to}}" is about to be delivered.<br>
+</template>
+
+<template name='invoice_mispaid'>
+<h3> Payment Error </h3>
+Something went wrong with your payment for<br>
+Your message "{{subject}}" to "{{to}}" 
+</template>
+
+<template name='invoice_delivered'>
+<h3> Delivered </h3>
+Your message "{{subject}}" to "{{to}}" is delivered.<br>
+</template>
+
+<template name='invoice_not_delivered'>
+<h3> Delivery Fail </h3>
+Your message "{{subject}}" to "{{to}}" is not delivered.<br>
+Refund is in process
+</template>
+
+<template name='invoice_refunded'>
+<h3> Delivery Fail (Refunded) </h3>
+Your message "{{subject}}" to "{{to}}" is not delivered.<br>
+</template>
+
+<template name='invoice_redeem'>
+<h3> Redeem </h3>
+"{{to}}" has returned money for you message "{{subject}}"<br>
+</template>
+
+<template name='invoice_error'>
+{{lastError}}
+<!--error creating invoice-->
+</template>
+
+<template name='invoice_opened'>
+<!--TODO: this is shown while opening payment form, and when the form is submitted but now yet proceeded -->
+loading...
+</template>

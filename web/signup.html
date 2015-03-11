@@ -1,0 +1,60 @@
+<template name="signup">
+    <div style="line-height: 1.4" class="content align_center">
+        <span style="display: block; height:30px"></span>
+        <h2>Forward emails from<br>
+            <div class="input input-{{aliasValidateStatus}}" id="alias" contenteditable="true" data-ph="your.name" spellcheck="false"></div>@wrte.io to
+            <div class="error error-{{aliasValidateStatus}}" id="aliasError">
+                <img src="/img/icon_error.png" class="error_icon">
+                {{#case aliasValidateStatus='alias_empty'}}
+                Name is<br>empty
+                {{/case}}
+                {{#case aliasValidateStatus='alias_wrong_syntax'}}
+                No whitespace<br>allowed!
+                {{/case}}
+                {{#case aliasValidateStatus='alias_exists'}}
+                This name has<br>been taken
+                {{/case}}
+            </div>
+            <br>
+            <div class="input input-{{emailValidateStatus}}" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div>
+            <div class="error error-{{emailValidateStatus}}" id="emailError">
+                <img src="/img/icon_error.png" class="error_icon">
+                {{#case emailValidateStatus='email_empty'}}
+                Email field<br>is empty
+                {{/case}}
+                {{#case emailValidateStatus='email_wrong_syntax'}}
+                Wrong email<br>format
+                {{/case}}
+                {{#case emailValidateStatus='email_exists'}}
+                This email has<br>been already registered
+                {{/case}}
+            </div>
+            <br>
+            when <div class="input input-{{priceValidateStatus}}" id="price" contenteditable="true" data-ph="0.001" spellcheck="false" ></div>
+            <div id="estimation">≈ ${{mBTCRate}}</div> bitcoin is paid
+            <div class="error error-{{priceValidateStatus}}">
+                <img src="/img/icon_error.png" class="error_icon">
+                {{#case priceValidateStatus='price_nan'}}
+                Must be<br>a number
+                {{/case}}
+                {{#case priceValidateStatus='price_toosmall'}}
+                Can not be less than<br>satoshi (1 / 100 000 000 BTC)
+                {{/case}}
+            </div>
+        </h2>
+        <span style="display: block; height:30px"></span>
+        <!--<div>{{errorMessage}}</div>-->
+        <button>Create account</button>
+    </div>
+</template>
+
+<template name="signup_done">
+    <div style="line-height: 1.4" class="content align_center">
+        <h1><img src="/img/icon_done.png" style="width: 80px; margin-bottom: -20px;"> Done!</h1>
+        <br><h3>You have registered <b>{{registredEmail}}</b></h3><br>
+        <h2>We will let you know<br> when the beta is launched</h2>
+        <span style="display: block; height:50px"></span>
+        <a href="/howitworks" id="linkToHow">How it works</a>
+    </div>
+</template>
+

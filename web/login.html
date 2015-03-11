@@ -1,0 +1,21 @@
+<template name="LoginLayout">
+    <div fit horizontal center-justified layout center>
+        {{> topBar}}
+        <div style="line-height: 1.4" class="content align_center">
+        {{> yield }}
+        </div>
+    </div>
+</template>
+
+<template name="login_input">
+        <span style="display: block; height:30px"></span>
+        <div class="input" id="username" contenteditable="true" data-ph="your.email" spellcheck="false"></div>@wrte.io
+        <span style="display: block; height:30px"></span>
+        <button>send login link</button>
+</template>
+<template name="login_email_sent">
+    Login link has been sent to your email address.
+</template>
+<template name="login_link_opened">
+    logging in ...
+</template>
