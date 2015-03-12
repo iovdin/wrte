@@ -4,8 +4,11 @@
         <h1>Log In</h1>
         <span style="display: block; height:30px"></span>
         <h2>
-            <input type="email" class="input f30" id="username" placeholder="Your email" style="width: 350px">
+            <input type="email" class="input f30" id="email" placeholder="Your email" style="width: 350px">
             <!--<div class="input" id="username" contenteditable="true" data-ph="Your email  _____ " spellcheck="false" style="width: 400px"></div>-->
+            {{#case lastError='not_found'}}
+            no such user
+            {{/case}}
         </h2>
         <span style="display: block; height:30px"></span>
         <button>Send me a login link</button>
@@ -15,7 +18,7 @@
     <div fit vertical center-justified layout center style="background: rgba(42, 45, 49, 0.90); z-index: 10">
         <a href="." class="close"></a>
         <h1>Log In</h1>
-        <h2>Link was sent</h2>
+        <h2>Check your mailbox</h2>
     </div>
 </template>
 <template name="login_link_opened">

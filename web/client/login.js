@@ -14,11 +14,12 @@ Meteor.loginWithToken = function(token, callback){
 Template.login.events({
     'click button' : function(e, template) {
         e.preventDefault();
-        var username = $('#username').text();
+        var email = $('#email').val();
         var path = Router.current().location.get().path;
-        Meteor.call('send_email_token', username, path.substr(1), function(error, result){
+        Meteor.call('send_email_token', email, path.substr(1), function(error, result){
             if(error){
-                //TODO: error
+                //TODO:
+                //lastError.set(error.error)
                 console.log("error sending link", error);
                 return;
             }
@@ -27,17 +28,17 @@ Template.login.events({
     }
 });
 
-Router.onAfterAction(function(){
-    if (this.params.hash == "login_link_opened"){
-        var token = _.keys(this.params.query)[0];
+Tracker.autorun(function(){
+    if(popup.get() == "login_link_opened") {
+        var token = _.keys(Router.current().params.query)[0];
         Meteor.loginWithToken(token, function(error, result){
             console.log("logged in with token ", error, result);
             if(error){
                 //TODO: error
+                console.log("error logging in", error);
                 return;
             }
             Router.go('/dashboard');
         });
     }
-    //this.next();
 });

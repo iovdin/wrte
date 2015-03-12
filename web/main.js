@@ -18,10 +18,7 @@ if (Meteor.isClient) {
         layoutTemplate: 'MainLayout'
     });
 
-    popup = new ReactiveVar("");
     Router.onBeforeAction(function(){
-        //depend on path otherwise Router.go does not work
-
         if(popup.get()) {
             this.render(popup.get(), { to : "popup"});
         }

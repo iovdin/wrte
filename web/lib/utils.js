@@ -45,7 +45,9 @@ if(Meteor.isClient){
         Router.go(path + "#" + newHash);
     }
     Template.registerHelper("case", function(){
+        console.log("case", JSON.stringify(this));
         var pair =_.chain(this).pairs().first().value();
+
         var key = pair[0];
         var value = pair[1];
 

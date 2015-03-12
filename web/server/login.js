@@ -24,9 +24,23 @@ Accounts.registerLoginHandler(function(loginRequest) {
 });
 
 Meteor.methods({
-    'send_email_token' : function(username, path) {
-        console.log("send_email_token to " + username);
-        var user = Meteor.users.findOne({username : username});
+    'send_email_token' : function(input, path) {
+        console.log("send_email_token to " + input);
+
+        var arr = input.split("@");
+        var search = {};
+        if(arr.length == 1){
+            search.username = input;
+        }else if(arr.length == 2){
+            if(arr[1] == "wrte.io"){
+                search.username = arr[0];
+            } else {
+                search = {"emails.0.address" : input}
+            }
+        } else {
+            throw new Meteor.Error("not_found");
+        }
+        var user = Meteor.users.findOne(search);
         if(!user) {
             throw new Meteor.Error("not_found");
         }
@@ -40,7 +54,7 @@ Meteor.methods({
             to : email,
             from : "wrte <support@wrte.io>",
             subject : "login to wrte.io",
-            text : loginTemplate({email : username + "@wrte.io", link : Meteor.absoluteUrl(path + '?' + emailToken + "#login_link_opened")}),
+            text : loginTemplate({email : user.username + "@wrte.io", link : Meteor.absoluteUrl(path + '?' + emailToken + "#login_link_opened")}),
         });
         return true;
     }
