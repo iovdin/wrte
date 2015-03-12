@@ -15,3 +15,9 @@ Router.route('/dashboard/settings', function(){
 Router.route('/dashboard/transactions', function(){
     this.render("dashboard_transactions");
 });
+
+Template.dashboard_topbar.events({
+    'click #logout' : function(e){
+        Meteor.logout();
+    }
+});

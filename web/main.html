@@ -35,7 +35,11 @@
         <div class="align_right" style="float: right">
             <a href="/signup" >Get one</a>
             <a href="/howitworks" >How it works</a>
+            {{#if loggedIn}}
+            <a href="/dashboard" class="b">Dashboard</a>
+            {{else}}
             <a href="#login" class="b">Login</a>
+            {{/if}}
         </div>
     </div>
 </template>
