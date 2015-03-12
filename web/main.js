@@ -13,15 +13,26 @@ if (Meteor.isClient) {
         layoutTemplate: 'MainLayout'
     });
 
+    popup = new ReactiveVar("");
     Router.onBeforeAction(function(){
         //depend on path otherwise Router.go does not work
-        var path = Router.current().location.get().path;
 
-        if(this.params.hash) {
-            this.render(this.params.hash, { to : "popup"});
+        if(popup.get()) {
+            this.render(popup.get(), { to : "popup"});
         }
         this.next();
 
+    });
+
+    Tracker.autorun(function(){
+        var router = Router.current(); 
+        if(!router) return;
+        var hash = router.location.get().hash; 
+        if(hash.length > 1) {
+            popup.set(hash.substr(1));
+        } else {
+            popup.set("");
+        }
     });
 
     Router.route('/', function(){

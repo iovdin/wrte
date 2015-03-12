@@ -16,6 +16,17 @@ _.mixin({
     }
 });
 
+
+wrteFee = function(amount, charity) {
+    if(charity) return 0;
+    return Math.round(amount * 0.05);
+}
+//TODO: handle no cents currencies
+stripeFee = function(amount, currency, bitcoins) {
+    if(bitcoins) return Math.round(0.005 * amount);
+    return Math.round(amount * 0.029) + 30;
+}
+
 if(Meteor.isClient){
     goToHash = function(newHash){
         var router = Router.current();

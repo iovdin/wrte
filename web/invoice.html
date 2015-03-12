@@ -26,8 +26,7 @@
 <template name='invoice_mispaid'>
     <h1> Payment Error </h1>
     <br>
-    <h3>Something went wrong with your payment for</h3>
-    Your message "{{subject}}" to "{{to}}" 
+    <h3>Something went wrong with your payment for your message to <b>{{to}}</b></h3>
 </template>
 
 <template name='invoice_delivered'>
@@ -56,7 +55,9 @@
 </template>
 
 <template name='invoice_error'>
-    <h3>{{lastError}}</h3>
+    <h1> Error </h1>
+    <br>
+    <h3>{{errmsg}}</h3>
     <!--error creating invoice-->
 </template>
 
