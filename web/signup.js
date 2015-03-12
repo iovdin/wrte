@@ -101,7 +101,7 @@ if (Meteor.isClient) {
                 }
                 registredEmail.set(alias.get()+"@wrte.io")
                 resetValidator();
-                Router.go("/signup_sendmoney")
+                Router.go("/signup/sendmoney")
                 //subscribeStatus.set("signup_done");
             });
         },
@@ -139,10 +139,10 @@ if (Meteor.isClient) {
     Router.route('/signup', function(){
         this.render("signup");
     })
-    Router.route('/signup_done', function(){
+    Router.route('/signup/done', function(){
         this.render("signup_done");
     });
-    Router.route('/signup_sendmoney', function(){
+    Router.route('/signup/sendmoney', function(){
         this.render("signup_sendmoney");
     });
 }
