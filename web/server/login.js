@@ -24,7 +24,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 });
 
 Meteor.methods({
-    'send_email_token' : function(username) {
+    'send_email_token' : function(username, path) {
         console.log("send_email_token to " + username);
         var user = Meteor.users.findOne({username : username});
         if(!user) {
@@ -40,7 +40,7 @@ Meteor.methods({
             to : email,
             from : "wrte <support@wrte.io>",
             subject : "login to wrte.io",
-            text : loginTemplate({email : username + "@wrte.io", link : Meteor.absoluteUrl('login/link_opened?' + emailToken)}),
+            text : loginTemplate({email : username + "@wrte.io", link : Meteor.absoluteUrl(path + '?' + emailToken + "#login_link_opened")}),
         });
         return true;
     }

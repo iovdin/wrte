@@ -39,7 +39,7 @@ exports.on_check_payment = function(){
     });
 }
 exports.hook_data_post = function(next, connection) {
-    var plugin = this; 
+    var plugin = this;
     var t = connection.transaction;
     var me = plugin.config.get('me');
 
@@ -72,7 +72,8 @@ exports.hook_data_post = function(next, connection) {
             to : t.notes.user.username + "@" + me,
             subject : t.notes.subject,
             amount : t.notes.user.amount,
-            currency : t.notes.user.currency
+            currency : t.notes.user.currency,
+            stripePublishableKey : t.notes.user.services.stripe.stripe_publishable_key
         }
 
         server.notes.invoices.insert([invoice], function(err, result){

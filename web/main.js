@@ -1,7 +1,6 @@
 if (Meteor.isClient) {
     invoiceStatus = new ReactiveVar("");
     registredEmail = new ReactiveVar("");
-    lastError = new ReactiveVar("");
 
     Template.intro.events({    
         "click #getEmail" : function(event){
@@ -13,6 +12,18 @@ if (Meteor.isClient) {
     Router.configure({
         layoutTemplate: 'MainLayout'
     });
+
+    Router.onBeforeAction(function(){
+        //depend on path otherwise Router.go does not work
+        var path = Router.current().location.get().path;
+
+        if(this.params.hash) {
+            this.render(this.params.hash, { to : "popup"});
+        }
+        this.next();
+
+    });
+
     Router.route('/', function(){
         this.render("intro");
     });

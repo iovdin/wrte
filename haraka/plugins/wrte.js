@@ -107,7 +107,7 @@ exports.wrte_user_exists = function (next, connection, params) {
     var plugin = this;
     var me = plugin.config.get('me');
 
-    server.notes.users.findOne({ username : rcpt.user }, { fields : { username : 1, "emails.address" : 1, "emails.verified" : 1, amount : 1, currency : 1 } } , function(err, user) {
+    server.notes.users.findOne({ username : rcpt.user }, { fields : { username : 1, "emails.address" : 1, "emails.verified" : 1, amount : 1, currency : 1, "services.stripe" : 1 } } , function(err, user) {
         if(err) {
             plugin.lognotice("error looking up user " + JSON.stringify(err));
             return next(DENY, DSN.no_such_user())
@@ -116,8 +116,13 @@ exports.wrte_user_exists = function (next, connection, params) {
         if (user && user.emails[0] && user.emails[0].address) {
             var address = user.emails[0].address;
             //TODO: leave here till beta
-            if(!user.emails[0].verified)
+            if(!user.emails[0].verified) {
                 return next(DENY, "not in beta yet");
+            }
+            var stripe = user.services.stripe;
+            if(!stripe) {
+                return next(DENY, "account is not properly set up");
+            }
 
             connection.transaction.parse_body = 1;
             var notes = connection.transaction.notes;
@@ -141,8 +146,6 @@ exports.hook_data_post = function(next, connection) {
     
     if(t.notes.user) {
         var fwd = new Address(t.notes.user.emails[0].address);
-        //rcpt.user = forwardEmail.user; 
-        //rcpt.host = forwardEmail.host; 
         _.each(t.rcpt_to, function(rcpt){
             if(rcpt.user == t.notes.user.username && rcpt.host == me) {
                 rcpt.user = fwd.user;

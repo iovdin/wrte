@@ -1,0 +1,19 @@
+<template name="AdminLayout">
+    <div fit horizontal center-justified layout center>
+        <!--<a href="/admin/partner/invite"> partners </a>-->
+        {{> yield }}
+    </div>
+</template>
+
+<template name="partner">
+    <h2>Invite Partner</h2>
+    <div class="input" id="email" contenteditable="true" data-ph="email" spellcheck="false"></div>
+    <button>create auth link</button>
+    {{#if link}}
+        {{link}}
+        copy the link and email it to partner
+    {{/if}}
+    {{#if lastError}}
+        error: {{lastError}}
+    {{/if}}
+</template>

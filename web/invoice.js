@@ -1,5 +1,5 @@
 if(Meteor.isClient){
-stripePubKey = stripeTest ? Meteor.settings.public.stripe.testPublicKey : Meteor.settings.public.stripe.livePublicKey; 
+//stripePubKey = stripeTest ? Meteor.settings.public.stripe.testPublicKey : Meteor.settings.public.stripe.livePublicKey; 
     buttonId = new ReactiveVar("");
     stripeHandler = null;
     Meteor.startup(function () {
@@ -38,7 +38,7 @@ stripePubKey = stripeTest ? Meteor.settings.public.stripe.testPublicKey : Meteor
 
         if(status == "opened"){
             stripeHandler = StripeCheckout.configure({
-                key: stripePubKey,
+                key: invoice.stripePublishableKey,
                 token: function(token) {
                     Meteor.call('invoice_charge', invoiceId, token.id, function(err, result){
                         console.log("invoice_charge", err, result);

@@ -17,6 +17,11 @@ _.mixin({
 });
 
 if(Meteor.isClient){
+    goToHash = function(newHash){
+        var router = Router.current();
+        var path = router.location.get().path;
+        Router.go(path + "#" + newHash);
+    }
     Template.registerHelper("case", function(){
         var pair =_.chain(this).pairs().first().value();
         var key = pair[0];

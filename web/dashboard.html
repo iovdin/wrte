@@ -1,0 +1,52 @@
+<template name="DashboardLayout">
+    <div fit horizontal center-justified layout center>
+        {{> topBar}}
+        <div style="line-height: 1.4" class="content align_center">
+        {{> yield }}
+        {{> yield "popup"}}
+        </div>
+    </div>
+</template>
+
+<template name="dashboard_settings">
+    <div style="line-height: 1.4" class="content align_center">
+        <h1>Settings</h1>
+        your wrte.io email<br>
+        <h2>your.mail@wrte.io</h2>
+        your private email<br>
+        <div class="input input-{{emailValidateStatus}}" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div>
+        amount to charge
+        <div class="input input-{{priceValidateStatus}}" id="price" contenteditable="true" data-ph="0.001" spellcheck="false" ></div> USD
+        send money to
+        <h3><input type="radio" name="sendto" value="stripe"> your Stripe account</h3>
+        Fee card: 0.38 USD, bitcoin: 0.08 USD
+        {{#if stripe}}
+            <button>Connect Stripe</button>
+        {{/if}}
+        <br>
+        <h3><input type="radio" name="sendto" value="watsi" checked> Watsi (Charity)</h3>
+        Fee card: 0.38 USD, bitcoin: 0.08 USD
+    </div>
+</template>
+    
+<template name="dashboard_transactions">
+    <div style="line-height: 1.4" class="content align_center">
+        <h1>Transactions</h1>
+        <table>
+            <tr>
+                <td>Date</td>
+                <td>From</td> 
+                <td>Subject</td>
+                <td>Paid</td>
+            </tr>
+            {{#each transaction}}
+            <tr>
+                <td>12-02-2015</td>
+                <td>ivan@wrte.io</td> 
+                <td>test</td>
+                <td>1</td>
+            </tr>
+            {{/each}}
+        </table>
+    </div>
+</template>

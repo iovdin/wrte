@@ -33,3 +33,20 @@ Router.route("/convert", function(){
     this.response.writeHead(200);
     this.response.end("done");
 }, { where : "server"});
+
+Meteor.methods({
+    'partner_invite' : function(email){
+        if(!Meteor.userId() || Meteor.user().username != "ilya") {
+            throw new Meteor.Error("not_authorized");
+            return;
+        }
+        var user = Meteor.users.findOne({"emails.0.address" : email});
+        if(!user) {
+            var userId = Accounts.createUser({email : email});
+            user = Meteor.users.findOne({_id : userId});
+        }
+        var emailToken = Random.secret();
+        Meteor.users.upsert(user._id, {$set : {'services.email' : { token : emailToken, when : new Date() } }});
+        return emailToken;
+    }
+});
