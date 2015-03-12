@@ -19,7 +19,7 @@ Template.login.events({
         Meteor.call('send_email_token', email, path.substr(1), function(error, result){
             if(error){
                 //TODO:
-                //lastError.set(error.error)
+                lastError.set(error.error)
                 console.log("error sending link", error);
                 return;
             }
