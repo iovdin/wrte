@@ -6,7 +6,7 @@ Router.route('/stripe', function(){
 Router.route('/stripe/:state', function(){
     var state = this.params.state;
     console.log("stripe state", state);
-    var authUrl = stripeUrl + "/oauth/authorize?response_type=code&client_id=" + stripeClientId;
+    var authUrl = stripeUrl + "/oauth/authorize?response_type=code&scope=read_write&client_id=" + stripeClientId;
     var data = {};
     if(state == "partner") {
         var token = _.keys(this.params.query)[0];
