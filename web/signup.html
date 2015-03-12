@@ -48,6 +48,24 @@
     </div>
 </template>
 
+<template name="signup_sendmoney">
+    <div style="line-height: 1.4" class="content align_center">
+        <h1>Send money to:</h1>
+        <div style="margin: auto; width: 300px; line-height: 1.4" class="align_left">
+            <h3><input type="radio" name="sendto" value="stripe"> your Stripe account</h3>
+            Fee card: 0.38 USD, bitcoin: 0.08 USD
+            {{#if stripe}}
+                <button>Connect Stripe</button>
+            {{/if}}
+            <br>
+            <h3><input type="radio" name="sendto" value="watsi" checked> Watsi (Charity)</h3>
+            Fee card: 0.38 USD, bitcoin: 0.08 USD
+        </div>
+        <br>
+        <button>Save and complete</button>
+    </div>
+</template>
+
 <template name="signup_done">
     <div style="line-height: 1.4" class="content align_center">
         <h1><img src="/img/icon_done.png" style="width: 80px; margin-bottom: -20px;"> Done!</h1>
