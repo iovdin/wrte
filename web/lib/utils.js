@@ -51,8 +51,6 @@ if(Meteor.isClient){
         var key = pair[0];
         var value = pair[1];
 
-        delete this[key];
-
         var pdata = Template.parentData(1);
         _.extend(this, pdata);
 
