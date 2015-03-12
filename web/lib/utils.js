@@ -17,6 +17,17 @@ _.mixin({
 });
 
 
+isPriceValid = function(price){
+    if(!_.isNumber(price) || _.isNaN(price))
+        return "price_nan";
+
+    // minimum 1 satoshi
+    // also take in account a fee, show a warning
+    if ( price < 0.00000001 ) 
+        return "price_toosmall";
+    return "price_valid";
+}
+
 wrteFee = function(amount, charity) {
     if(charity) return 0;
     return Math.round(amount * 0.05);
@@ -50,7 +61,7 @@ if(Meteor.isClient){
         if(!rvar){
             rvar = window[key] = new ReactiveVar("default");
         }
-        if(rvar instanceof ReactiveVar && rvar.get().toString() == value) {
+        if(rvar instanceof ReactiveVar && rvar.get() == value) {
             return Template._case_default;
         }
         return null;
