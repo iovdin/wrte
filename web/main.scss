@@ -69,12 +69,17 @@ a:hover {
     100% { @include filter(drop-shadow(0px 6px 8px rgba(0,0,0,0.8))); }
 }
 
-.align_left { text-align: left; }
-.align_center { text-align: center; }
-.align_right { text-align: right; }
+input { font-family: "Lato", "HelveticaNeue-Thin", "HelveticaNeue-Light", "Helvetica Neue Thin", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
+
+.align_left { text-align: left; margin: auto; }
+.align_center { text-align: center; margin: auto; }
+.align_right { text-align: right; margin: auto; }
 
 .t50 { opacity: 0.5 }
 .t65 { opacity: 0.65 }
+
+.f30 { font-size: 30px }
+.f40 { font-size: 40px }
 
 .comment { color: rgba(255,255,255,0.50) }
 
@@ -95,10 +100,41 @@ a:hover {
 .top_bar > div > a {
     font-size: 18px;
     text-decoration: none;
+    margin-left: 25px;
+}
+
+.b {
+    padding: 4px 20px 5px 20px;
+    border: 2px solid #fff;
+    border-radius: 25px;
+}
+.b:hover {
+    background-color: #fff;
+    color: $blue;
 }
 
 .logo {
-    width: 100px;
+    width: 116px;
+    margin-top: -10px;
+}
+
+.close {
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    right: 30px;
+    top: 30px;
+    width: 40px;
+    height: 40px;
+    background: none;
+    background-image: url(/img/close.png);
+    background-size: 40px;
+    background-repeat: no-repeat;
+    border: none;
+}
+.close:focus {
+    box-shadow: 0px 8px 15px 0px rgba(0,0,0,0.18);
+    outline: none;
 }
 
 .content {
@@ -114,6 +150,7 @@ a:hover {
     min-width: 40px;
     width: auto;
     display: inline;
+    border: 0px solid #fff;
     border-bottom: 2px solid #fff;
     margin: 0px;
     padding: 0px;
@@ -160,6 +197,28 @@ a:hover {
 [contentEditable=true]:empty:focus:before{
     content:attr(data-ph);
     color: rgba(255, 255, 255, 0.3);
+}
+
+input[type=radio] {
+   position: absolute;
+   top: -9999px;
+   left: -9999px;
+}
+
+label.radio {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    //padding: 5px;
+    background: none;
+    box-shadow: 0 0 0 2px #fff;
+    //border: 4px solid $blue;
+    border-radius: 15px;
+    margin: 0 4px -2px 0;
+}
+input[type=radio]:checked ~ label.radio {
+    border: 5px solid $blue;
+    background: #fff;
 }
 
 #estimation {
@@ -252,6 +311,59 @@ button:hover {
     border: 1px solid #fff;
 }
 
+table {
+    width: 100%;
+    
+    .title { 
+        color: #9b9b9b;
+        line-height: 1;
+    }
+    
+    td {
+        border: none;
+        border-bottom: 1px solid #eee;
+        line-height: 1.8;
+    }
+    
+}
+
+.dashboard {
+    background: #fff;
+    color: #000;
+    //font-weight: 300;
+    
+    h1, h2, h3 { font-weight: 300; }
+    
+    a { color: #000; }
+    a:hover { color: $blue; @include animation(none); }
+    
+    .b { border: 1px solid #000 }
+    .b:hover { background: $blue; color: #fff; border: 1px solid $blue; }
+    
+    .input { 
+        color: #000; 
+        border-bottom: 2px solid #000;
+        font-weight: 300;
+    }
+    
+    label.radio {
+        box-shadow: 0 0 0 2px #000;
+    }
+    input[type=radio]:checked ~ label.radio {
+        border: 5px solid #fff;
+        background: #000;
+    }
+}
+
+.fee {
+    margin-left: 20px;
+    color: #aaa;
+    
+    img {
+        margin-bottom: -4px;
+        margin-left: 5px;
+    }
+}
 
 @media only screen and (max-device-width: 480px) {
 

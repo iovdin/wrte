@@ -17,7 +17,14 @@ if (Meteor.isClient) {
         priceValidateStatus.set("");
     }
 
-
+    var stripe = new ReactiveVar(false);
+    
+/*    Template.sign.helpers({
+      stripe: function () {
+        return stripe.get();
+      }
+    });*/ 
+    
     Template.signup.events({
         "input #alias" : function(event){
             alias.set(event.currentTarget.textContent);
@@ -95,6 +102,9 @@ if (Meteor.isClient) {
                 Router.go("/signup_sendmoney")
                 //subscribeStatus.set("signup_done");
             });
+        },
+        "click #radio_stripe" : function(event){
+            stripe.set(true);
         }
     });
 

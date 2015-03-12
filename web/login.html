@@ -1,13 +1,28 @@
 <template name="login">
+    <div fit vertical center-justified layout center style="background: rgba(42, 45, 49, 0.90); z-index: 10">
+        <a href="." class="close"></a>
+        <h1>Log In</h1>
         <span style="display: block; height:30px"></span>
-        <div class="input" id="username" contenteditable="true" data-ph="your.email" spellcheck="false"></div>@wrte.io
+        <h2>
+            <input type="email" class="input f30" id="username" placeholder="Your email" style="width: 350px">
+            <!--<div class="input" id="username" contenteditable="true" data-ph="Your email  _____ " spellcheck="false" style="width: 400px"></div>-->
+        </h2>
         <span style="display: block; height:30px"></span>
-        <button>send login link</button>
+        <button>Send me a login link</button>
+    </div>
 </template>
 <template name="login_email_sent">
-    Login link has been sent to your email address.
+    <div fit vertical center-justified layout center style="background: rgba(42, 45, 49, 0.90); z-index: 10">
+        <a href="." class="close"></a>
+        <h1>Log In</h1>
+        <h2>Link was sent</h2>
+    </div>
 </template>
 <template name="login_link_opened">
-    logging in ...
+        <div fit vertical center-justified layout center style="background: rgba(42, 45, 49, 0.90); z-index: 10">
+            <a href="." class="close"></a>
+            <h1>Log In</h1>
+            <h2>logging in...</h2>
+        </div>
 </template>
 

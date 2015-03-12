@@ -1,52 +1,94 @@
 <template name="DashboardLayout">
-    <div fit horizontal center-justified layout center>
-        {{> topBar}}
+    <div fit horizontal center-justified layout center class="dashboard">
+        {{> dashboard_topbar}}
         <div style="line-height: 1.4" class="content align_center">
-        {{> yield }}
-        {{> yield "popup"}}
+            {{> yield }}
+            {{> yield "popup"}}
+        </div>
+    </div>
+</template>
+
+<template name="dashboard_topbar">
+    <div class="top_bar">
+        <div>
+            <a href="/"><img src="/img/logo_blue.png" class="logo"></a>
+        </div>
+        <div class="align_right" style="float: right">
+            <a href="/dashboard/settings" >Settings</a>
+            <a href="/dashboard/transactions" >Transactions</a>
+            <a href="/" class="b">Log Out</a>
         </div>
     </div>
 </template>
 
 <template name="dashboard_settings">
-    <div style="line-height: 1.4" class="content align_center">
+    <div style="line-height: 1.4" class="content align_left">
         <h1>Settings</h1>
         your wrte.io email<br>
-        <h2>your.mail@wrte.io</h2>
+        <h3>your.mail@wrte.io</h3><br>
         your private email<br>
-        <div class="input input-{{emailValidateStatus}}" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div>
-        amount to charge
-        <div class="input input-{{priceValidateStatus}}" id="price" contenteditable="true" data-ph="0.001" spellcheck="false" ></div> USD
-        send money to
-        <h3><input type="radio" name="sendto" value="stripe"> your Stripe account</h3>
-        Fee card: 0.38 USD, bitcoin: 0.08 USD
+        <h3>
+            <div class="input input-{{emailValidateStatus}}" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div>
+        </h3><br>
+        amount to charge<br>
+        <h3>
+            <div class="input input-{{priceValidateStatus}}" id="price" contenteditable="true" data-ph="0.001" spellcheck="false" ></div> USD<br>             </h3><br>
+        send money to<br>
+        <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe"><label for="radio_stripe" class="radio"></label> your Stripe account</h3>
+        <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> 0.38 USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> 0.08 USD</div>
         {{#if stripe}}
             <button>Connect Stripe</button>
         {{/if}}
         <br>
-        <h3><input type="radio" name="sendto" value="watsi" checked> Watsi (Charity)</h3>
-        Fee card: 0.38 USD, bitcoin: 0.08 USD
+        <h3><input type="radio" id="radio_watsi" name="sendto" value="watsi" checked><label for="radio_watsi" class="radio"> </label> Watsi (Charity)</h3>
+        <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> 0.38 USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> 0.08 USD</div>
     </div>
 </template>
     
 <template name="dashboard_transactions">
-    <div style="line-height: 1.4" class="content align_center">
+    <div style="line-height: 1.4" class="content align_left">
         <h1>Transactions</h1>
-        <table>
-            <tr>
+        <table cellspacing="0">
+            <tr class="title">
                 <td>Date</td>
                 <td>From</td> 
                 <td>Subject</td>
                 <td>Paid</td>
             </tr>
-            {{#each transaction}}
+            <tr>
+                <td>12-02-2015</td>
+                <td>ivan@wrte.io</td> 
+                <td>Some long text bla bla bla</td>
+                <td>1</td>
+            </tr>           
+            <tr>
+                <td>12-02-2015</td>
+                <td>ivanpashenko@wrte.io</td> 
+                <td>test</td>
+                <td>1</td>
+            </tr>
+                        <tr>
+                <td>12-02-2015</td>
+                <td>ivan@wrte.io</td> 
+                <td>test</td>
+                <td>1</td>
+            </tr>           
             <tr>
                 <td>12-02-2015</td>
                 <td>ivan@wrte.io</td> 
                 <td>test</td>
                 <td>1</td>
             </tr>
+            {{#each transaction}}
+                <tr>
+                    <td>12-02-2015</td>
+                    <td>ivan@wrte.io</td> 
+                    <td>test</td>
+                    <td>1</td>
+                </tr>
             {{/each}}
         </table>
+        <br>
+        <h3 class="align_right">Total: 84894</h3>
     </div>
 </template>
