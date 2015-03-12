@@ -1,58 +1,66 @@
 <template name="invoice_loading">
-<!--TODO: when invoice data is beging loaded from server -->
-loading...  
+    <!--TODO: when invoice data is beging loaded from server -->
+    <h3>loading...</h3>
 </template>
 
 <template name="invoice_timeout_open">
-<h3> Timeout </h3>
-Your message "{{subject}}" to "{{to}}" is dropped.<br>
-Please send it again and open a payment link within {{openTimeout}}
+    <h1> Timeout </h1>
+    <br>
+    <h3>Your message to <b>{{to}}</b> is dropped.</h3>
+    Please send it again and open a payment link within {{openTimeout}}
 </template>
 
 <template name='invoice_timeout_pay'>
-<h3> Payment Timeout </h3>
-Your message "{{subject}}" to "{{to}}" is not delivered.<br>
-It is not being paid within {{payTimeout}}
+    <h1> Payment Timeout </h1>
+    <br>
+    <h3>Your message <b>{{subject}}</b> to <b>{{to}}</b> is not delivered.</h3>
+    It is not being paid within {{payTimeout}}
 </template>
 
 <template name='invoice_paid'>
-<h3> Paid </h3>
-Your message "{{subject}}" to "{{to}}" is about to be delivered.<br>
+    <h1> Paid </h1>
+    <br>
+    <h3>Your message to <b>{{to}}</b> is about to be delivered</h3>
 </template>
 
 <template name='invoice_mispaid'>
-<h3> Payment Error </h3>
-Something went wrong with your payment for<br>
-Your message "{{subject}}" to "{{to}}" 
+    <h1> Payment Error </h1>
+    <br>
+    <h3>Something went wrong with your payment for</h3>
+    Your message "{{subject}}" to "{{to}}" 
 </template>
 
 <template name='invoice_delivered'>
-<h3> Delivered </h3>
-Your message "{{subject}}" to "{{to}}" is delivered.<br>
+    <h1> Delivered </h1>
+    <br>
+    <h3>Your message to <b>{{to}}</b> is delivered</h3>
 </template>
 
 <template name='invoice_not_delivered'>
-<h3> Delivery Fail </h3>
-Your message "{{subject}}" to "{{to}}" is not delivered.<br>
-Refund is in process
+    <h1> Delivery Fail </h1>
+    <br>
+    <h3>Your message to <b>{{to}}</b> is not delivered.</h3>
+    Refund is in process
 </template>
 
 <template name='invoice_refunded'>
-<h3> Delivery Fail (Refunded) </h3>
-Your message "{{subject}}" to "{{to}}" is not delivered.<br>
+    <h1> Delivery Fail (Refunded) </h1>
+    <br>
+    <h3>Your message <b>{{subject}}</b> to <b>{{to}}</b> is not delivered.</h3>
 </template>
 
 <template name='invoice_redeem'>
-<h3> Redeem </h3>
-"{{to}}" has returned money for you message "{{subject}}"<br>
+    <h1> Redeem </h1>
+    <br>
+    <h3><b>{{to}}</b> has returned money for you message <b>{{subject}}</b></h3>
 </template>
 
 <template name='invoice_error'>
-{{lastError}}
-<!--error creating invoice-->
+    <h3>{{lastError}}</h3>
+    <!--error creating invoice-->
 </template>
 
 <template name='invoice_opened'>
-<!--TODO: this is shown while opening payment form, and when the form is submitted but now yet proceeded -->
-loading...
+    <!--TODO: this is shown while opening payment form, and when the form is submitted but now yet proceeded -->
+    <h3>loading...</h3>
 </template>
