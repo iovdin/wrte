@@ -36,7 +36,7 @@ Router.route("/convert", function(){
 
 Meteor.methods({
     'partner_invite' : function(email){
-        if(!Meteor.userId() || Meteor.user().username != "ilya") {
+        if(!Meteor.userId() || ["ilya", "ivan"].indexOf(Meteor.user().username) < 0) {
             throw new Meteor.Error("not_authorized");
             return;
         }
