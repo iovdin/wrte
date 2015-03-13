@@ -1,12 +1,16 @@
 stripeClientId = stripeTest ? Meteor.settings.public.stripe.testClientId : Meteor.settings.public.stripe.liveClientId; 
 
+stripeAuthUrl = function(back){
+    return stripeUrl + "/oauth/authorize?response_type=code&scope=read_write&client_id=" + stripeClientId + "&redirect_uri="+ encodeURIComponent(Meteor.absoluteUrl(back));
+
+}
+
 Router.route('/stripe', function(){
     Router.go('/stripe/start');
 });
 Router.route('/stripe/:state', function(){
     var state = this.params.state;
     console.log("stripe state", state);
-    var authUrl = stripeUrl + "/oauth/authorize?response_type=code&scope=read_write&client_id=" + stripeClientId;
     var data = {};
     if(state == "partner") {
         var token = _.keys(this.params.query)[0];
@@ -24,7 +28,7 @@ Router.route('/stripe/:state', function(){
         });
     }
     this.render("stripe_" + state, {
-        data : { stripeUrl : authUrl }
+        data : { stripeUrl : stripeAuthUrl("/stripe/back") }
     });
 });
 

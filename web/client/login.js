@@ -14,8 +14,9 @@ Meteor.loginWithToken = function(token, callback){
 Template.login.events({
     'click button' : function(e, template) {
         e.preventDefault();
-        var email = $('#email').val();
+        var email = $('#login_name').val();
         var path = Router.current().location.get().path;
+        console.log("login with email", email);
         Meteor.call('send_email_token', email, path.substr(1), function(error, result){
             if(error){
                 //TODO:
@@ -38,7 +39,6 @@ Tracker.autorun(function(){
                 console.log("error logging in", error);
                 return;
             }
-            Router.go('/dashboard');
         });
     }
 });

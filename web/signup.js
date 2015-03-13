@@ -13,20 +13,12 @@ if (Meteor.isClient) {
         console.log("isValid", isValid);
         priceValidateStatus.set(isValid);
     }, 500);
-    resetValidator = function(){
+    resetValidators = function(){
         aliasValidateStatus.set("");
         emailValidateStatus.set("");
         priceValidateStatus.set("");
     }
 
-    var stripe = new ReactiveVar(false);
-    
-/*    Template.sign.helpers({
-      stripe: function () {
-        return stripe.get();
-      }
-    });*/ 
-    
     Template.signup.events({
         "input #alias" : function(event){
             alias.set(event.currentTarget.textContent);
@@ -70,23 +62,15 @@ if (Meteor.isClient) {
             $("#estimation").css("visibility", "hidden");
             $("#estimation").removeClass("animated fadeInUp");
         },
-        "input #btcAddress" : function(event){
-            event.preventDefault();
-            btcAddress.set(event.currentTarget.value);
-        },
-        "change .input" : function(event){
-            useOrCreate = event.currentTarget.value;
-        },
         "click button" : function(event, template){
             event.preventDefault();
-            var address = (useOrCreate == 'use') ? btcAddress.get() : undefined;
 
             //TODO: make usd as default
             var amount = (btc2usd.get() * price.get());
             amount = parseFloat(amount.toFixed(2));
             amount = Math.max(amount, 0.60);
 
-            Meteor.call("signup", alias.get(), email.get(), price.get(), amount, function(error, result){
+            Meteor.call("signup", alias.get(), email.get(), price.get(), amount, function(error, token){
                 if (error){
                     var e = error.error;
                     lastError.set(error.error);
@@ -99,15 +83,20 @@ if (Meteor.isClient) {
                     }
                     return;
                 }
+                Meteor.loginWithToken(token, function(error, result){
+                    console.log("logged in with token ", error, result);
+                    if(error){
+                        //TODO: error
+                        console.log("error logging in", error);
+                        return;
+                    }
+                    Router.go("/signup/sendmoney")
+                });
                 registredEmail.set(alias.get()+"@wrte.io")
-                resetValidator();
-                Router.go("/signup/sendmoney")
+                resetValidators();
                 //subscribeStatus.set("signup_done");
             });
         },
-        "click #radio_stripe" : function(event){
-            stripe.set(true);
-        }
     });
 
     HTTP.get("https://bitpay.com/api/rates/USD", null, function(error, result){
@@ -116,7 +105,7 @@ if (Meteor.isClient) {
             return;
         }
         btc2usd.set(result.data.rate);
-        console.log("btc2usd ", btc2usd.get());
+        //console.log("btc2usd ", btc2usd.get());
     });
 
     //var mBTCRate = new ReactiveVar("Unknown");
@@ -136,6 +125,62 @@ if (Meteor.isClient) {
             return "";
         }
     });
+
+    var sendTo = new ReactiveVar();
+    var authCode = new ReactiveVar();
+
+    Template.signup_sendmoney.helpers({
+        watsiChecked : function(){
+            return (sendTo.get() == 'watsi') ? "checked" : "";
+        },
+        stripeChecked : function(){
+            return (sendTo.get() == 'stripe') ? "checked" : "";
+        },
+        cardFee : function(){
+            var amount = 100;
+            var user = Meteor.user();
+            if(user) amount = user.amount * 100;
+            var fee = wrteFee(amount) + stripeFee(amount, false);
+            return (fee * 0.01).toFixed(2);
+        },
+        bitcoinFee : function(){
+            var amount = 100;
+            var user = Meteor.user();
+            if(user) amount = user.amount * 100;
+            var fee = wrteFee(amount) + stripeFee(amount, true);
+            return (fee * 0.01).toFixed(2);
+        },
+        stripeUrl : function(){
+            return stripeAuthUrl("signup/sendmoney");
+        },
+        authCode : function(){
+            return authCode.get();
+        }
+    });
+
+    Template.signup_sendmoney.events({
+        'click #btn_complete' : function(e){
+            e.preventDefault();
+            loading.set(true);
+            Meteor.call("sendmoney", sendTo.get(), authCode.get(), function(err, result){
+                loading.set(false);
+                if(err){
+                    lastError.set(err.error);
+                    return;
+                }
+                Router.go('/signup/done');
+            });
+        },
+        'change input:radio[name=sendto]:checked' : function(e){
+            var value = e.currentTarget.value;
+            sendTo.set(value);
+            if(value == 'watsi') {
+                authCode.set("");
+            }
+        }
+    });
+
+    loading = new ReactiveVar(false);
     Router.route('/signup', function(){
         this.render("signup");
     })
@@ -143,7 +188,35 @@ if (Meteor.isClient) {
         this.render("signup_done");
     });
     Router.route('/signup/sendmoney', function(){
+        this.wait(Meteor.subscribe('me'));
+        if(this.ready()){
+            var user = Meteor.user();
+            var code = this.params.query.code;
+            if(code) {
+                authCode.set(code);
+                Router.go("/signup/sendmoney");
+            }
+            if(!sendTo.get()){
+                if(authCode.get() || _.get(user, "services.stripe.stripe_publishable_key")){
+                    sendTo.set("stripe");
+                } else {
+                    sendTo.set("watsi");
+                }
+            }
+        }
         this.render("signup_sendmoney");
+    });
+
+    Tracker.autorun(function(){
+        var user = Meteor.user();
+        if(popup.get() == "login_link_opened" && user) {
+            if(!_.get(user, "services.stripe")) {
+                Router.go("/signup/sendmoney");
+            } else {
+                Router.go('/dashboard');
+            }
+            return;
+        }
     });
 }
 

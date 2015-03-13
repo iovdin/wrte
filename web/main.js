@@ -1,5 +1,9 @@
 if (Meteor.isClient) {
     lastError = new ReactiveVar();
+    Meteor.startup(function () {
+        Meteor.subscribe("me");
+        // code to run on server at startup
+    });
 
     Template.intro.events({    
         "click #getEmail" : function(event){

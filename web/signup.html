@@ -52,17 +52,31 @@
     <div style="line-height: 1.4" class="content align_center">
         <h1>Send money to</h1>
         <div style="margin: auto; width: 300px; line-height: 1.4" class="align_left">
-            <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe"><label for="radio_stripe" class="radio"> </label> your Stripe account</h3>
-            <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> 0.38 USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> 0.08 USD</div>
-            {{#if stripe}}
-                <button>Connect Stripe</button>
+            <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe" {{stripeChecked}}><label for="radio_stripe" class="radio"> </label> your Stripe account</h3>
+            <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> {{cardFee}} USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> {{bitcoinFee}} USD</div>
+            {{#if stripeChecked}}
+                {{#case lastError='empty_code'}}
+                please authorize access to your stripe account
+                {{/case}}
+                {{#if authCode}}
+                    authorized
+                {{else}}
+                    <a href="{{stripeUrl}}" class="stripe-connect light-blue dark"><span>Connect with Stripe</span></a>
+                    <!--<button id="btn_stripe">Connect Stripe</button>-->
+                {{/if}}
             {{/if}}
             <br>
-            <h3><input type="radio" id="radio_watsi" name="sendto" value="watsi" checked><label for="radio_watsi" class="radio"> </label> Watsi (Charity)</h3>
-            <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> 0.38 USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> 0.08 USD</div>
+            <h3><input type="radio" id="radio_watsi" name="sendto" value="watsi" {{watsiChecked}}><label for="radio_watsi" class="radio"> </label> Watsi (Charity)</h3>
         </div>
         <br>
-        <button>Save and complete</button>
+
+        {{#case lastError='not_authorized'}}
+        not logged in
+        {{/case}}
+        {{#if loading}}
+        loading...
+        {{/if}}
+        <button id="btn_complete">Save and complete</button>
     </div>
 </template>
 

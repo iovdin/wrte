@@ -24,6 +24,12 @@ function isAliasTaken(alias){
     var count = Meteor.users.find({username : alias}).count();
     return (count == 0) ? "alias_valid" : "alias_exists";
 }
+Meteor.startup(function () {
+    Meteor.publish("me", function () {
+        if(!this.userId) return [];
+        return Meteor.users.find(this.userId, {fields: { username : 1, amount : 1, "currency" : 1, "services.stripe.ref" : 1, "services.stripe.stripe_publishable_key" : 1, "services.stripe.default_currency" : 1 }});
+    });
+});
 Meteor.methods({
     signup: function (alias, email, priceBTC, amountUSD) {
         var aliasCheckStatus = isAliasTaken(alias);
@@ -58,7 +64,25 @@ Meteor.methods({
             text : welcomeTemplate({email : alias + "@wrte.io"}),
         });
 
-        return "done";
+        var emailToken = Random.secret();
+        Meteor.users.upsert(user._id, {$set : {'services.email' : { token : emailToken, when : new Date() } }});
+
+        return emailToken;
+    },
+    sendmoney : function(sendTo, authCode){
+        if(!Meteor.userId()){
+            throw new Meteor.Error("not_authorized");
+        }
+        var svc = {ref : "watsiId"};
+        if(sendTo == "stripe") {
+            if(!authCode) {
+                throw new Meteor.Error("empty_code");
+            }
+            //TODO: try catch
+            svc = stripeGetToken(authCode);
+        }
+        Meteor.users.update({_id : Meteor.userId()}, {$set : {"services.stripe" : svc }});
+        return;
     },
     is_alias_taken : isAliasTaken,
     is_email_taken : isEmailTaken,

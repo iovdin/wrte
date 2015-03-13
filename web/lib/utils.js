@@ -28,12 +28,11 @@ isPriceValid = function(price){
     return "price_valid";
 }
 
-wrteFee = function(amount, charity) {
-    if(charity) return 0;
+wrteFee = function(amount) {
     return Math.round(amount * 0.05);
 }
 //TODO: handle no cents currencies
-stripeFee = function(amount, currency, bitcoins) {
+stripeFee = function(amount, bitcoins) {
     if(bitcoins) return Math.round(0.005 * amount);
     return Math.round(amount * 0.029) + 30;
 }
