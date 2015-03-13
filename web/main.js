@@ -21,7 +21,7 @@ if (Meteor.isClient) {
     Router.onBeforeAction(function(){
         if(popup.get()) {
             this.render(popup.get(), { to : "popup"});
-        }
+        } 
         this.next();
 
     });
@@ -33,7 +33,7 @@ if (Meteor.isClient) {
         if(hash.length > 1) {
             popup.set(hash.substr(1));
         } else {
-            popup.set("");
+            popup.set("empty");
         }
     });
 
