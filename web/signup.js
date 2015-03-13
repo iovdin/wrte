@@ -164,6 +164,8 @@ if (Meteor.isClient) {
             loading.set(true);
             Meteor.call("sendmoney", sendTo.get(), authCode.get(), function(err, result){
                 loading.set(false);
+                authCode.set();
+                sendTo.set();
                 if(err){
                     lastError.set(err.error);
                     return;

@@ -31,7 +31,7 @@ Meteor.methods({
         if(ref)
             user = Meteor.users.findOne(ref);
 
-        //TODO: refresh if nessesary
+        //TODO: refresh token if nessesary
         var stripeAccessToken = user.services.stripe.access_token;
         
         var stripe = StripeAPI(stripePrivKey);
