@@ -33,6 +33,9 @@ Router.route('/dashboard/transactions', function(){
                     }
                 });
                 return result;
+            },
+            hasAny : function(){
+                return invoices.findOne();
             }
         }});
 

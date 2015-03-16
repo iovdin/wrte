@@ -50,6 +50,7 @@
 <template name="dashboard_transactions">
     <div style="line-height: 1.4" class="content align_left">
         <h1>Messages</h1>
+        {{#if hasAny}}
         <table cellspacing="0">
             <tr class="title">
                 <td>Date</td>
@@ -68,5 +69,8 @@
         </table>
         <br>
         <h3 class="align_right">Total: {{total}} USD </h3>
+        {{else}}
+        no messages sent
+        {{/if}}
     </div>
 </template>
