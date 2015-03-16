@@ -56,13 +56,12 @@
             <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> {{cardFee}} USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> {{bitcoinFee}} USD</div>
             {{#if stripeChecked}}
                 {{#case lastError='empty_code'}}
-                please authorize access to your stripe account
+                    please authorize access to your stripe account
                 {{/case}}
                 {{#if authCode}}
                     authorized
                 {{else}}
                     <a href="{{stripeUrl}}" class="stripe-connect light-blue dark"><span>Connect with Stripe</span></a>
-                    <!--<button id="btn_stripe">Connect Stripe</button>-->
                 {{/if}}
             {{/if}}
             <br>

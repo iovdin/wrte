@@ -42,6 +42,7 @@ if(Meteor.isClient){
         var router = Router.current();
         var path = router.location.get().path;
         Router.go(path + "#" + newHash);
+        $(".backing").addClass("blur");
     }
     Template.registerHelper("case", function(){
         var pair =_.chain(this).pairs().first().value();

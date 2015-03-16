@@ -25,11 +25,11 @@
     <div style="line-height: 1.4" class="content align_left">
         <h1>Settings</h1>
         your wrte.io email<br>
-        <h3>your.mail@wrte.io</h3><br>
+        <h4>your.mail@wrte.io</h4>
+        <br>
         your private email<br>
-        <h3>
-            <div class="input input-{{emailValidateStatus}}" id="email" contenteditable="true" data-ph="your.private@email.com" spellcheck="false"></div>
-        </h3><br>
+        <h4>your.private@email.com</h4>
+        <br>
         amount to charge<br>
         <h3>
             <div class="input input-{{priceValidateStatus}}" id="price" contenteditable="true" data-ph="0.001" spellcheck="false" ></div> USD<br>             </h3><br>
@@ -40,8 +40,10 @@
             <button>Connect Stripe</button>
         {{/if}}
         <br>
-        <h3><input type="radio" id="radio_watsi" name="sendto" value="watsi" checked><label for="radio_watsi" class="radio"> </label> Watsi (Charity)</h3>
-        <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> 0.38 USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> 0.08 USD</div>
+        <h3>
+            <input type="radio" id="radio_watsi" name="sendto" value="watsi" checked><label for="radio_watsi" class="radio"> </label> 
+            <a href="http://watsi.org">Watsi</a> (Charity)
+        </h3>
     </div>
 </template>
     

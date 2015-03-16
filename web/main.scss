@@ -49,7 +49,7 @@ h3 > a {
 h4 {
     margin: 5px 0px;
     font-size: 25px;
-    font-weight: 400;
+    font-weight: 300;
 }
 
 a {
@@ -363,6 +363,10 @@ table {
         margin-bottom: -4px;
         margin-left: 5px;
     }
+}
+
+.blur {
+    @include filter(blur(20px));
 }
 
 @media only screen and (max-device-width: 480px) {
