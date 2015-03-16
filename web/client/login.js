@@ -1,4 +1,4 @@
-Meteor.loginWithToken = function(token, callback){
+Meteor.loginWithEmailToken = function(token, callback){
     Accounts.callLoginMethod({ 
         methodArguments: [{ emailToken : token }],
     userCallback: function (error, result) {
@@ -32,7 +32,7 @@ Template.login.events({
 Tracker.autorun(function(){
     if(popup.get() == "login_link_opened") {
         var token = _.keys(Router.current().params.query)[0];
-        Meteor.loginWithToken(token, function(error, result){
+        Meteor.loginWithEmailToken(token, function(error, result){
             console.log("logged in with token ", error, result);
             if(error){
                 //TODO: error

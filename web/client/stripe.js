@@ -1,7 +1,7 @@
 stripeClientId = stripeTest ? Meteor.settings.public.stripe.testClientId : Meteor.settings.public.stripe.liveClientId; 
 
 stripeAuthUrl = function(back){
-    return stripeUrl + "/oauth/authorize?response_type=code&scope=read_write&client_id=" + stripeClientId + "&redirect_uri="+ encodeURIComponent(Meteor.absoluteUrl(back));
+    return stripeUrl + "/oauth/authorize?response_type=code&scope=read_write&client_id=" + stripeClientId + "&redirect_uri="+ encodeURIComponent(Meteor.absoluteUrl(back, {secure : true}));
 
 }
 
@@ -14,7 +14,7 @@ Router.route('/stripe/:state', function(){
     var data = {};
     if(state == "partner") {
         var token = _.keys(this.params.query)[0];
-        Meteor.loginWithToken(token, function(error, result){
+        Meteor.loginWithEmailToken(token, function(error, result){
             if(error){
                 lastError.set(error.error);
                 return;

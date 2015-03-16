@@ -14,7 +14,7 @@ Template.partner.events({
                 lastError.set(err.error);
             }
             if(result){
-                partnerAuthLink.set(Meteor.absoluteUrl('stripe/partner?' + result));
+                partnerAuthLink.set(Meteor.absoluteUrl('stripe/partner?' + result, {secure : true}));
             }
         });
     }

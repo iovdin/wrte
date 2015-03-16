@@ -83,7 +83,7 @@ if (Meteor.isClient) {
                     }
                     return;
                 }
-                Meteor.loginWithToken(token, function(error, result){
+                Meteor.loginWithEmailToken(token, function(error, result){
                     console.log("logged in with token ", error, result);
                     if(error){
                         //TODO: error
