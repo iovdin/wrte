@@ -6,7 +6,7 @@
 
  
 //$blue: #0079FF;
-$blue: #2778C3;
+$blue: #0079FF;
 $blue-light: #0079FF;
 $green: #61DA46;
 $red: #FF6464;
@@ -24,32 +24,31 @@ html, body {
     color: #fff;
 }
 
+h1, h2, h3, h4 {
+    font-weight: 300;
+}
+
 h1 {
     margin: 10px 0px;
     font-size: 50px;
-    font-weight: 100;
 }
 
 h2 {
     margin: 10px 0px;
     font-size: 40px;
-    font-weight: 100;
 }
 
 h3 {
     margin: 5px 0px;
     font-size: 30px;
-    font-weight: 100;
 }
 h3 > a {
     font-size: 30px;
-    font-weight: 300;
 }
 
 h4 {
     margin: 5px 0px;
     font-size: 25px;
-    font-weight: 300;
 }
 
 a {
@@ -92,6 +91,16 @@ input { font-family: "Lato", "HelveticaNeue-Thin", "HelveticaNeue-Light", "Helve
     height: 40px;
     width: 100%;
     //border: 1px solid red;
+    
+    div.ph {
+        margin: 0;
+        width: 100%;
+        height: 40px;
+        background-color: #fff;
+        color: #000;
+        text-align: center;
+    }
+
 }
 .top_bar > div {
     float: left;
@@ -155,7 +164,7 @@ input { font-family: "Lato", "HelveticaNeue-Thin", "HelveticaNeue-Light", "Helve
     margin: 0px;
     padding: 0px;
     background-color: transparent;
-    font-weight: 100;
+    font-weight: 300;
     color: #fff;
 }
 .input:focus {
@@ -214,7 +223,7 @@ label.radio {
     box-shadow: 0 0 0 2px #fff;
     //border: 4px solid $blue;
     border-radius: 15px;
-    margin: 0 4px -2px 0;
+    margin: 0 4px 0px 0;
 }
 input[type=radio]:checked ~ label.radio {
     border: 5px solid $blue;
@@ -334,11 +343,13 @@ table {
     
     h1, h2, h3 { font-weight: 300; }
     
-    a { color: #000; }
+    a { color: $blue; text-decoration: none; }
     a:hover { color: $blue; @include animation(none); }
     
-    .b { border: 1px solid #000 }
-    .b:hover { background: $blue; color: #fff; border: 1px solid $blue; }
+    .black { color: #000; }
+    
+    .b { border: 2px solid #000; }
+    .b:hover { background: $blue; color: #fff; border: 2px solid $blue; }
     
     .input { 
         color: #000; 
@@ -353,11 +364,18 @@ table {
         border: 5px solid #fff;
         background: #000;
     }
+    button {
+        margin: 20px 0 10px 0;
+        background-color: $blue;
+        color: #fff;
+    }
 }
 
 .fee {
     margin-left: 20px;
     color: #aaa;
+    font-size: 16px;
+    font-weight: 300;
     
     img {
         margin-bottom: -4px;
@@ -365,8 +383,21 @@ table {
     }
 }
 
+.white {
+    color: #fff;
+    opacity: 0.5;
+}
+
+.margin-left-24px {
+    margin-left: 24px;
+}
+
 .blur {
     @include filter(blur(20px));
+}
+
+.visible {
+    visibility: visible;
 }
 
 @media only screen and (max-device-width: 480px) {

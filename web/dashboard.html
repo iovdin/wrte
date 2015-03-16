@@ -14,9 +14,9 @@
             <a href="/"><img src="/img/logo_blue.png" class="logo"></a>
         </div>
         <div class="align_right" style="float: right">
-            <a href="/dashboard/settings" >Settings</a>
-            <a href="/dashboard/transactions" >Transactions</a>
-            <a href="/" id="logout" class="b">Log Out</a>
+            <a href="/dashboard/settings" class="black">Settings</a>
+            <a href="/dashboard/transactions" class="black">Transactions</a>
+            <a href="/" id="logout" class="b black">Log Out</a>
         </div>
     </div>
 </template>
@@ -24,11 +24,16 @@
 <template name="dashboard_settings">
     <div style="line-height: 1.4" class="content align_left">
         <h1>Settings</h1>
-        your wrte.io email<br>
-        <h4>{{username}}@wrte.io</h4>
-        <br>
-        your private email<br>
-        <h4>{{email}}</h4>
+        <div horizontal layout style="padding: 10px; background-color: #E8F0F2; background-image: url(/img/divider.png);  background-repeat: no-repeat; background-position: 50% 50%; background-size: 40px">
+            <div flex four>
+                Public<br>
+                <h4>{{username}}@wrte.io</h4>
+            </div>
+            <div flex three>
+                Forward to<br>
+                <h4>{{email}}</h4>
+            </div>
+        </div>
         <br>
         amount to charge<br>
         <h3>
