@@ -49,48 +49,24 @@
     
 <template name="dashboard_transactions">
     <div style="line-height: 1.4" class="content align_left">
-        <h1>Transactions</h1>
+        <h1>Messages</h1>
         <table cellspacing="0">
             <tr class="title">
                 <td>Date</td>
                 <td>From</td> 
                 <td>Subject</td>
-                <td>Paid</td>
+                <td>Status</td>
             </tr>
-            <tr>
-                <td>12-02-2015</td>
-                <td>ivan@wrte.io</td> 
-                <td>Some long text bla bla bla</td>
-                <td>1</td>
-            </tr>           
-            <tr>
-                <td>12-02-2015</td>
-                <td>ivanpashenko@wrte.io</td> 
-                <td>test</td>
-                <td>1</td>
-            </tr>
-                        <tr>
-                <td>12-02-2015</td>
-                <td>ivan@wrte.io</td> 
-                <td>test</td>
-                <td>1</td>
-            </tr>           
-            <tr>
-                <td>12-02-2015</td>
-                <td>ivan@wrte.io</td> 
-                <td>test</td>
-                <td>1</td>
-            </tr>
-            {{#each transaction}}
+            {{#each invoices}}
                 <tr>
-                    <td>12-02-2015</td>
-                    <td>ivan@wrte.io</td> 
-                    <td>test</td>
-                    <td>1</td>
+                    <td>{{createdAt}}</td>
+                    <td>{{from}}</td> 
+                    <td>{{subject}}</td>
+                    <td>{{status}}</td>
                 </tr>
             {{/each}}
         </table>
         <br>
-        <h3 class="align_right">Total: 84894</h3>
+        <h3 class="align_right">Total: {{total}} USD </h3>
     </div>
 </template>
