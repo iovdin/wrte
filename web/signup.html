@@ -30,15 +30,15 @@
                 {{/case}}
             </div>
             <br>
-            when <div class="input input-{{priceValidateStatus}}" id="price" contenteditable="true" data-ph="0.001" spellcheck="false" ></div>
-            <div id="estimation">≈ ${{mBTCRate}}</div> bitcoin is paid
-            <div class="error error-{{priceValidateStatus}}">
+            when <div class="input input-{{priceValidateStatus}}" id="amount" contenteditable="true" data-ph="{{minAmount}}" spellcheck="false" ></div>
+            USD is paid
+            <div class="error error-{{amountValidateStatus}}">
                 <img src="/img/icon_error.png" class="error_icon">
-                {{#case priceValidateStatus='price_nan'}}
+                {{#case amountValidateStatus='amount_nan'}}
                 Must be<br>a number
                 {{/case}}
-                {{#case priceValidateStatus='price_toosmall'}}
-                Can not be less than<br>satoshi (1 / 100 000 000 BTC)
+                {{#case amountValidateStatus='amount_toosmall'}}
+                Can not be less than<br> {{minAmount}} USD
                 {{/case}}
             </div>
         </h2>

@@ -25,17 +25,17 @@
     <div style="line-height: 1.4" class="content align_left">
         <h1>Settings</h1>
         your wrte.io email<br>
-        <h4>your.mail@wrte.io</h4>
+        <h4>{{username}}@wrte.io</h4>
         <br>
         your private email<br>
-        <h4>your.private@email.com</h4>
+        <h4>{{email}}</h4>
         <br>
         amount to charge<br>
         <h3>
-            <div class="input input-{{priceValidateStatus}}" id="price" contenteditable="true" data-ph="0.001" spellcheck="false" ></div> USD<br>             </h3><br>
+            <div class="input input-{{priceValidateStatus}}" id="amount" contenteditable="true" data-ph="0.99" spellcheck="false"  >{{amount}}</div>  USD<br></h3><br>
         send money to<br>
         <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe"><label for="radio_stripe" class="radio"></label> your Stripe account</h3>
-        <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> 0.38 USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> 0.08 USD</div>
+        <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> {{cardFee}} USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> {{bitcoinFee}} USD</div>
         {{#if stripe}}
             <button>Connect Stripe</button>
         {{/if}}
@@ -44,6 +44,7 @@
             <input type="radio" id="radio_watsi" name="sendto" value="watsi" checked><label for="radio_watsi" class="radio"> </label> 
             <a href="http://watsi.org">Watsi</a> (Charity)
         </h3>
+        <button> Save </button>
     </div>
 </template>
     

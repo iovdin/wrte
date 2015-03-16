@@ -31,7 +31,7 @@ Meteor.startup(function () {
     });
 });
 Meteor.methods({
-    signup: function (alias, email, priceBTC, amountUSD) {
+    signup: function (alias, email, amount) {
         var aliasCheckStatus = isAliasTaken(alias);
         if(aliasCheckStatus != "alias_valid") {
             throw new Meteor.Error(aliasCheckStatus);
@@ -42,17 +42,17 @@ Meteor.methods({
             throw new Meteor.Error(emailCheckStatus);
         }
 
-        var priceCheckStatus = isPriceValid(priceBTC);
-        if(priceCheckStatus != "price_valid") {
-            throw new Meteor.Error(priceCheckStatus);
-            return priceCheckStatus;
+        var amountCheckStatus = isAmountValid(amount);
+        if(amountCheckStatus != "amount_valid") {
+            throw new Meteor.Error(amountCheckStatus);
+            return amountCheckStatus;
         }
 
         alias = alias.toLowerCase();
         var userId = Accounts.createUser({username : alias, email : email});
         check(userId, String);
         var user = Meteor.users.findOne(userId);
-        var params = {price : priceBTC, amount : amountUSD, currency : "usd"}
+        var params = { amount : amount, currency : "usd"}
         Meteor.users.update({ _id : userId }, {$set : params});
 
         var welcomeTemplate = _.template(Assets.getText("email_templates/welcome.txt"));
@@ -86,5 +86,5 @@ Meteor.methods({
     },
     is_alias_taken : isAliasTaken,
     is_email_taken : isEmailTaken,
-    is_price_valid : isPriceValid
+    is_amount_valid : isAmountValid
 });

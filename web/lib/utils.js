@@ -17,15 +17,16 @@ _.mixin({
 });
 
 
-isPriceValid = function(price){
-    if(!_.isNumber(price) || _.isNaN(price))
-        return "price_nan";
+minAmount = 0.99;
 
-    // minimum 1 satoshi
-    // also take in account a fee, show a warning
-    if ( price < 0.00000001 ) 
-        return "price_toosmall";
-    return "price_valid";
+isAmountValid = function(price){
+    if(!_.isNumber(price) || _.isNaN(price))
+        return "amount_nan";
+
+    //min 1 USD
+    if ( price < minAmount) 
+        return "amount_toosmall";
+    return "amount_valid";
 }
 
 wrteFee = function(amount) {

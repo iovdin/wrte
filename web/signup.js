@@ -7,19 +7,20 @@ if (Meteor.isClient) {
     emailValidateStatus = new ReactiveVar("default");
     validateEmail = inputValidator("is_email_taken", emailValidateStatus);
 
-    priceValidateStatus = new ReactiveVar("default");
-    validatePrice = _.debounce(function(price){
-        var isValid = isPriceValid(price);
+    amountValidateStatus = new ReactiveVar("default");
+    validateAmount = _.debounce(function(amount){
+        var isValid = isAmountValid(amount);
         console.log("isValid", isValid);
-        priceValidateStatus.set(isValid);
+        amountValidateStatus.set(isValid);
     }, 500);
     resetValidators = function(){
         aliasValidateStatus.set("");
         emailValidateStatus.set("");
-        priceValidateStatus.set("");
+        amountValidateStatus.set("");
     }
 
-    Template.signup.events({
+
+    Template.signup.events(_.extend({
         "input #alias" : function(event){
             alias.set(event.currentTarget.textContent);
             validateAlias(alias.get()); 
@@ -29,53 +30,15 @@ if (Meteor.isClient) {
             email.set(event.currentTarget.textContent);
             validateEmail(email.get());
         },
-        "input #price" : function(event){
-            var priceText = event.currentTarget.textContent;
-            var lprice;
-            if(!priceText) {
-                lprice = 0.001;
-            } else {
-                lprice = parseFloat(priceText);
-            }
-            validatePrice(lprice);
-            price.set(lprice);
-
-            $("#estimation").css("visibility", "visible");
-            w = $(event.currentTarget).width();
-            we = $("#estimation").width();
-            $("#estimation").css("margin-left", -w/2-we/2-10);
-            $("#estimation").addClass("animated fadeInUp");
-        },
-        "mouseover #price" : function(event){
-            w = $(event.currentTarget).width();
-            we = $("#estimation").width();
-            //console.log("div price width:", w);
-            $("#estimation").css("margin-left", -w/2-we/2-10);
-            $("#estimation").css("visibility", "visible");
-            $("#estimation").addClass("animated fadeInUp");
-        },
-        "mouseout #price" : function(event){
-            $("#estimation").css("visibility", "hidden");
-            $("#estimation").removeClass("animated fadeInUp");
-        },
-        "focusout #price" : function(event){
-            $("#estimation").css("visibility", "hidden");
-            $("#estimation").removeClass("animated fadeInUp");
-        },
         "click button" : function(event, template){
             event.preventDefault();
 
-            //TODO: make usd as default
-            var amount = (btc2usd.get() * price.get());
-            amount = parseFloat(amount.toFixed(2));
-            amount = Math.max(amount, 0.60);
-
-            Meteor.call("signup", alias.get(), email.get(), price.get(), amount, function(error, token){
+            Meteor.call("signup", alias.get(), email.get(), amount.get(), function(error, token){
                 if (error){
                     var e = error.error;
                     lastError.set(error.error);
-                    if(e.indexOf("price_") >= 0) {
-                        priceValidateStatus.set(e);
+                    if(e.indexOf("amount_") >= 0) {
+                        amountValidateStatus.set(e);
                     } else if(e.indexOf("email_") >= 0) {
                         emailValidateStatus.set(e);
                     } else if(e.indexOf("alias_") >= 0){
@@ -97,39 +60,21 @@ if (Meteor.isClient) {
                 //subscribeStatus.set("signup_done");
             });
         },
-    });
+    }, signupEvents));
 
-    HTTP.get("https://bitpay.com/api/rates/USD", null, function(error, result){
-        if(error) {
-            console.log("failed to get btc ticker", e);
-            return;
-        }
-        btc2usd.set(result.data.rate);
-        //console.log("btc2usd ", btc2usd.get());
-    });
-
-    //var mBTCRate = new ReactiveVar("Unknown");
-    var btc2usd = new ReactiveVar("Unknown");   
-    var price = new ReactiveVar(0.001);
+    amount = new ReactiveVar(minAmount);
     var alias = new ReactiveVar("");
     var email = new ReactiveVar("");
     var btcAddress = new ReactiveVar();
     var useOrCreate = "create";
 
-    Template.signup.helpers({
-        mBTCRate : function(){
-            if (_.isNumber(btc2usd.get())){
-                var result = price.get() * btc2usd.get();
-                return result.toFixed(2);
-            }
-            return "";
-        }
-    });
+    sendTo = new ReactiveVar();
+    authCode = new ReactiveVar();
 
-    var sendTo = new ReactiveVar();
-    var authCode = new ReactiveVar();
-
-    Template.signup_sendmoney.helpers({
+    signupHelpers = {
+        minAmount : function(){
+            return minAmount;
+        },
         watsiChecked : function(){
             return (sendTo.get() == 'watsi') ? "checked" : "";
         },
@@ -156,7 +101,10 @@ if (Meteor.isClient) {
         authCode : function(){
             return authCode.get();
         }
-    });
+    }
+
+    Template.signup_sendmoney.helpers(signupHelpers);
+    Template.signup.helpers(signupHelpers);
 
     Template.signup_sendmoney.events({
         'click #btn_complete' : function(e){
