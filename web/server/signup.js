@@ -69,19 +69,26 @@ Meteor.methods({
 
         return emailToken;
     },
-    sendmoney : function(sendTo, authCode){
+    changeUser : function(options){
         if(!Meteor.userId()){
             throw new Meteor.Error("not_authorized");
         }
-        var svc = {ref : "watsiId"};
-        if(sendTo == "stripe") {
-            if(!authCode) {
-                throw new Meteor.Error("empty_code");
-            }
-            //TODO: try catch
-            svc = stripeGetToken(authCode);
+        var params = {};
+        if(options.amount){
+            params.amount = options.amount;
         }
-        Meteor.users.update({_id : Meteor.userId()}, {$set : {"services.stripe" : svc }});
+        if(options.sendTo){
+            var svc = {ref : "watsi"};
+            if(options.sendTo == "stripe") {
+                if(!options.authCode) {
+                    throw new Meteor.Error("empty_code");
+                }
+                //TODO: try catch
+                svc = stripeGetToken(options.authCode);
+            }
+            params["services.stripe"] = svc;
+        }
+        Meteor.users.update({_id : Meteor.userId()}, {$set : params});
         return;
     },
     is_alias_taken : isAliasTaken,

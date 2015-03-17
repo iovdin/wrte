@@ -20,7 +20,7 @@ if (Meteor.isClient) {
     }
 
 
-    Template.signup.events(_.extend({
+    Template.signup.events({
         "input #alias" : function(event){
             alias.set(event.currentTarget.textContent);
             validateAlias(alias.get()); 
@@ -60,57 +60,63 @@ if (Meteor.isClient) {
                 //subscribeStatus.set("signup_done");
             });
         },
-    }, signupEvents));
+        "input #amount" : amountChange(function(value){
+            validateAmount(value);
+            amount.set(value);
+        })
+    });
 
-    amount = new ReactiveVar(minAmount);
+    var getAmount1 = function() {
+        if(amount.get()) 
+            return amount.get();
+
+        return minAmount
+    }
+
+    Template.signup.helpers({
+        cardFee : cardFee(getAmount1),
+        bitcoinFee : bitcoinFee(getAmount1),
+
+    });
+
+    var amount = new ReactiveVar();
     var alias = new ReactiveVar("");
     var email = new ReactiveVar("");
-    var btcAddress = new ReactiveVar();
-    var useOrCreate = "create";
 
-    sendTo = new ReactiveVar();
-    authCode = new ReactiveVar();
+    var sendTo = new ReactiveVar();
+    var authCode = new ReactiveVar();
 
-    signupHelpers = {
-        minAmount : function(){
-            return minAmount;
-        },
+    var getAmount = function() {
+        if(amount.get())
+            return amount.get();
+        if(Meteor.user()) 
+            return Meteor.user().amount;
+
+        return minAmount
+    }
+
+    Template.signup_sendmoney.helpers({
         watsiChecked : function(){
             return (sendTo.get() == 'watsi') ? "checked" : "";
         },
         stripeChecked : function(){
             return (sendTo.get() == 'stripe') ? "checked" : "";
         },
-        cardFee : function(){
-            var amount = 100;
-            var user = Meteor.user();
-            if(user) amount = user.amount * 100;
-            var fee = wrteFee(amount) + stripeFee(amount, false);
-            return (fee * 0.01).toFixed(2);
-        },
-        bitcoinFee : function(){
-            var amount = 100;
-            var user = Meteor.user();
-            if(user) amount = user.amount * 100;
-            var fee = wrteFee(amount) + stripeFee(amount, true);
-            return (fee * 0.01).toFixed(2);
-        },
+        cardFee : cardFee(getAmount),
+        bitcoinFee : bitcoinFee(getAmount),
         stripeUrl : function(){
             return stripeAuthUrl("signup/sendmoney");
         },
         authCode : function(){
             return authCode.get();
         }
-    }
-
-    Template.signup_sendmoney.helpers(signupHelpers);
-    Template.signup.helpers(signupHelpers);
+    });
 
     Template.signup_sendmoney.events({
         'click #btn_complete' : function(e){
             e.preventDefault();
             loading.set(true);
-            Meteor.call("sendmoney", sendTo.get(), authCode.get(), function(err, result){
+            Meteor.call("changeUser", { sendTo : sendTo.get(), authCode : authCode.get() }, function(err, result){
                 loading.set(false);
                 authCode.set();
                 sendTo.set();

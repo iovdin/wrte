@@ -37,18 +37,32 @@
         <br>
         amount to charge<br>
         <h3>
-            <div class="input input-{{priceValidateStatus}}" id="amount" contenteditable="true" data-ph="0.99" spellcheck="false"  >{{amount}}</div>  USD<br></h3><br>
+            <div class="input input-{{priceValidateStatus}}" id="amount" contenteditable="true" data-ph="{{minAmount}}" spellcheck="false"  ></div>  USD<br></h3><br>
         send money to<br>
-        <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe"><label for="radio_stripe" class="radio"></label> your Stripe account</h3>
+        <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe" {{stripeChecked}}><label for="radio_stripe" class="radio"></label> your Stripe account</h3>
         <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> {{cardFee}} USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> {{bitcoinFee}} USD</div>
-        {{#if stripe}}
-            <button>Connect Stripe</button>
+        {{#if stripeChecked}}
+            {{#if authCode}}
+                <img src="/img/icon_done_20px_white.png" style="width:20px; margin: 10px 5px -6px 24px;"> Authorized
+            {{else}}
+                <a href="{{stripeUrl}}" class="stripe-connect light-blue dark margin-left-24px" style="margin-top: 10px; margin-bottom: 10px; "><span>Connect with Stripe</span></a>
+            {{/if}}
+            {{#case lastError='empty_code'}}
+            <div class="error visible">
+                <img src="/img/icon_error.png" class="error_icon">
+                please authorize access<br>to your stripe account
+            </div>
+            {{/case}}
         {{/if}}
         <br>
         <h3>
-            <input type="radio" id="radio_watsi" name="sendto" value="watsi" checked><label for="radio_watsi" class="radio"> </label> 
+            <input type="radio" id="radio_watsi" name="sendto" value="watsi" {{watsiChecked}}><label for="radio_watsi" class="radio"> </label> 
             <a href="http://watsi.org">Watsi</a> (Charity)
         </h3>
+        {{#if loading}}
+        saving ...
+        {{/if}}
+        
         <button> Save </button>
     </div>
 </template>

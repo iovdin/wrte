@@ -29,6 +29,9 @@ isAmountValid = function(price){
     return "amount_valid";
 }
 
+totalFee = function(amount, isBitcoin){
+    return wrteFee(amount) + stripeFee(amount, isBitcoin);
+}
 wrteFee = function(amount) {
     return Math.round(amount * 0.05);
 }
@@ -39,6 +42,38 @@ stripeFee = function(amount, bitcoins) {
 }
 
 if(Meteor.isClient){
+    Template.registerHelper("minAmount", function(){
+        return minAmount;
+    });
+    cardFee = function(getAmount) {
+        return function(){
+            var amount = getAmount() * 100;
+            var fee = totalFee(amount, false);
+            return (fee * 0.01).toFixed(2);
+        }
+    }
+    bitcoinFee = function(getAmount) {
+        return function(){
+            var amount = getAmount() * 100;
+            var fee = totalFee(amount, true);
+            return (fee * 0.01).toFixed(2);
+        }
+    }
+    amountChange = function(callback){
+        return function(event){
+            var amountText = event.currentTarget.textContent;
+            var lamount;
+            if(!amountText) {
+                lamount = minAmount;
+            } else {
+                lamount = parseFloat(amountText);
+            }
+            callback(lamount);
+            //validateAmount(lamount);
+            //amount.set(lamount);
+        }
+    }
+
     goToHash = function(newHash){
         var router = Router.current();
         var path = router.location.get().path;

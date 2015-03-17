@@ -16,16 +16,61 @@ Router.route('/dashboard/settings', function(){
         this.render("loading");
         return;
     }
+    var user = Meteor.user();
+    var code = this.params.query.code;
+    if(code) {
+        authCode.set(code);
+        Router.go("/dashboard/settings");
+    }
+    if(!sendTo.get()){
+        if(authCode.get() || _.get(user, "services.stripe.stripe_publishable_key")){
+            sendTo.set("stripe");
+        } else {
+            sendTo.set("watsi");
+        }
+    }
+    this.render("dashboard_settings");
+});
+var getAmount = function() {
+    if(amount.get())
+        return amount.get();
+    if(Meteor.user()) 
+        return Meteor.user().amount;
 
-    this.render("dashboard_settings", { data : _.extend({
-            username : function() {
-                return Meteor.user().username;
-            },
-            email : function() {
-                var user = Meteor.user();
-                return _.get(user, "emails.0.address"); 
-            }}, signupHelpers) 
-    });
+    return minAmount
+}
+
+var amount = new ReactiveVar();
+var sendTo = new ReactiveVar();
+var authCode = new ReactiveVar();
+
+
+Template.dashboard_settings.rendered = function(){
+    this.$("#amount").text(getAmount());
+}
+
+Template.dashboard_settings.helpers({
+    username : function() {
+        return Meteor.user().username;
+    },
+    email : function() {
+        var user = Meteor.user();
+        return _.get(user, "emails.0.address"); 
+    },
+    cardFee : cardFee(getAmount),
+    bitcoinFee : bitcoinFee(getAmount),
+    watsiChecked : function(){
+        return (sendTo.get() == 'watsi') ? "checked" : "";
+    },
+    stripeChecked : function(){
+        return (sendTo.get() == 'stripe') ? "checked" : "";
+    },
+    stripeUrl : function(){
+        return stripeAuthUrl("dashboard/settings");
+    },
+    authCode : function(){
+        return authCode.get();
+    }
 });
 
 Router.route('/dashboard/transactions', function() {
@@ -34,7 +79,6 @@ Router.route('/dashboard/transactions', function() {
         this.render("loading");
         return;
     } 
-    amount.set(Meteor.user().amount);
 
     this.render("dashboard_transactions", { data : {
         invoices : function(){
@@ -59,25 +103,42 @@ Router.route('/dashboard/transactions', function() {
 });
 
 
-//console.log("minAmount")
-var amount = new ReactiveVar(minAmount);
-signupEvents = {
-    "input #amount" : function(event){
-        var amountText = event.currentTarget.textContent;
-        var lamount;
-        if(!amountText) {
-            lamount = minAmount;
-        } else {
-            lamount = parseFloat(amountText);
+Template.dashboard_settings.events({
+    "input #amount" : amountChange(function(value){
+        validateAmount(value);
+        console.log("change amount", value);
+        amount.set(value);
+    }),
+    'change input:radio[name=sendto]:checked' : function(e){
+        var value = e.currentTarget.value;
+        sendTo.set(value);
+        if(value == 'watsi') {
+            authCode.set("");
         }
-        validateAmount(lamount);
-        amount.set(lamount);
     },
-}
+    'click button' : function(e){
+        //save
+        console.log("save");
+        e.preventDefault();
+        var options = {}
+        if(amount.get() && amount.get() != Meteor.user().amount) {
+            console.log("amount changed");
+            options.amount = amount.get();
+        }
+        options.sendTo = sendTo.get();
+        options.authCode = authCode.get();
 
-Template.dashboard_settings.events(_.extend({
-}, signupEvents));
-
+        loading.set(true);
+        Meteor.call("changeUser", options, function(err, result){
+            loading.set(false);
+            authCode.set();
+            if(err){
+                lastError.set(err.error);
+                return;
+            }
+        });
+    }
+});
 
 Template.dashboard_topbar.events({
     'click #logout' : function(e){
