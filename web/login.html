@@ -1,15 +1,18 @@
 <template name="login">
-    <div fit vertical center-justified layout center style="background: rgba(42, 45, 49, 0.90); z-index: 10">
+    <div fit vertical center-justified layout center style="background: rgba(42, 45, 49, 0.90); z-index: 10" class="login">
         <a href="#" class="close"></a>
         <h1>Log In</h1>
         <span style="display: block; height:30px"></span>
-        <h2>
+        <h3>
             <input type="email" class="input f30" id="login_name" placeholder="Your email" style="width: 350px">
             <!--<div class="input" id="username" contenteditable="true" data-ph="Your email  _____ " spellcheck="false" style="width: 400px"></div>-->
             {{#case lastError='not_found'}}
-            no such user
+            <div class="error visible">
+                <img src="/img/icon_error.png" class="error_icon">
+                no such a user
+            </div>
             {{/case}}
-        </h2>
+        </h3>
         <span style="display: block; height:30px"></span>
         <button>Send me a login link</button>
     </div>
@@ -18,14 +21,16 @@
     <div fit vertical center-justified layout center style="background: rgba(42, 45, 49, 0.90); z-index: 10">
         <a href="#" class="close"></a>
         <h1>Log In</h1>
-        <h2>Check your mailbox</h2>
+        <span style="display: block; height:30px"></span>
+        <h3>Check your mailbox</h3>
     </div>
 </template>
 <template name="login_link_opened">
         <div fit vertical center-justified layout center style="background: rgba(42, 45, 49, 0.90); z-index: 10">
             <a href="#" class="close"></a>
             <h1>Log In</h1>
-            <h2>logging in...</h2>
+            <span style="display: block; height:30px"></span>
+            <h3>logging in...</h3>
         </div>
 </template>
 

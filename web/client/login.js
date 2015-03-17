@@ -11,6 +11,11 @@ Meteor.loginWithEmailToken = function(token, callback){
     }})
 }
 
+Template.login.rendered = function(){
+    //$("body").addClass("blur");
+    //$(".login").addClass("noblur");
+};
+
 Template.login.events({
     'click button' : function(e, template) {
         e.preventDefault();
