@@ -20,11 +20,11 @@
 </body>
 
 <template name="MainLayout">
-    <div fit vertical center-justified layout center>
+    <div fit vertical center-justified layout center class="maincontent">
         {{> topBar}}
         {{> yield }}
-        {{> yield "popup"}}
     </div>
+    {{> yield "popup"}}
 </template>
 
 <template name="topBar">
@@ -51,7 +51,7 @@
 <template name="intro">
     <div class="content align_center">
         <span style="display: block; height:50px"></span>
-        <h1>Make people think before they send you a cold email</h1>
+        <h1>Email with a paywall</h1>
         <h3 class="comment">Charge for each email you get</h3>
         <span style="display: block; height:50px"></span>
         <button id="getEmail">Sounds Good<img src="/img/arrow_right.png" style="height: 24px; margin: 0px -8px -5px 12px;"></button>

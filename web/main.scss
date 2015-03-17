@@ -296,20 +296,28 @@ button {
     background-color: #fff;
     padding: 13px 25px 15px 25px;
     border: none;
-    border-radius: 5px;
-    box-shadow: 0px 8px 15px 0px rgba(0,0,0,0.18);
+    box-shadow: 0px 1px 0px 0px rgba(0,0,0,0.20);
+    border-radius: 40px;
 }
-
 button:hover {
     //box-shadow: 0px 12px 25px 0px rgba(0,0,0,0.18);
-    @include animation(shadow_blur ease-in 1);
+    @include animation(bg_to_black ease-in 1);
     @include animation-duration(0.25s);
     @include animation-fill-mode(forwards);
+    //background: rgba(0,0,0,0.65);
+    //color: #fff;
 }
 @include keyframes(shadow_blur) {
     0% { box-shadow: 0px 8px 15px 0px rgba(0,0,0, 0.18); }
     //50% { box-shadow: 0px 12px 30px 0px rgba(0,0,0, 0.09); }
     100% { box-shadow: 0px 12px 30px 0px rgba(0,0,0, 0.24) }
+}
+@include keyframes(bg_to_black) {
+    0% { background: rgba(255,255,255,1); color: $blue; }
+    100% { background: rgba(0,0,0,0.65); color: #fff; box-shadow: 0px 12px 30px 0px rgba(0,0,0, 0.24); }
+}
+button:focus {
+    outline: none;
 }
 
 .numbering {
@@ -348,6 +356,8 @@ table {
     a:hover { color: $blue; @include animation(none); }
     
     .black { color: #000; }
+    
+    .comment { color: #999; }
     
     .b { border: 2px solid #000; }
     .b:hover { background: $blue; color: #fff; border: 2px solid $blue; }
@@ -394,10 +404,7 @@ table {
 }
 
 .blur {
-    @include filter(blur(20px));
-}
-.noblur {
-    @include filter(blur(0));
+    @include filter(blur(30px));
 }
 
 .visible {
