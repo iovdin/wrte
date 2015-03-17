@@ -17,3 +17,4 @@ iron:router
 spiderable
 mrgalaxy:stripe
 momentjs:moment
+u2622:persistent-session
