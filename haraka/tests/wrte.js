@@ -254,7 +254,7 @@ exports.paid_delivery = {
         this.from     = genID() + "@test";
 
         setUpMongo.call(self, function(){
-            self.users.insert([{ username : self.username, _id : "test_" + self.username, emails : [ {address : self.email, verified : true}], price : 0.0001, amount : 1, currency : "usd" }], function(err, result){
+            self.users.insert([{ username : self.username, _id : "test_" + self.username, emails : [ {address : self.email, verified : true}], price : 0.0001, amount : 1, currency : "usd", active : true, services : { stripe : { ref : "watsi"}} }], function(err, result){
 
                 setUpMail.call(self, done);
             });
@@ -420,7 +420,7 @@ exports.free_delivery = {
         this.from     = genID() + "@test";
 
         setUpMongo.call(self, function(){
-            self.users.insert([{ username : self.username, _id : "test_" + self.username, emails : [ {address : self.email, verified : true}], price : 0.0001, amount : 0, currency : "usd" }], function(err, result){
+            self.users.insert([{ username : self.username, active : true, _id : "test_" + self.username, emails : [ {address : self.email, verified : true}], price : 0.0001, amount : 0, currency : "usd" }], function(err, result){
 
                 setUpMail.call(self, done);
             });

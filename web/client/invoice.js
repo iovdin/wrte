@@ -1,4 +1,4 @@
-//stripePubKey = stripeTest ? Meteor.settings.public.stripe.testPublicKey : Meteor.settings.public.stripe.livePublicKey; 
+stripePubKey = stripeTest ? Meteor.settings.public.stripe.testPublicKey : Meteor.settings.public.stripe.livePublicKey; 
 buttonId = new ReactiveVar("");
 stripeHandler = null;
 Meteor.startup(function () {
@@ -36,8 +36,9 @@ var invoiceRoute = function () {
     this.render('invoice_' + status, { data : data });
 
     if(status == "opened"){
+        console.log("keys", invoice.stripePublishableKey, stripePubKey);
         stripeHandler = StripeCheckout.configure({
-            key: invoice.stripePublishableKey,
+            key: invoice.stripePublishableKey || stripePubKey,
             token: function(token) {
                 Meteor.call('invoice_charge', invoiceId, token.id, function(err, result){
                     if(err){
@@ -48,6 +49,7 @@ var invoiceRoute = function () {
             }
         });
 
+        //TODO: bitcoins
         stripeHandler.open({
             name: 'to ' + invoice.to,
             description: invoice.subject,

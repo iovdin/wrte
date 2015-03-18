@@ -27,10 +27,6 @@ Meteor.methods({
 
         //find stripe access token
         var user = Meteor.users.findOne(invoice.userId);
-        var ref = user.services.stripe.ref;
-        if(ref)
-            user = Meteor.users.findOne(ref);
-
         //TODO: refresh token if nessesary
         var stripeAccessToken = user.services.stripe.access_token;
         
@@ -39,15 +35,22 @@ Meteor.methods({
 
         var amount = invoice.amount * 100;
         var charge;
+        var chargeData = {
+            amount: amount,
+            currency: invoice.currency,
+            source: source, 
+            metadata : { invoice : invoiceId, user : invoice.userId },
+            description: "email to : " + invoice.to, 
+        }
+        if(stripeAccessToken) {
+                chargeData["application_fee"] = wrteFee(amount);
+        } else{
+            //watsi
+            chargeData.metedata.watsi = true;
+        }
+
         try{
-            charge = createSync({
-               amount: amount,
-               application_fee : wrteFee(amount, false),
-               currency: invoice.currency,
-               source: source, 
-               metadata : { invoice : invoiceId, user : invoice.userId },
-               description: "email to : " + invoice.to, 
-            }, stripeAccessToken);
+            charge = createSync(chargeData, stripeAccessToken);
         } catch(e) {
             console.log("charge error");
             console.log(e.stack)
