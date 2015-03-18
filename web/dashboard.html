@@ -13,7 +13,7 @@
         <div>
             <a href="/"><img src="/img/logo_blue.png" class="logo"></a>
         </div>
-        <div class="align_right" style="float: right">
+        <div class="align_right items" style="float: right">
             <a href="/dashboard/settings" class="black">Settings</a>
             <a href="/dashboard/transactions" class="black">Invoices</a>
             <a href="/" id="logout" class="b black">Log Out</a>
@@ -24,20 +24,21 @@
 <template name="dashboard_settings">
     <div style="line-height: 1.4" class="content align_left">
         <h1>Settings</h1>
-        <div horizontal layout style="padding: 10px; background-color: #E8F0F2; background-image: url(/img/divider.png);  background-repeat: no-repeat; background-position: 50% 50%; background-size: 40px">
-            <div flex four>
+        <div horizontal layout style="outline: 10px solid #E8F0F2; background-color: #E8F0F2;">
+            <div flex>
                 Public<br>
-                <h4>{{username}}@wrte.io</h4>
+                <h5>{{username}}@wrte.io</h5>
                 {{#if notactive}}
                 <span class="comment">Not activated yet. We are in a limited beta</span>
                 {{/if}}
             </div>
-            <div flex three>
+            <div style="width: 40px; background-image: url(/img/divider.png);  background-repeat: no-repeat; background-position: center; background-size: 40px 120px"></div>
+            <div flex style="padding-left: 20px">
                 Forward to<br>
-                <h4>{{email}}</h4>
+                <h5>{{email}}</h5>
                 {{#if active}}
                 {{#if notverified}}
-                Not verified. <a href="" id="resend">resend</a> verification email 
+                <img src="/img/icon_attention.png" style="width: 15px; margin: 0 5px -2px 0;"><span class="comment">Not verified. <a href="" id="resend">Resend</a> verification email</span>
                 {{/if}}
                 {{/if}}
             </div>
@@ -48,21 +49,23 @@
             <div class="input input-{{priceValidateStatus}}" id="amount" contenteditable="true" data-ph="{{minAmount}}" spellcheck="false"  ></div>  USD<br></h3><br>
         send money to<br>
         <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe" {{stripeChecked}}><label for="radio_stripe" class="radio"></label> your Stripe account</h3>
-        <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> {{cardFee}} USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> {{bitcoinFee}} USD</div>
-        {{#if stripeChecked}}
-            {{#if authCode}}
-                <img src="/img/icon_done_20px_white.png" style="width:20px; margin: 10px 5px -6px 24px;"> Authorized
-            {{else}}
-                <a href="{{stripeUrl}}" class="stripe-connect light-blue dark margin-left-24px" style="margin-top: 10px; margin-bottom: 10px; "><span>Connect with Stripe</span></a>
+        <div class="margin-left-24px">
+            <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> {{cardFee}} USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> {{bitcoinFee}} USD</div>
+            {{#if stripeChecked}}
+                {{#if authCode}}
+                    <img src="/img/icon_done_20px_white.png" style="width:20px; margin: 10px 5px -6px 0px;"> Authorized
+                {{else}}
+                    <a href="{{stripeUrl}}" class="stripe-connect dark" style="margin-top: 10px; margin-bottom: 10px; "><span>Connect with Stripe</span></a>
+                {{/if}}
+                {{#case lastError='empty_code'}}
+                <div class="error visible">
+                    <img src="/img/icon_error.png" class="error_icon">
+                    please authorize access<br>to your stripe account
+                </div>
+                {{/case}}
             {{/if}}
-            {{#case lastError='empty_code'}}
-            <div class="error visible">
-                <img src="/img/icon_error.png" class="error_icon">
-                please authorize access<br>to your stripe account
-            </div>
-            {{/case}}
-        {{/if}}
-        <br>
+            <br>
+        </div>
         <h3>
             <input type="radio" id="radio_watsi" name="sendto" value="watsi" {{watsiChecked}}><label for="radio_watsi" class="radio"> </label> 
             <a href="http://watsi.org">Watsi</a> (Charity)

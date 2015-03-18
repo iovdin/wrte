@@ -24,7 +24,7 @@ html, body {
     color: #fff;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3, h4, h5 {
     font-weight: 300;
 }
 
@@ -42,17 +42,19 @@ h3 {
     margin: 5px 0px;
     font-size: 30px;
 }
-h3 > a {
-    font-size: 30px;
-}
 
 h4 {
     margin: 5px 0px;
     font-size: 25px;
 }
 
-a {
+h5 {
+    margin: 5px 0px;
     font-size: 20px;
+}
+
+a {
+    //font-size: 20px;
     font-weight: 400;
     color: #fff;
     text-decoration: underline;
@@ -88,29 +90,43 @@ input { font-family: "Lato", "HelveticaNeue-Thin", "HelveticaNeue-Light", "Helve
     position: fixed;
     top: 0;
     left: 0;
-    height: 40px;
     width: 100%;
-    //border: 1px solid red;
     
+    > div {
+        float: left;
+        margin: 25px 30px;
+    }
+    .logo {
+        width: 116px;
+        margin-top: -10px;
+    }
+    > div.items > a {
+        font-size: 18px;
+        text-decoration: none;
+        margin-left: 25px;
+        opacity: 0.65;
+    }
+    > div.items > a:hover { opacity: 1; }
+        
     div.ph {
         margin: 0;
+        margin-top: -80px;
         width: 100%;
         height: 70px;
         background-color: #fff;
         color: #E83600;
         font-size: 20px;
         text-align: center;
+        
+        @include animation(showup $ease-out-expo 1);
+        @include animation-delay(1s);
+        @include animation-duration(1.5s);
+        @include animation-fill-mode(forwards);
     }
-
 }
-.top_bar > div {
-    float: left;
-    margin: 20px 30px;
-}
-.top_bar > div > a {
-    font-size: 18px;
-    text-decoration: none;
-    margin-left: 25px;
+@include keyframes(showup) {
+    0% { }
+    100% { margin-top: 0px; }
 }
 
 .b {
@@ -123,10 +139,6 @@ input { font-family: "Lato", "HelveticaNeue-Thin", "HelveticaNeue-Light", "Helve
     color: $blue;
 }
 
-.logo {
-    width: 116px;
-    margin-top: -10px;
-}
 
 .close {
     margin: 0;
@@ -167,6 +179,11 @@ input { font-family: "Lato", "HelveticaNeue-Thin", "HelveticaNeue-Light", "Helve
     background-color: transparent;
     font-weight: 300;
     color: #fff;
+
+    @include placeholder {
+        color: #fff;
+        opacity: 0.5;
+    }
 }
 .input:focus {
     box-shadow: 0px 8px 15px 0px rgba(0,0,0,0.18);
@@ -323,10 +340,8 @@ button:focus {
 }
 
 .numbering {
-    @include flex(none);
-    //width: 180px;
-    margin-right: 20px;
-    padding: 3px 20px 5px 20px;
+    margin-bottom: 10px;
+    padding: 3px 22px 5px 21px;
     border-radius: 50%;
     border: 2px solid #fff;
 }
@@ -350,9 +365,6 @@ table {
 .dashboard {
     background: #fff;
     color: #000;
-    //font-weight: 300;
-    
-    h1, h2, h3 { font-weight: 300; }
     
     a { color: $blue; text-decoration: none; }
     a:hover { color: $blue; @include animation(none); }
@@ -368,6 +380,8 @@ table {
         color: #000; 
         border-bottom: 2px solid #000;
         font-weight: 300;
+        
+        @include placeholder { color: #000; }
     }
     
     label.radio {
@@ -385,7 +399,7 @@ table {
 }
 
 .fee {
-    margin-left: 20px;
+    //margin-left: 20px;
     color: #aaa;
     font-size: 16px;
     font-weight: 300;
@@ -414,7 +428,7 @@ table {
 }
 
 .backing {
-    background: rgba(83, 88, 95, 0.8); 
+    background: rgba(52, 53, 54, 0.45); 
     z-index: 10
 }
 

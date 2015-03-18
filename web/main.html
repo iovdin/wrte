@@ -38,7 +38,7 @@
         <div>
             <a href="/"><img src="/img/logo_beta_white.png" class="logo"></a>
         </div>
-        <div class="align_right" style="float: right">
+        <div class="align_right items" style="float: right">
             <a href="/signup" >Get one</a>
             <a href="/howitworks" >How it works</a>
             {{#if loggedIn}}
@@ -56,39 +56,38 @@
         <h1>Email with a paywall</h1>
         <h3 class="comment">Fix cold emails, charge for your<br>attention or build a service with it</h3>
         <span style="display: block; height:50px"></span>
-        <button id="getEmail">Sounds Good<img src="/img/arrow_right.png" style="height: 24px; margin: 0px -8px -5px 12px;"></button>
+        <button id="getEmail">Sounds good<img src="/img/arrow_right.png" style="height: 20px; margin: 0px -8px -3px 12px;"></button>
     </div>
 </template>
 
 <template name="howitworks">
     <div style="width: 100%; height: 100%; overflow-y: auto;">
         <div style="line-height: 1.4; margin: 100px auto;" class="content  align_center">
-            <!--<h4>How it will work</h4>-->
             <span style="display: block; height:50px"></span>
-            <div horizontal layout center>
+            <div vertical layout center>
                 <h2 class="numbering">1</h2>
-                <h2 class="align_left">A person sends an email<br>to your address at wrte.io</h2>
+                <h2 class="align_center">A person sends an email<br>to your address at wrte.io</h2>
             </div>
-            <img src="/img/how_1.png" style="width: 533px">
-            <span style="display: block; height:80px"></span>
-            <div horizontal layout center>
+            <img src="/img/how_1.png" style="width: 533px margin-top: 30px">
+            <span style="display: block; height:60px"></span>
+            <div vertical layout center>
                 <h2 class="numbering">2</h2>
-                <h2 class="align_left">He gets reply with an invoice</h2>
+                <h2 class="align_center">He gets reply with an invoice</h2>
             </div>
-            <img src="/img/how_2.png" style="width:627px">
-            <span style="display: block; height:80px"></span>
-            <div horizontal layout center>
+            <img src="/img/how_2.png" style="width: 627px; margin-top: 30px">
+            <span style="display: block; height:60px"></span>
+            <div vertical layout center>
                 <h2 class="numbering">3</h2>
-                <h2 class="align_left">Once payment is verified we forward his message to your personal email</h2>
+                <h2 class="align_center">Once payment is verified we forward his message to your personal email</h2>
             </div>
-            <img src="/img/how_3.png" style="width: 529px">
-            <span style="display: block; height:80px"></span>
-            <div horizontal layout center>
+            <img src="/img/how_3.png" style="width: 529px; margin-top: 30px">
+            <span style="display: block; height:60px"></span>
+            <div vertical layout center>
                 <h2 class="numbering">4</h2>
-                <h2 class="align_left">Money goes directly to your Stripe account or to the charity (<a href="http://watsi.org">Watsi</a>)</h2>
+                <h2 class="align_center">Money goes directly to<br>your Stripe account or<br>to charity ( <a href="http://watsi.org">Watsi</a> )</h2>
             </div>
-            <img src="/img/how_4.png" style="width: 613px">
-            <span style="display: block; height:80px"></span>
+            <img src="/img/how_4.png" style="width: 613px; margin-top: 30px">
+            <span style="display: block; height:60px"></span>
             <h1>Questions?</h1>
             <h3>Write to <a href="mailto:support@wrte.io">support@wrte.io</a></h3>
         </div>

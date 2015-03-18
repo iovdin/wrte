@@ -25,11 +25,23 @@ Meteor.loginWithTempToken = function(token, callback){
 
 Template.login.rendered = function(){
     $(".maincontent").addClass("blur");
-    //$(".login").addClass("noblur");
 };
 Template.login.destroyed = function(){
     $(".maincontent").removeClass("blur");
 };
+Template.login_email_sent.rendered = function(){
+    $(".maincontent").addClass("blur");
+};
+Template.login_email_sent.destroyed = function(){
+    $(".maincontent").removeClass("blur");
+};
+Template.login_link_opened.rendered = function(){
+    $(".maincontent").addClass("blur");
+};
+Template.login_link_opened.destroyed = function(){
+    $(".maincontent").removeClass("blur");
+};
+
 
 Template.login.events({
     'click button' : function(e, template) {
