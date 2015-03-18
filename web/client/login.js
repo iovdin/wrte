@@ -10,6 +10,18 @@ Meteor.loginWithEmailToken = function(token, callback){
 
     }})
 }
+Meteor.loginWithTempToken = function(token, callback){
+    Accounts.callLoginMethod({ 
+        methodArguments: [{ tempToken : token }],
+    userCallback: function (error, result) {
+        if(!callback) return;
+        if (error) 
+            callback(error);
+        else 
+            callback();
+
+    }})
+}
 
 Template.login.rendered = function(){
     $(".maincontent").addClass("blur");
@@ -25,7 +37,7 @@ Template.login.events({
         var email = $('#login_name').val();
         var path = Router.current().location.get().path;
         console.log("login with email", email);
-        Meteor.call('send_email_token', email, path.substr(1), function(error, result){
+        Meteor.call('send_login', email, path.substr(1), function(error, result){
             if(error){
                 //TODO:
                 lastError.set(error.error)
@@ -39,6 +51,8 @@ Template.login.events({
 
 Tracker.autorun(function(){
     if(popup.get() == "login_link_opened") {
+        var router = Router.current();
+        if(!router) return;
         var token = _.keys(Router.current().params.query)[0];
         Meteor.loginWithEmailToken(token, function(error, result){
             console.log("logged in with token ", error, result);
@@ -47,6 +61,7 @@ Tracker.autorun(function(){
                 console.log("error logging in", error);
                 return;
             }
+            goToHash("");
         });
     }
 });

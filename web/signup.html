@@ -84,29 +84,33 @@
     </div>
 </template>
 
-<template name="signup_done">
+<template name="signup_done_not_authorized">
     <div style="line-height: 1.4" class="content align_center">
-        {{#case user='not_authorized'}}
         <h1><img src="/img/icon_done.png" style="width: 80px; margin-bottom: -20px;"> Done!</h1>
         <br><h3>You have registered <b>{{registredEmail}}</b></h3><br>
         <h2>We will let you know<br> when the beta is launched</h2>
         <span style="display: block; height:50px"></span>
         <a href="/howitworks" id="linkToHow">How it works</a>
-        {{/case}}
-        {{#case user='not_verified'}}
+    </div>
+</template>
+
+<template name="signup_done_not_verified">
+    <div style="line-height: 1.4" class="content align_center">
         <h1><img src="/img/icon_done.png" style="width: 80px; margin-bottom: -20px;"> Done!</h1>
         <br><h3>You have registered <b>{{registredEmail}}</b></h3><br>
         <h2>You still need to verify you email</h2>
         <span style="display: block; height:50px"></span>
-        <a href="">Send a link</a>
-        {{/case}}
-        {{#case user='logged'}}
+        <a href="" id="resend">Resend verification</a>
+    </div>
+</template>
+
+<template name="signup_done_loggedin">
+    <div style="line-height: 1.4" class="content align_center">
         <h1><img src="/img/icon_done.png" style="width: 80px; margin-bottom: -20px;"> Done!</h1>
         <br><h3>You have registered <b>{{registredEmail}}</b></h3><br>
-        <h2>Now ou can start playing with your wrte.io email</h2>
+        <h2>Now you can start playing with your wrte.io email</h2>
         <span style="display: block; height:50px"></span>
         <a href="/howitworks" id="linkToHow">How it works</a>
-        {{/case}}
     </div>
 </template>
 

@@ -70,7 +70,16 @@ Template.dashboard_settings.helpers({
     },
     authCode : function(){
         return authCode.get();
-    }
+    },
+    active : function(){
+        return !!Meteor.user().active;
+    },
+    notactive : function(){
+        return !Meteor.user().active;
+    },
+    notverified : function(){
+        return !_.get(Meteor.user(), "emails.0.verified");
+    },
 });
 
 Router.route('/dashboard/transactions', function() {

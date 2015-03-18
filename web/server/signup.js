@@ -1,3 +1,7 @@
+Accounts.config({
+    //sendVerificationEmail : true,
+forbidClientAccountCreation : true,
+});
 var reservedNames = ["noreply", "support"];
 function isEmailTaken(email){
     if(!email) 
@@ -27,11 +31,14 @@ function isAliasTaken(alias){
 Meteor.startup(function () {
     Meteor.publish("me", function () {
         if(!this.userId) return [];
-        return Meteor.users.find(this.userId, {fields: { username : 1, amount : 1, "currency" : 1, "services.stripe.ref" : 1, "services.stripe.stripe_publishable_key" : 1, "services.stripe.default_currency" : 1 }});
+        return Meteor.users.find(this.userId, {fields: { username : 1, amount : 1, "currency" : 1, "services.stripe.ref" : 1, "services.stripe.stripe_publishable_key" : 1, "services.stripe.default_currency" : 1, "active" : 1 }});
     });
+
 });
+
+
 Meteor.methods({
-    signup: function (alias, email, amount) {
+    signup: function (alias, email, amount, activate) {
         var aliasCheckStatus = isAliasTaken(alias);
         if(aliasCheckStatus != "alias_valid") {
             throw new Meteor.Error(aliasCheckStatus);
@@ -53,21 +60,21 @@ Meteor.methods({
         check(userId, String);
         var user = Meteor.users.findOne(userId);
         var params = { amount : amount, currency : "usd"}
+        if(activate){
+            params.active = !!activate;
+        }
         Meteor.users.update({ _id : userId }, {$set : params});
 
-        var welcomeTemplate = _.template(Assets.getText("email_templates/welcome.txt"));
+        if(activate){
+            sendVerification(user, "signup/sendmoney", "Welcome to wrte.io", "verify_email");
+        } else {
+            sendVerification(user, "signup/sendmoney" , "Welcome to wrte.io", "welcome_beta");
+        }
 
-        Email.send({
-            to : email,
-            from : "Wrte <support@wrte.io>",
-            subject : "Welcome to Wrte.io",
-            text : welcomeTemplate({email : alias + "@wrte.io"}),
-        });
+        var tempToken = Random.secret();
+        Meteor.users.upsert({_id : userId }, {$set : {'services.temp' : { token : tempToken, when : new Date() } }});
 
-        var emailToken = Random.secret();
-        Meteor.users.upsert(user._id, {$set : {'services.email' : { token : emailToken, when : new Date() } }});
-
-        return emailToken;
+        return tempToken;
     },
     changeUser : function(options){
         if(!Meteor.userId()){

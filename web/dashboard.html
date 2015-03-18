@@ -28,12 +28,18 @@
             <div flex four>
                 Public<br>
                 <h4>{{username}}@wrte.io</h4>
-                <span class="comment">Not activated yet. We have limited amount<br>of activated accounts. We will invite you soon.</span>
+                {{#if notactive}}
+                <span class="comment">Not activated yet. We are in a limited beta</span>
+                {{/if}}
             </div>
             <div flex three>
                 Forward to<br>
                 <h4>{{email}}</h4>
-                Not verified yet. <a href="">Send email</a> to verify
+                {{#if active}}
+                {{#if notverified}}
+                Not verified. <a href="" id="resend">resend</a> verification email 
+                {{/if}}
+                {{/if}}
             </div>
         </div>
         <br>

@@ -1,11 +1,11 @@
 Accounts.registerLoginHandler(function(loginRequest) {
     if( !loginRequest.emailToken ) {
-        return null;
+        return;
     }
     var user = Meteor.users.findOne({'services.email.token': loginRequest.emailToken});
 
     if(!user) {
-        return null;
+        return;
     }
 
     //reset token
@@ -14,7 +14,31 @@ Accounts.registerLoginHandler(function(loginRequest) {
     var stampedToken = Accounts._generateStampedLoginToken();
     var hashStampedToken = Accounts._hashStampedToken(stampedToken);
 
-    Meteor.users.update(user._id, {$push: {'services.resume.loginTokens': hashStampedToken}});
+    Meteor.users.update(user._id, {$push: {'services.resume.loginTokens': hashStampedToken}, $set : { "emails.0.verified" : true}});
+
+
+    return {
+        userId: user._id,
+        token: stampedToken.token
+    };
+});
+Accounts.registerLoginHandler(function(loginRequest) {
+    if( !loginRequest.tempToken ) {
+        return;
+    }
+    var user = Meteor.users.findOne({'services.temp.token': loginRequest.tempToken});
+
+    if(!user) {
+        return ;
+    }
+
+    //reset token
+    //Meteor.users.update({_id : user._id}, {$set : {'services.email' : {}}});
+
+    var stampedToken = Accounts._generateStampedLoginToken();
+    var hashStampedToken = Accounts._hashStampedToken(stampedToken);
+
+    Meteor.users.update(user._id, {$push: {'services.resume.loginTokens': hashStampedToken}, $set : { "services.temp" : {}}});
 
 
     return {
@@ -24,7 +48,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 });
 
 Meteor.methods({
-    'send_email_token' : function(input, path) {
+    'send_login' : function(input, path) {
         console.log("send_email_token to " + input);
 
         var arr = input.split("@");
@@ -44,18 +68,21 @@ Meteor.methods({
         if(!user) {
             throw new Meteor.Error("not_found");
         }
-        var emailToken = Random.secret();
-        var email = user.emails[0].address;
-        Meteor.users.upsert(user._id, {$set : {'services.email' : { token : emailToken, when : new Date() } }});
-
-        var loginTemplate = _.template(Assets.getText("email_templates/login_email.txt"));
-
-        Email.send({
-            to : email,
-            from : "wrte <support@wrte.io>",
-            subject : "login to wrte.io",
-            text : loginTemplate({email : user.username + "@wrte.io", link : Meteor.absoluteUrl(path + '?' + emailToken + "#login_link_opened")}),
-        });
+        sendVerification(user, path, "login to wrte.io", "login_email");
         return true;
+    },
+    'send_verification' : function(path) {
+        if(!Meteor.userId()){
+            throw new Meteor.Error("not_authorized");
+        }
+        if(_.get(Meteor.user(), "emails.0.verified")){
+            //return;
+        }
+
+        if(Meteor.user().active){
+            sendVerification(Meteor.user(), path, "Welcome to wrte.io", "verify_email");
+        } else {
+            sendVerification(Meteor.user(), path, "Welcome to wrte.io", "welcome_beta");
+        }
     }
 });

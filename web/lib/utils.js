@@ -151,3 +151,24 @@ if(Meteor.isClient){
         }
     };
 }
+if (Meteor.isServer){
+    sendVerification = function(user, path, subject, templateName){
+        if(!user) {
+            throw new Meteor.Error("not_found");
+        }
+        var template = _.template(Assets.getText("email_templates/" + templateName + ".txt"));
+            
+        var email = _.get(user, "emails.0.address");
+        var emailToken = Random.secret();
+
+        Meteor.users.upsert(user._id, {$set : {'services.email' : { token : emailToken, when : new Date() } }});
+
+        Email.send({
+            to : email,
+            from : "wrte <support@wrte.io>",
+            subject : subject,
+            text : template({email : user.username + "@wrte.io", link : Meteor.absoluteUrl(path + '?' + emailToken + "#login_link_opened", {secure : true})}),
+        });
+
+    }
+}

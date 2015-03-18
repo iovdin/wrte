@@ -2,7 +2,8 @@ Hi,
 
 You've just registered an address: <%= email %>
 
-We will let you know when the beta is launched.
+Please follow the link to verify your email
+<%= link %>
 
 
 --
