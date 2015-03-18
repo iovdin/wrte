@@ -284,7 +284,7 @@ input[type=radio]:checked ~ label.radio {
     box-shadow: 0px 4px 12px 0px rgba(0,0,0,0.25);
 }
 
-.error-alias_empty, .error-alias_wrong_syntax, .error-alias_exists, .error-email_empty, .error-email_wrong_syntax, .error-email_exists, .error-price_nan, .error-price_toosmall{
+.error-alias_empty, .error-alias_wrong_syntax, .error-alias_exists, .error-email_empty, .error-email_wrong_syntax, .error-email_exists, .error-amount_nan, .error-amount_toosmall{
     @extend .error-invalid;
 }
 
@@ -313,7 +313,9 @@ button:hover {
     100% { box-shadow: 0px 12px 30px 0px rgba(0,0,0, 0.24) }
 }
 @include keyframes(bg_to_black) {
-    0% { background: rgba(255,255,255,1); color: $blue; }
+    0% { 
+        //background: rgba(255,255,255,1); color: $blue; 
+    }
     100% { background: rgba(0,0,0,0.65); color: #fff; box-shadow: 0px 12px 30px 0px rgba(0,0,0, 0.24); }
 }
 button:focus {
@@ -326,7 +328,7 @@ button:focus {
     margin-right: 20px;
     padding: 3px 20px 5px 20px;
     border-radius: 50%;
-    border: 1px solid #fff;
+    border: 2px solid #fff;
 }
 
 table {
@@ -409,6 +411,11 @@ table {
 
 .visible {
     visibility: visible;
+}
+
+.backing {
+    background: rgba(83, 88, 95, 0.8); 
+    z-index: 10
 }
 
 @media only screen and (max-device-width: 480px) {
