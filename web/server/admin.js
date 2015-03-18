@@ -34,12 +34,26 @@ Router.route("/convert", function(){
     this.response.end("done");
 }, { where : "server"});
 
+checkIfAdmin = function(){
+    if(!Meteor.userId() || ["ilya", "ivan"].indexOf(Meteor.user().username) < 0) {
+        throw new Meteor.Error("not_authorized");
+    }
+}
+
+Meteor.startup(function () {
+    Meteor.publish("users", function(){
+        if(!this.userId) return [];
+        var user = Meteor.users.findOne({_id : this.userId});
+        if(["ilya", "ivan"].indexOf(user.username) < 0) {
+            return [];
+        }
+        return Meteor.users.find({}, {sort : {createdAt : -1}, fields : { username : 1, active : 1, amount : 1, "emails" : 1, "services.stripe" : 1}});
+    });
+});
+
 Meteor.methods({
     'partner_invite' : function(email){
-        if(!Meteor.userId() || ["ilya", "ivan"].indexOf(Meteor.user().username) < 0) {
-            throw new Meteor.Error("not_authorized");
-            return;
-        }
+        checkAdmin();
         var user = Meteor.users.findOne({"emails.0.address" : email});
         if(!user) {
             var userId = Accounts.createUser({email : email});
@@ -48,5 +62,17 @@ Meteor.methods({
         var emailToken = Random.secret();
         Meteor.users.upsert(user._id, {$set : {'services.email' : { token : emailToken, when : new Date() } }});
         return emailToken;
+    },
+    'admin_activate' : function(userId){
+        checkIfAdmin();
+        Meteor.users.update({_id : userId}, {$set : {active : true, services : { stripe : { ref : "watsi" }}}});
+    },
+    'admin_deactivate' : function(userId){
+        checkIfAdmin();
+        Meteor.users.update({_id : userId}, {$set : {active : false}});
+    },
+    'admin_verify' : function(userId){
+        checkIfAdmin();
+
     }
 });

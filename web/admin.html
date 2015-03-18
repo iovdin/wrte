@@ -17,3 +17,30 @@
         error: {{lastError}}
     {{/if}}
 </template>
+<template name="admin_users">
+<h2>users</h2>
+<table cellspacing="0">
+    <tr class="title">
+        <td>wrte</td>
+        <td>email</td> 
+        <td>active</td>
+        <td>verified</td>
+    </tr>
+    {{#each users}}
+    <tr>
+        <td>{{username}}@wrte.io</td>
+        <td>{{email}}</td> 
+        {{#if active}}
+        <td><button name="deactivate" value="{{_id}}">deactivate </button></td>
+        {{else}}
+        <td><button name="activate" value="{{_id}}">activate</button></td>
+        {{/if}}
+        {{#if verified}}
+        <td>yes</td>
+        {{else}}
+        <td><button name="verify" value="{{_id}}">verify</button> </td>
+        {{/if}}
+    </tr>
+    {{/each}}
+</table>
+</template>
