@@ -79,7 +79,7 @@ Template.dashboard_settings.helpers({
     },
     notverified : function(){
         return !_.get(Meteor.user(), "emails.0.verified");
-    },
+    }
 });
 
 Router.route('/dashboard/transactions', function() {
@@ -145,6 +145,12 @@ Template.dashboard_settings.events({
                 lastError.set(err.error);
                 return;
             }
+        });
+    },
+    'click #resend' : function(e){
+        e.preventDefault();
+        Meteor.call("send_verification", "dashboard/settings", function(err, result){
+            console.log("verification sent", err, result);
         });
     }
 });
