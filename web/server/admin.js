@@ -65,7 +65,7 @@ Meteor.methods({
     },
     'admin_activate' : function(userId){
         checkIfAdmin();
-        Meteor.users.update({_id : userId}, {$set : {active : true, services : { stripe : { ref : "watsi" }}}});
+        Meteor.users.update({_id : userId}, {$set : {active : true, "services.stripe" : { ref : "watsi"}}});
     },
     'admin_deactivate' : function(userId){
         checkIfAdmin();

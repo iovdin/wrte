@@ -26,7 +26,7 @@ exports.wrte_auth = function (next, connection, params) {
     var me = plugin.config.get('me');
     var results = connection.results;
     var from = params[0];
-    if(from.host == me && !results.has('relay', 'pass','auth')) {
+    if(connection.remote_ip != "127.0.0.1" && from.host == me && !results.has('relay', 'pass','auth')) {
         return next(DENY, DSN.sec_unauthorized()) 
     }
     next();

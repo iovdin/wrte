@@ -46,7 +46,7 @@ Meteor.methods({
                 chargeData["application_fee"] = wrteFee(amount);
         } else{
             //watsi
-            chargeData.metedata.watsi = true;
+            chargeData.metadata.watsi = true;
         }
 
         try{
