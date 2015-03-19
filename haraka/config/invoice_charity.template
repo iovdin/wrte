@@ -1,0 +1,14 @@
+From: wrte <delivery@wrte.io> 
+Subject: RE: <%= subject %> 
+In-Reply-To : <%= msgId %>
+References : <%= msgId %>
+x-test-mail : invoice-charity
+x-test-invoice : <%= invoiceId %>
+
+It costs <%= amount %> <%= currency %> to deliver the message to <%= email %>. All the money goes to chariy (http://watsi.org)
+
+Please open the link to donate https://wrte.io/invoice/<%= invoiceId %> 
+
+--
+wrte.io team
+Email Paywall

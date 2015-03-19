@@ -214,9 +214,13 @@ exports.send_invoice = function(from, to, notes) {
     var me = plugin.config.get('me');
     var email = notes.user.username + "@" + me;
     var params = _.extend({email: email}, notes);
-    plugin.lognotice("send invoice to " + to);
-    plugin.logdebug("invoice url " + notes.invoiceUrl);
-    this.send_email_template(from, to , "invoice.template", params);
+    var services = notes.user.services;
+    var template = "invoice.template";
+    if(!services.stripe || !services.stripe.stripe_publishable_key) {
+        template = "invoice_charity.template";
+    }
+    plugin.lognotice("send invoice to " + to + " with template " + template);
+    this.send_email_template(from, to , template, params);
 }
 
 exports.send_confirm = function(from, to, notes) {

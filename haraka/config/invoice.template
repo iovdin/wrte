@@ -5,9 +5,10 @@ References : <%= msgId %>
 x-test-mail : invoice
 x-test-invoice : <%= invoiceId %>
 
-It costs <%= amount %> <%= currency %> to deliver the message to <%= email %>
+It costs <%= amount %> <%= currency %> to deliver the message to <%= email %>.
+
 Please open the link to pay https://wrte.io/invoice/<%= invoiceId %> 
 
 --
 wrte.io team
-Charge For Each Email You Get
+Email Paywall
