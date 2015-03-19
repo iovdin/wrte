@@ -103,7 +103,7 @@ Router.route('/dashboard/transactions', function() {
                     result += invoice.amount;
                 }
             });
-            return result;
+            return result.toFixed(2);
         },
         hasAny : function(){
             return invoices.findOne();

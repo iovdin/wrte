@@ -11,10 +11,14 @@ Accounts.registerLoginHandler(function(loginRequest) {
     //reset token
     //Meteor.users.update({_id : user._id}, {$set : {'services.email' : {}}});
 
+    if(!user.emails[0].verified){
+        Meteor.users.update(user._id, {$set : { "emails.0.verified" : "justverified"}});
+    }
+
     var stampedToken = Accounts._generateStampedLoginToken();
     var hashStampedToken = Accounts._hashStampedToken(stampedToken);
 
-    Meteor.users.update(user._id, {$push: {'services.resume.loginTokens': hashStampedToken}, $set : { "emails.0.verified" : true}});
+    Meteor.users.update(user._id, {$push: {'services.resume.loginTokens': hashStampedToken}});
 
 
     return {
@@ -91,8 +95,11 @@ Meteor.methods({
 
         var user = Meteor.user();
         console.log("user", user);
+        var verified = user.emails[0].verified
+        if(verified == "justverified") {
+            Meteor.users.update(user._id, {$set : { "emails.0.verified" : true}});
+        } 
 
-        return { active : user.active, verified : user.emails[0].verified, stripe : _.get(user, "services.stripe")};
-
+        return { active : user.active, verified : verified, justverified : (verified == "justverified"), stripe : _.get(user, "services.stripe")};
     }
 });

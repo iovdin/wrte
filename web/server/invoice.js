@@ -43,11 +43,12 @@ Meteor.methods({
             description: "email to : " + invoice.to, 
         }
         if(stripeAccessToken) {
-                chargeData["application_fee"] = wrteFee(amount);
+            chargeData["application_fee"] = wrteFee(amount);
         } else{
             //watsi
             chargeData.metadata.watsi = true;
         }
+        //console.log("chargeData", chargeData)
 
         try{
             charge = createSync(chargeData, stripeAccessToken);

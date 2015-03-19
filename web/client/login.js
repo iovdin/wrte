@@ -93,6 +93,10 @@ Tracker.autorun(function(){
                     Router.go('/signup/done-not-verified');
                     return;
                 }
+                if(result.justverified) {
+                    Router.go('/signup/done');
+                    return;
+                }
                 Router.go('/dashboard/settings');
             });
         });
