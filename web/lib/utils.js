@@ -160,8 +160,9 @@ if (Meteor.isServer){
             
         var email = _.get(user, "emails.0.address");
         var emailToken = Random.secret();
+        var numSent = _.get(user, "services.email.numSent") || 0;
 
-        Meteor.users.upsert(user._id, {$set : {'services.email' : { token : emailToken, when : new Date() } }});
+        Meteor.users.update({_id : user._id}, {$set : {'services.email' : { token : emailToken, when : new Date(), numSent : numSent + 1 }}});
 
         Email.send({
             to : email,

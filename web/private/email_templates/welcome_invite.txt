@@ -1,8 +1,8 @@
 Hi,
 
-We are launching Wrte.io beta! Activate your account and choose where payments will go to: http://wrte.io/sendmoneyto
+We are launching Wrte.io beta! Verify your email and choose where payments will go: <%= link %>
 
-We are using Stripe for payments. It means people could pay by both credit card and bitcoins. That’s why we have to change your paywall amount from bitcoins to USD. If you want to tweak it, you can do it here http://wrte.io/dashboard 
+We are using Stripe for payments. It means people could pay by both credit card and bitcoins. That’s why we have to change your paywall amount from bitcoins to USD. You can tweak it in settings http://wrte.io/dashboard 
 
 Wondering how you are going to use it. Here there are some ideas to start with:
      - Charge for you attention (e.g. journalists could charge for reading pitches)

@@ -91,10 +91,9 @@ Meteor.methods({
     },
     'user_state' : function(){
         if(!Meteor.user())
-            return ;
+            return;
 
         var user = Meteor.user();
-        console.log("user", user);
         var verified = user.emails[0].verified
         if(verified == "justverified") {
             Meteor.users.update(user._id, {$set : { "emails.0.verified" : true}});

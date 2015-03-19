@@ -21,6 +21,7 @@
 <h2>users</h2>
 <table cellspacing="0">
     <tr class="title">
+        <td>date</td>
         <td>wrte</td>
         <td>email</td> 
         <td>active</td>
@@ -28,6 +29,7 @@
     </tr>
     {{#each users}}
     <tr>
+        <td>{{date}}</td>
         <td>{{username}}@wrte.io</td>
         <td>{{email}}</td> 
         {{#if active}}
@@ -38,7 +40,7 @@
         {{#if verified}}
         <td>yes</td>
         {{else}}
-        <td><button name="verify" value="{{_id}}">verify</button> </td>
+        <td><button name="verify" value="{{_id}}">verify ({{numSent}})</button> </td>
         {{/if}}
     </tr>
     {{/each}}

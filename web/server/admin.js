@@ -47,7 +47,7 @@ Meteor.startup(function () {
         if(["ilya", "ivan"].indexOf(user.username) < 0) {
             return [];
         }
-        return Meteor.users.find({}, {sort : {createdAt : -1}, fields : { username : 1, active : 1, amount : 1, "emails" : 1, "services.stripe" : 1}});
+        return Meteor.users.find({}, {sort : {createdAt : -1}, fields : { username : 1, active : 1, amount : 1, "emails" : 1, "services.stripe" : 1, "services.email.numSent" : 1, createdAt : 1}});
     });
 });
 
@@ -60,12 +60,12 @@ Meteor.methods({
             user = Meteor.users.findOne({_id : userId});
         }
         var emailToken = Random.secret();
-        Meteor.users.upsert(user._id, {$set : {'services.email' : { token : emailToken, when : new Date() } }});
+        Meteor.users.update(user._id, {$set : {'services.email' : { token : emailToken, when : new Date() } }});
         return emailToken;
     },
     'admin_activate' : function(userId){
         checkIfAdmin();
-        Meteor.users.update({_id : userId}, {$set : {active : true, "services.stripe" : { ref : "watsi"}}});
+        Meteor.users.update({_id : userId}, {$set : {active : true}});
     },
     'admin_deactivate' : function(userId){
         checkIfAdmin();
@@ -73,6 +73,10 @@ Meteor.methods({
     },
     'admin_verify' : function(userId){
         checkIfAdmin();
-
+        var user = Meteor.users.findOne({_id : userId});
+        if( !user ) {
+            throw new Meteor.Error("not_found");
+        }
+        sendVerification(user, "signup/sendmoney", 'wrte.io beta is alive', 'welcome_invite');
     }
 });

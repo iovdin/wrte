@@ -72,7 +72,7 @@ Meteor.methods({
         }
 
         var tempToken = Random.secret();
-        Meteor.users.upsert({_id : userId }, {$set : {'services.temp' : { token : tempToken, when : new Date() } }});
+        Meteor.users.update({_id : userId }, {$set : {'services.temp' : { token : tempToken, when : new Date() } }});
 
         return tempToken;
     },
