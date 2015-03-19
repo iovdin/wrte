@@ -79,6 +79,7 @@ Tracker.autorun(function(){
                     lastError.set(error.error);
                     return;
                 }
+                registredEmail.set(Meteor.user().username + "@wrte.io");
                 if(!result.stripe) {
                     Router.go("/signup/sendmoney");
                     return;
