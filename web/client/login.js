@@ -71,9 +71,30 @@ Tracker.autorun(function(){
             if(error){
                 //TODO: error
                 console.log("error logging in", error);
+                lastError.set(error.error);
                 return;
             }
-            goToHash("");
+            Meteor.call('user_state', function(error, result){
+                if(error){
+                    lastError.set(error.error);
+                    return;
+                }
+                if(!result.stripe) {
+                    Router.go("/signup/sendmoney");
+                    return;
+                }
+
+                if(!result.active){
+                    Router.go('/signup/done-not-authorized');
+                }
+
+                //opening login link automatically activates account
+                if(!result.verified) {
+                    Router.go('/signup/done-not-verified');
+                    return;
+                }
+                Router.go('/dashboard/settings');
+            });
         });
     }
 });

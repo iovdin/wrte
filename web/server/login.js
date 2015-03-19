@@ -84,5 +84,15 @@ Meteor.methods({
         } else {
             sendVerification(Meteor.user(), path, "Welcome to wrte.io", "welcome_beta");
         }
+    },
+    'user_state' : function(){
+        if(!Meteor.user())
+            return ;
+
+        var user = Meteor.user();
+        console.log("user", user);
+
+        return { active : user.active, verified : user.emails[0].verified, stripe : _.get(user, "services.stripe")};
+
     }
 });
