@@ -18,7 +18,25 @@ Router.route("/admin/users", function(){
         }
     }})
 
-})
+});
+
+Router.route('/admin/invoices', function() {
+    this.layout("DashboardLayout");
+    this.wait(Meteor.subscribe('admin_invoices'));
+    if(!this.ready()) {
+        this.render("loading");
+        return;
+    } 
+
+    this.render("admin_invoices", { data : {
+        invoices : function(){
+            return invoices.find({}, {sort : {createdAt : -1}}).map(function(invoice){
+                invoice.createdAt = invoice.createdAt.toDateString();
+                return invoice;
+            });
+        }
+    }});
+});
 
 partnerAuthLink = new ReactiveVar("");
 

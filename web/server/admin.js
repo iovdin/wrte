@@ -49,6 +49,15 @@ Meteor.startup(function () {
         }
         return Meteor.users.find({}, {sort : {createdAt : -1}, fields : { username : 1, active : 1, amount : 1, "emails" : 1, "services.stripe" : 1, "services.email.numSent" : 1, createdAt : 1}});
     });
+
+    Meteor.publish("admin_invoices", function(){
+        if(!this.userId) return [];
+        var user = Meteor.users.findOne({_id : this.userId});
+        if(["ilya", "ivan"].indexOf(user.username) < 0) {
+            return [];
+        }
+        return invoices.find({}, {sort : {createdAt : -1},  limit : 50});
+    });
 });
 
 Meteor.methods({

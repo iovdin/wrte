@@ -17,6 +17,32 @@
         error: {{lastError}}
     {{/if}}
 </template>
+<template name="admin_invoices">
+<div style="line-height: 1.4" class="content align_left">
+        <h1>Invoices</h1>
+        <table cellspacing="0">
+            <tr class="title">
+                <td>Date</td>
+                <td>From</td> 
+                <td>To</td>
+                <td>Subject</td>
+                <td>amount</td>
+                <td>Status</td>
+            </tr>
+            {{#each invoices}}
+                <tr>
+                    <td>{{createdAt}}</td>
+                    <td>{{from}}</td> 
+                    <td>{{to}}</td> 
+                    <td>{{subject}}</td>
+                    <td>{{amount}}</td>
+                    <td>{{status}}</td>
+                </tr>
+            {{/each}}
+        </table>
+        <br>
+    </div>
+</template>
 <template name="admin_users">
 <h2>users</h2>
 <table cellspacing="0">
