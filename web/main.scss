@@ -396,6 +396,10 @@ table {
         background-color: $blue;
         color: #fff;
     }
+    
+    .error {
+        color: #999;
+    }
 }
 
 .fee {
@@ -422,14 +426,34 @@ table {
 .blur {
     @include filter(blur(30px));
 }
+    
+/*
+    @include animation(blurring $ease-out-expo 1);
+    //@include animation-delay(1s);
+    @include animation-duration(1.5s);
+    @include animation-fill-mode(forwards);
+}
+@include keyframes(blurring) {
+    0% { }
+    100% { @include filter(blur(30px)); }
+}
+*/
 
 .visible {
     visibility: visible;
 }
 
 .backing {
-    background: rgba(52, 53, 54, 0.45); 
-    z-index: 10
+    z-index: 10;
+    
+    @include animation(backing_appears ease-out 1);
+    //@include animation-delay(1s);
+    @include animation-duration(1.5s);
+    @include animation-fill-mode(forwards);
+}
+@include keyframes(backing_appears) {
+    0% { }
+    100% { background: rgba(52, 53, 54, 0.45); }
 }
 
 @media only screen and (max-device-width: 480px) {

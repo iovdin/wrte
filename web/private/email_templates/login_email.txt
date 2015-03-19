@@ -4,6 +4,7 @@ Please open the link to login to your account <%= email %>
 
 <%= link %>
 
+
 --
 wrte.io team
-Charge For Each Email You Get
+Email Paywall

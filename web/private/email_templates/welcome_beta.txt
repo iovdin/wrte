@@ -2,10 +2,10 @@ Hi,
 
 You've just registered an address: <%= email %>
 
-wrte.io is in beta.
-We will let you know when your account is activated.
+Wrte.io is in beta.
+We will invite you soon.
 
 
 --
 wrte.io team
-Charge For Each Email You Get
+Email Paywall

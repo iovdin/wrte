@@ -5,6 +5,8 @@ here is the list of all users emails:
 <%= emails %>
 
 This email is result of calling http://wrte.io/allusers url
+
+
 --
 wrte.io team
-Charge For Each Email You Get
+Email Paywall
