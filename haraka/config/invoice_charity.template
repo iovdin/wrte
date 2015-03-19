@@ -5,7 +5,7 @@ References : <%= msgId %>
 x-test-mail : invoice-charity
 x-test-invoice : <%= invoiceId %>
 
-It costs <%= amount %> <%= currency %> to deliver the message to <%= email %>. All the money goes to chariy ( watsi.org )
+It costs <%= amount %> <%= currency %> to deliver the message to <%= email %>. All the money goes to charity ( watsi.org )
 
 Please open the link to donate https://wrte.io/invoice/<%= invoiceId %> 
 
