@@ -2,6 +2,10 @@ Router.onBeforeAction(function(){
     var name = this.route.getName();
     if(name && name.indexOf("dashboard") == 0) {
         this.layout("DashboardLayout");
+        if(!Meteor.userId()) {
+            Router.go("/#login");
+            return;
+        }
     }
     this.next();
 });
