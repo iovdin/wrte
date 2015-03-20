@@ -36,6 +36,18 @@ if (Meteor.isClient) {
         this.next();
 
     });
+    //HTTPS only
+    /*Router.onBeforeAction(function(){
+        var router = Router.current(); 
+        if(router) {
+            var location = router.location.get();
+            if(location.host != "localhost:3000" && location.protocol == "http:") {
+                var path = location.originalUrl.replace(location.rootUrl , "");
+                Router.go("/redirect-to-https/" + encodeURIComponent(path))
+                return;
+            }
+        }
+    });*/
 
     Tracker.autorun(function(){
         var router = Router.current(); 
@@ -74,4 +86,14 @@ if (Meteor.isServer) {
     Meteor.startup(function () {
         // code to run on server at startup
     });
+    
+    
+    /*Router.route('/redirect-to-https/:path', function(){
+        var path = this.params.path;
+        var url = "https://wrte.io" + path;
+        this.response.writeHead(302, {
+            'Location': url 
+        });
+        this.response.end();
+    }, {where : 'server'})*/
 }
