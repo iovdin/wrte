@@ -358,7 +358,7 @@ exports.paid_delivery = {
             var headers = mail.headers;
             console.log("headers", headers);
             self.invoice = headers['x-test-invoice'];
-            test.equals(headers['x-test-mail'], "invoice");
+            test.equals(headers['x-test-mail'], "invoice-charity");
             self.invoices.update({ _id : self.invoice } , { $set: { status : 'paid' } }, function(err, result) {
 
             });
@@ -439,6 +439,36 @@ exports.free_delivery = {
         test.expect(3);
         var client = this.client;
         var self = this;
+        self.msg = genID();
+        var msg = [
+            "Subject: Test",
+            "x-test-message: " + self.msg,
+            "Hello world" ].join("\r\n");
+
+        client.send({ from : self.from, to: self.username + "@wrte.io"}, msg, function(err, info){
+            test.ok(!err, "no error on sending");
+            client.quit();
+        });
+
+        //got email
+        this.e.on("rcpt_to", function(address){
+            test.equals(address.address, self.email);
+            console.log("rcpt_to", address.address);
+        });
+        this.e.on("mail_from", function(address){
+            test.equals(address.address, self.from);
+            console.log("mail_from", address.address);
+        });
+
+        setTimeout(function(){
+            test.done();
+        }, 3000);
+    },
+    'should pass email from whitelist' : function(test) {
+        test.expect(3);
+        var client = this.client;
+        var self = this;
+        self.from = genID() + "@bounce.linkedin.com";
         self.msg = genID();
         var msg = [
             "Subject: Test",

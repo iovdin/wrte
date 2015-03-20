@@ -1,8 +1,10 @@
 var _        = require('underscore');
 var Address  = require('./address').Address;
 var DSN      = require('./dsn');
+var net_utils = require('./net_utils');
 
 exports.register = function() {
+    //this.register_hook('mail', 'wrte_whitelist_spf');
     this.register_hook('mail', 'wrte_auth');
     this.register_hook('rcpt', 'wrte_test_emails');
     this.register_hook('rcpt', 'wrte_sent_by_localhost');
@@ -14,6 +16,7 @@ exports.register = function() {
 exports.hook_init_master = function(next) {
     var wrteConfig = this.config.get('wrte.json');
     server.notes.config = wrteConfig.main; 
+    server.notes.whitelist = this.config.get("wrte.whitelist", "list");
     if(process.env.WRTE_DEBUG) {
         server.notes.config = wrteConfig.debug; 
     }
@@ -21,12 +24,21 @@ exports.hook_init_master = function(next) {
     return next()
 }
 
+exports.wrte_whitelist_spf = function (next, connection, params) { 
+    //check if in white list and has valid spf record then pass
+    var spf = connection.transaction.results.get("spf");
+    if(spf.scope == "mfrom" && spf.domain && _.contains(server.notes.whitelist, spf.domain) && spf.result == "SoftFail") {
+
+        return next(DENY, DSN.sec_unauthorized()) 
+    }
+}
 exports.wrte_auth = function (next, connection, params) { 
     var plugin = this;
     var me = plugin.config.get('me');
     var results = connection.results;
     var from = params[0];
-    if(connection.remote_ip != "127.0.0.1" && from.host == me && !results.has('relay', 'pass','auth')) {
+
+    if(!net_utils.is_rfc1918(connection.remote_ip) && from.host == me && !results.has('relay', 'pass','auth')) {
         return next(DENY, DSN.sec_unauthorized()) 
     }
     next();
@@ -47,7 +59,7 @@ exports.wrte_sent_by_localhost = function (next, connection, params) {
 
     //allow web server and mail server to send messages
     if(rcpt.host != me){
-        if(connection.remote_ip == "127.0.0.1"){
+        if (net_utils.is_rfc1918(connection.remote_ip)) {
             this.loginfo("remote_ip == 127.0.0.1, (from web server or myself?), allow relay");
             connection.relaying = true;
             return next(OK);
@@ -128,9 +140,6 @@ exports.wrte_user_exists = function (next, connection, params) {
 
             connection.transaction.parse_body = 1;
             var notes = connection.transaction.notes;
-            //var forwardEmail = new Address(address);
-            //rcpt.user = forwardEmail.user; 
-            //rcpt.host = forwardEmail.host; 
             notes.user = user;
             connection.relaying = true;
             //to get subject
