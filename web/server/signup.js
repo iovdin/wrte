@@ -2,7 +2,8 @@ Accounts.config({
     //sendVerificationEmail : true,
 forbidClientAccountCreation : true,
 });
-var reservedNames = ["noreply", "support"];
+var reservedNames = [ "mailer-daemon", "postmaster", "nobody", "hostmaster", "usenet", "news", "webmaster", "www", "mail", "ftp", "abuse", "noc", "security", "root", "noreply", "support", "wrte", "ilya", "ivan", "delivery", "admin"];
+
 function isEmailTaken(email){
     if(!email) 
         return "email_empty";
