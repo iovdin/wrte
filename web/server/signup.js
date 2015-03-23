@@ -91,7 +91,8 @@ Meteor.methods({
         var tempToken = Random.secret();
         Meteor.users.update({_id : userId }, {$set : {'services.temp' : { token : tempToken, when : new Date() } }});
 
-        intercomUpdateUser({ user_id : userId, email : email, signed_up_at : (new Date()).getTime(), custom_attributes : { username : alias } });
+        var now = (new Date()).getTime();
+        intercomUpdateUser({ user_id : userId, email : email, signed_up_at : now, last_request_at : now, custom_attributes : { username : alias, active : activate, verified : false } });
         return tempToken;
     },
     changeUser : function(options){

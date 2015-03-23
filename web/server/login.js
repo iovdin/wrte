@@ -13,6 +13,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
     if(!user.emails[0].verified){
         Meteor.users.update(user._id, {$set : { "emails.0.verified" : "justverified"}});
+        var now = (new Date()).getTime();
+        intercomUpdateUser({ user_id : user._id, last_request_at : now, custom_attributes : {  verified : true } });
     }
 
     var stampedToken = Accounts._generateStampedLoginToken();
