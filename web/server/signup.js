@@ -38,6 +38,22 @@ Meteor.startup(function () {
 });
 
 
+intercomUpdateUser = function(params){
+    var intercomURL = "https://api.intercom.io/users"; 
+    var intercomSettings = Meteor.absoluteUrl("").indexOf("http://localhost") == 0 ? Meteor.settings.intercom.test : Meteor.settings.intercom.live;
+
+    //console.log("intercomSettings ", intercomSettings);
+    var credentials = intercomSettings.appId + ":" + intercomSettings.key;
+    //console.log("credentials ", credentials);
+    var headers = {
+        "Accept"        : "application/json"
+    }
+    var result = HTTP.post(intercomURL, { data : params, auth : credentials , headers : headers }, function(err, result){
+        if(err){
+            console.log("intercom update user", err);
+        }
+    });
+}
 Meteor.methods({
     signup: function (alias, email, amount, activate) {
         var aliasCheckStatus = isAliasTaken(alias);
@@ -75,6 +91,7 @@ Meteor.methods({
         var tempToken = Random.secret();
         Meteor.users.update({_id : userId }, {$set : {'services.temp' : { token : tempToken, when : new Date() } }});
 
+        intercomUpdateUser({ user_id : userId, email : email, signed_up_at : (new Date()).getTime(), custom_attributes : { username : alias } });
         return tempToken;
     },
     changeUser : function(options){
