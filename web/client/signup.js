@@ -33,7 +33,7 @@ Template.signup.events({
         event.preventDefault();
         console.log("signup", amount.get());
 
-        Meteor.call("signup", alias.get(), email.get(), amount.get() || minAmount, Session.get("ph"), function(error, token){
+        Meteor.call("signup", alias.get(), email.get(), amount.get() || minAmount, function(error, token){
             if (error){
                 var e = error.error;
                 lastError.set(error.error);

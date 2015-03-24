@@ -55,7 +55,7 @@ intercomUpdateUser = function(params){
     });
 }
 Meteor.methods({
-    signup: function (alias, email, amount, activate) {
+    signup: function (alias, email, amount) {
         var aliasCheckStatus = isAliasTaken(alias);
         if(aliasCheckStatus != "alias_valid") {
             throw new Meteor.Error(aliasCheckStatus);
@@ -77,22 +77,16 @@ Meteor.methods({
         check(userId, String);
         var user = Meteor.users.findOne(userId);
         var params = { amount : amount, currency : "usd"}
-        if(activate){
-            params.active = !!activate;
-        }
+        params.active = true;
         Meteor.users.update({ _id : userId }, {$set : params});
 
-        if(activate){
-            sendVerification(user, "signup/sendmoney", "Welcome to wrte.io", "verify_email");
-        } else {
-            sendVerification(user, "signup/sendmoney" , "Welcome to wrte.io", "welcome_beta");
-        }
+        sendVerification(user, "signup/sendmoney", "Welcome to wrte.io", "verify_email");
 
         var tempToken = Random.secret();
         Meteor.users.update({_id : userId }, {$set : {'services.temp' : { token : tempToken, when : new Date() } }});
 
         var now = (new Date()).getTime();
-        intercomUpdateUser({ user_id : userId, email : email, signed_up_at : now, last_request_at : now, custom_attributes : { username : alias, active : activate, verified : false } });
+        intercomUpdateUser({ user_id : userId, email : email, signed_up_at : now, last_request_at : now, custom_attributes : { username : alias, active : true, verified : false } });
         return tempToken;
     },
     changeUser : function(options){

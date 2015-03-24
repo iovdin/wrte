@@ -15,13 +15,6 @@ if (Meteor.isClient) {
     Template.topBar.helpers({
         'loggedIn' : function(){
             return Meteor.userId();
-        },
-        showPHHeader : function() {
-            var router = Router.current(); 
-            if(!router) return false;
-
-            return Session.get("ph") && router.location.get().path == "/";
-
         }
     })
 
@@ -64,7 +57,6 @@ if (Meteor.isClient) {
         this.render("intro");
     });
     Router.route('/ph', function(){
-        Session.setPersistent("ph", true);
         this.redirect('/');
     });
     Router.route('/howitworks', function(){
