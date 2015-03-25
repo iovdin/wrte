@@ -30,7 +30,7 @@
                 {{/case}}
             </div>
             <br>
-            when <div class="input input-{{priceValidateStatus}}" id="amount" contenteditable="true" data-ph="{{minAmount}}" spellcheck="false" ></div>
+            when <div class="input input-{{amountValidateStatus}}" id="amount" contenteditable="true" data-ph="{{minAmount}}" spellcheck="false" ></div>
             USD is paid
             <div class="error error-{{amountValidateStatus}}">
                 <img src="/img/icon_error.png" class="error_icon">
@@ -39,6 +39,9 @@
                 {{/case}}
                 {{#case amountValidateStatus='amount_toosmall'}}
                 Can not be less<br> than {{minAmount}} USD
+                {{/case}}
+                {{#case amountValidateStatus='amount_toobig'}}
+                Can not be more <br> than {{maxAmount}} USD
                 {{/case}}
             </div>
         </h2>

@@ -146,7 +146,12 @@ Template.dashboard_settings.events({
             loading.set(false);
             authCode.set();
             if(err){
-                lastError.set(err.error);
+                var e = err.error;
+                console.log("error changing user", err);
+                if(e.indexOf("amount_") >= 0) {
+                    amountValidateStatus.set(e);
+                }
+                lastError.set(e);
                 return;
             }
         });

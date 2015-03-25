@@ -18,6 +18,7 @@ _.mixin({
 
 
 minAmount = 0.99;
+maxAmount = 1000;
 
 isAmountValid = function(price){
     if(!_.isNumber(price) || _.isNaN(price))
@@ -26,6 +27,9 @@ isAmountValid = function(price){
     //min 1 USD
     if ( price < minAmount) 
         return "amount_toosmall";
+    if ( price > maxAmount) 
+        return "amount_toobig";
+
     return "amount_valid";
 }
 
@@ -44,6 +48,9 @@ stripeFee = function(amount, bitcoins) {
 if(Meteor.isClient){
     Template.registerHelper("minAmount", function(){
         return minAmount;
+    });
+    Template.registerHelper("maxAmount", function(){
+        return maxAmount;
     });
     cardFee = function(getAmount) {
         return function(){

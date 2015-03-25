@@ -46,7 +46,20 @@
         <br>
         amount to charge<br>
         <h3>
-            <div class="input input-{{priceValidateStatus}}" id="amount" contenteditable="true" data-ph="{{minAmount}}" spellcheck="false"  ></div>  USD<br></h3><br>
+            <div class="input input-{{amountValidateStatus}}" id="amount" contenteditable="true" data-ph="{{minAmount}}" spellcheck="false"  ></div>  USD
+        <div class="error error-{{amountValidateStatus}}">
+            <img src="/img/icon_error.png" class="error_icon">
+            {{#case amountValidateStatus='amount_nan'}}
+            Must be<br>a number
+            {{/case}}
+            {{#case amountValidateStatus='amount_toosmall'}}
+            Can not be less<br> than {{minAmount}} USD
+            {{/case}}
+            {{#case amountValidateStatus='amount_toobig'}}
+            Can not be more <br> than {{maxAmount}} USD
+            {{/case}}
+        </div>
+        <br></h3><br>
         send money to<br>
         <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe" {{stripeChecked}}><label for="radio_stripe" class="radio"></label> your Stripe account</h3>
         <div class="margin-left-24px">

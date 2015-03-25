@@ -96,6 +96,11 @@ Meteor.methods({
         var params = {};
         if(options.amount){
             params.amount = options.amount;
+            var amountCheckStatus = isAmountValid(options.amount);
+            if(amountCheckStatus != "amount_valid") {
+                throw new Meteor.Error(amountCheckStatus);
+                return amountCheckStatus;
+            }
         }
         if(options.sendTo){
             var svc = {ref : "watsi"};
