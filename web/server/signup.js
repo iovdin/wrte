@@ -80,7 +80,7 @@ Meteor.methods({
         params.active = true;
         Meteor.users.update({ _id : userId }, {$set : params});
 
-        sendVerification(user, "signup/sendmoney", "Welcome to wrte.io", "verify_email");
+        sendVerification(user, "signup", "Welcome to wrte.io", "verify_email");
 
         var tempToken = Random.secret();
         Meteor.users.update({_id : userId }, {$set : {'services.temp' : { token : tempToken, when : new Date() } }});
