@@ -77,9 +77,14 @@
   (scp "build/mail.tgz" "~/")
   (ssh "sudo tar xfz mail.tgz -C /var/mail/")
   (ssh "'cd /var/mail/; sudo npm install'")
+  (ssh "'cd /var/mail/; cp upstart.conf /etc/init/haraka.conf'")
   (ssh "sudo chown -R mail:mail /var/mail/*")
-  (ssh "'cat /var/run/haraka.pid | xargs sudo kill -9; sudo rm /var/run/haraka.pid'")
-  (ssh "'cd /var/mail/; sudo node haraka.js'"))
+  (ssh "sudo chown  mail:mail /var/log/haraka.log")
+  ;(ssh "'cat /var/run/haraka.pid | xargs sudo kill -9; sudo rm /var/run/haraka.pid'")
+  ;(ssh "'cd /var/mail/; sudo node haraka.js'")
+  )
+  (ssh "sudo stop haraka")
+  (ssh "sudo start haraka")
  )
 
 (setq make-map 
