@@ -1,0 +1,1 @@
+bitcore = Npm.require('bitcore');

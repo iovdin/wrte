@@ -194,7 +194,7 @@ input { font-family: "Lato", "HelveticaNeue-Thin", "HelveticaNeue-Light", "Helve
     border-bottom: 2px solid $green;
 }
 
-.input-alias_valid, .input-email_valid, .input-amount_valid{
+.input-alias_valid, .input-email_valid, .input-amount_valid, .input-btc_address_valid {
     @extend .input-valid;
 }
 .input-invalid {
@@ -212,7 +212,7 @@ input { font-family: "Lato", "HelveticaNeue-Thin", "HelveticaNeue-Light", "Helve
     100% { border-bottom: 2px solid rgba(255, 255, 255, 1.0); }
 }
 
-.input-alias_empty, .input-alias_wrong_syntax, .input-alias_exists, .input-email_empty, .input-email_wrong_syntax, .input-email_exists, .input-amount_nan, .input-amount_toosmall, .input-amount_toobig{
+.input-alias_empty, .input-alias_wrong_syntax, .input-alias_exists, .input-email_empty, .input-email_wrong_syntax, .input-email_exists, .input-amount_nan, .input-amount_toosmall, .input-amount_toobig, .input-btc_address_invalid{
     @extend .input-invalid;
 }
 
@@ -301,7 +301,7 @@ input[type=radio]:checked ~ label.radio {
     box-shadow: 0px 4px 12px 0px rgba(0,0,0,0.25);
 }
 
-.error-alias_empty, .error-alias_wrong_syntax, .error-alias_exists, .error-email_empty, .error-email_wrong_syntax, .error-email_exists, .error-amount_nan, .error-amount_toosmall, .error-amount_toobig{
+.error-alias_empty, .error-alias_wrong_syntax, .error-alias_exists, .error-email_empty, .error-email_wrong_syntax, .error-email_exists, .error-amount_nan, .error-amount_toosmall, .error-amount_toobig, .error-btc_address_invalid{
     @extend .error-invalid;
 }
 

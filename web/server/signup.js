@@ -4,6 +4,16 @@ forbidClientAccountCreation : true,
 });
 var reservedNames = [ "mailer-daemon", "postmaster", "nobody", "hostmaster", "usenet", "news", "webmaster", "www", "mail", "ftp", "abuse", "noc", "security", "root", "noreply", "support", "wrte", "ilya", "ivan", "delivery", "admin"];
 
+var Address = bitcore.Address;
+var Networks = bitcore.Networks;
+
+isBtcAddressValid = function(btcAddress){
+    var network = btcTest ? Networks.testnet : Networks.livenet;
+    var err = Address.getValidationError(btcAddress, network);
+    if( !err ) return "btc_address_valid";
+    return "btc_address_invalid";
+}
+
 function isEmailTaken(email){
     if(!email) 
         return "email_empty";
@@ -32,7 +42,7 @@ function isAliasTaken(alias){
 Meteor.startup(function () {
     Meteor.publish("me", function () {
         if(!this.userId) return [];
-        return Meteor.users.find(this.userId, {fields: { username : 1, amount : 1, "currency" : 1, "services.stripe.ref" : 1, "services.stripe.stripe_publishable_key" : 1, "services.stripe.default_currency" : 1, "active" : 1 }});
+        return Meteor.users.find(this.userId, {fields: { username : 1, amount : 1, "currency" : 1, "services.stripe.ref" : 1, "services.stripe.stripe_publishable_key" : 1, "services.stripe.default_currency" : 1, "services.btc" : 1, "active" : 1 }});
     });
 
 });
@@ -102,21 +112,39 @@ Meteor.methods({
                 return amountCheckStatus;
             }
         }
-        if(options.sendTo){
-            var svc = {ref : "watsi"};
-            if(options.sendTo == "stripe") {
-                if(!options.authCode) {
-                    throw new Meteor.Error("empty_code");
-                }
-                //TODO: try catch
-                svc = stripeGetToken(options.authCode);
+        if(options.sendTo == "btc") {
+            var btcCheckStatus = isBtcAddressValid(options.btcAddress);
+            if(btcCheckStatus != "btc_address_valid") {
+                throw new Meteor.Error(btcCheckStatus);
+                return btcCheckStatus;
             }
-            params["services.stripe"] = svc;
+        }
+        if(options.sendTo){
+            params["services.stripe"] = {};
+            params["services.btc"] = {};
+            switch(options.sendTo) {
+                case "watsi":
+                    params["services.stripe"] = {ref : "watsi"};
+                    break;
+                case "stripe":
+                    if(!options.authCode) {
+                        throw new Meteor.Error("empty_code");
+                    }
+                    //TODO: try catch
+                    params["services.stripe"] = stripeGetToken(options.authCode);
+                    break;
+                case "btc":
+                    params["services.btc"] = {address : options.btcAddress};
+                    break;
+                default:
+                    throw new Meteor.Error("wrong_payment", "Payment method not specified");
+            }
         }
         Meteor.users.update({_id : Meteor.userId()}, {$set : params});
         return;
     },
     is_alias_taken : isAliasTaken,
     is_email_taken : isEmailTaken,
-    is_amount_valid : isAmountValid
+    is_amount_valid : isAmountValid,
+    is_btc_address_valid : isBtcAddressValid
 });

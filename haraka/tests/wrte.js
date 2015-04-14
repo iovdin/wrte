@@ -9,6 +9,8 @@ var MongoClient    = require('mongodb').MongoClient;
 var MailParser     = require("mailparser").MailParser;
 var events         = require('events');
 var util           = require("util");
+var bitcore        = require("bitcore");
+var Insight        = require('bitcore-explorers').Insight;
 
 /*_.mixin({
   series: function() {
@@ -489,6 +491,92 @@ exports.free_delivery = {
             test.equals(address.address, self.from);
             console.log("mail_from", address.address);
         });
+
+        setTimeout(function(){
+            test.done();
+        }, 3000);
+    }
+}
+
+exports.bitcoin_delivery = {
+    setUp : function(done){
+        var self = this;
+        this.username = genID();
+        this.email    = genID() + "@test";
+        this.from     = genID() + "@test";
+        //this.privateKey = new bitcore.PrivateKey();
+        this.privateKey = bitcore.PrivateKey.fromWIF("L4LShBYPNTpryeC84RFWMHpxsjsimD7i8R5FuZbcLp7tid1acQaq");
+        //got some bitcoins for test net http://tpfaucet.appspot.com
+        //and return them back 
+        //var address = "msj42CCGruhRsFrGATiUuh25dtxYtnpbTx";
+        
+        //our second address
+        var address = this.address = "mt8iAU3pLCpfxzXDCfhY98Tqcc7KWVMKWC";
+
+        setUpMongo.call(self, function(){
+            self.users.insert([{ username : self.username, active : true, _id : "test_" + self.username, emails : [ {address : self.email, verified : true}], amount : 1, currency : "usd", services : { btc : { address : address }} }], function(err, result){
+
+                setUpMail.call(self, done);
+            });
+        });
+    },
+    tearDown : function(done){
+        var self = this;
+        self.users.remove([{username : self.username}], function(err, result){
+            tearDownMongo.call(self, function(){
+                tearDownMail.call(self, done);
+            });
+        })
+    },
+    'invoice should be paid' : function(test){
+        var insight = new Insight("https://test-insight.bitpay.com");
+        insight.getUnspentUtxos(this.address, function(err, utxos) {
+            console.log(err, utxos);
+        });
+        test.done();
+    },
+    'invoice should properly encoded' : function(test) {
+        test.done();
+        return;
+        test.expect(7);
+        var client = this.client;
+        var self = this;
+        self.msg = genID();
+        var msg = [
+            "Subject: Test",
+            "x-test-message: " + self.msg,
+            "Hello world" ].join("\r\n");
+
+        client.send({ from : self.from, to: self.username + "@wrte.io"}, msg, function(err, info){
+            test.ok(!err, "no error on sending");
+            client.quit();
+        });
+
+
+        //got invoice
+        this.e.on("rcpt_to", _.once(function(address){
+            test.equals(address.address, self.from);
+            console.log("rcpt_to", address.address);
+        }));
+        this.e.on("mail_from", _.once(function(address){
+            test.equals(address.address, "delivery@wrte.io");
+            console.log("mail_from", address.address);
+        }));
+        this.e.on('message', _.once(function(mail){
+            var headers = mail.headers;
+            self.invoice = headers['x-test-invoice'];
+            self.invoices.findOne({ _id : self.invoice } , function(err, result) {
+                test.ok(!err, "cant find invoice ", self.invoice);
+                test.ok(result.btc.rate, "rate is not defined");
+                var pow5 = Math.pow(10, 5);
+                var amount = Math.trunc(result.btc.amount * pow5) / pow5;
+                test.equals( Math.trunc((amount * result.btc.rate - 1) * 100), 0, "amount match");
+                var uid = (result.btc.amount - amount) * Math.pow(10, 8);
+                test.equals(Math.trunc((result.btc.uid - uid) * 100), 0, "uid match");
+                console.log("result ", result);
+                test.done();
+            });
+        }));
 
         setTimeout(function(){
             test.done();

@@ -12,6 +12,10 @@ validateAmount = _.debounce(function(amount){
     console.log("isValid", isValid);
     amountValidateStatus.set(isValid);
 }, 500);
+
+btcAddressValidateStatus = new ReactiveVar("default");
+validateBtcAddress = inputValidator("is_btc_address_valid", btcAddressValidateStatus);
+
 resetValidators = function(){
     aliasValidateStatus.set("");
     emailValidateStatus.set("");
@@ -95,12 +99,17 @@ var getAmount = function() {
     return minAmount
 }
 
+var btcAddress = new ReactiveVar("");
+
 Template.signup_sendmoney.helpers({
     watsiChecked : function(){
         return (sendTo.get() == 'watsi') ? "checked" : "";
     },
     stripeChecked : function(){
         return (sendTo.get() == 'stripe') ? "checked" : "";
+    },
+    btcChecked : function(){
+        return (sendTo.get() == 'btc') ? "checked" : "";
     },
     cardFee : cardFee(getAmount),
     bitcoinFee : bitcoinFee(getAmount),
@@ -109,15 +118,24 @@ Template.signup_sendmoney.helpers({
     },
     authCode : function(){
         return authCode.get();
-    }
+    },
+
 });
 
 Template.signup_sendmoney.events({
     'click #btn_complete' : function(e){
         e.preventDefault();
         loading.set(true);
-        Meteor.call("changeUser", { sendTo : sendTo.get(), authCode : authCode.get() }, function(err, result){
+        Meteor.call("changeUser", { sendTo : sendTo.get(), authCode : authCode.get(), btcAddress : btcAddress.get() }, function(err, result){
             loading.set(false);
+            if (err){
+                var e = err.error;
+                lastError.set(err.error);
+                if(e.indexOf("btc_address_") >= 0) {
+                    btcAddressValidateStatus.set(e);
+                } 
+                return;
+            }
             authCode.set();
             sendTo.set();
             if(err){
@@ -140,13 +158,18 @@ Template.signup_sendmoney.events({
             Router.go('/signup/done');
         });
     },
-        'change input:radio[name=sendto]:checked' : function(e){
-            var value = e.currentTarget.value;
-            sendTo.set(value);
-            if(value == 'watsi') {
-                authCode.set("");
-            }
+    'change input:radio[name=sendto]:checked' : function(e){
+        var value = e.currentTarget.value;
+        sendTo.set(value);
+        if(value == 'watsi') {
+            authCode.set("");
         }
+    },
+    "input #btcAddress" : function(event){
+        btcAddress.set(event.currentTarget.textContent);
+        console.log("input change", btcAddress.get());
+        validateBtcAddress(btcAddress.get());
+    }
 });
 
 Template.signup_done_not_verified.events({

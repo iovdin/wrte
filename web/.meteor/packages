@@ -19,3 +19,5 @@ mrgalaxy:stripe
 momentjs:moment
 u2622:persistent-session
 force-ssl
+bitcore
+steeve:jquery-qrcode

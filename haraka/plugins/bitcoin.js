@@ -11,20 +11,44 @@ var DSN      = require('./dsn');
 var _        = require('underscore');
 var url      = require('url');
 var mimelib  = require("mimelib");
+var request  = require("request");
 
 exports.hook_init_master = function(next) {
     this.invoices = {};
-    //this.on_check_payment.bind(this);
+
     setTimeout(this.on_check_payment.bind(this), server.notes.config.check_time * 1000);
-    return next();
+    setTimeout(this.fetchBTCRates.bind(this), server.notes.config.btc_rates_time * 1000);
+    this.fetchBTCRates(next);
 }
+
+exports.fetchBTCRates = function(next){
+    var plugin = this;
+    request({
+        url:  "https://bitpay.com/api/rates",
+        json: true
+    }, function (error, response, body) {
+        if(error) {
+            plugin.logerror("error fetching bitcoin rates " + error);
+        } else {
+            plugin.loginfo("got bitcoin rates");
+        }
+        if (!error && response.statusCode === 200) {
+            plugin.rates = {};
+            for(var i = 0; i < body.length; i++){
+                plugin.rates[body[i].code] = body[i].rate;
+            }
+        }
+        if(next) next();
+    })
+}
+
 exports.on_check_payment = function(){
     var plugin = this;
     var timeout = server.notes.config.pay_invoice_timeout;
     //var timeout = 3600 * 24;
     var since = (new Date()).getTime() -  timeout * 1000 * 2;
     //TODO: only with status != "created"
-    server.notes.invoices.find({createdAt : {$gt : new Date(since)}}).toArray(function(err, results){
+    server.notes.invoices.find({createdAt : {$gt : new Date(since)}}).toArray(function(err, results) {
         if(err){
             plugin.logerror("error finding invoice ", err);
             return;
@@ -38,6 +62,12 @@ exports.on_check_payment = function(){
         setTimeout(plugin.on_check_payment.bind(plugin), server.notes.config.check_time * 1000);
     });
 }
+
+function round(num, precision) {
+    var prec = Math.pow(10, precision);
+    return Math.trunc(num * prec) / prec;
+}
+
 exports.hook_data_post = function(next, connection) {
     var plugin = this;
     var t = connection.transaction;
@@ -76,8 +106,25 @@ exports.hook_data_post = function(next, connection) {
             to : t.notes.user.username + "@" + me,
             subject : t.notes.subject,
             amount : t.notes.user.amount,
-            currency : t.notes.user.currency,
-            stripePublishableKey : t.notes.user.services.stripe.stripe_publishable_key
+            currency : t.notes.user.currency
+        }
+
+        var stripe = t.notes.user.services.stripe;
+        var btc = t.notes.user.services.btc;
+        if(stripe && stripe.stripe_publishable_key) {
+            invoice.stripePublishableKey = stripe.stripe_publishable_key;
+        } else if(btc && btc.address){
+            invoice.btc = { address : btc.address };
+            var rate = invoice.btc.rate = plugin.rates[invoice.currency.toUpperCase()];
+            if (!rate) {
+                t.notes.paid_state = "error";
+                return next(DENY, "server error");
+            }
+            // 244 usd per bitcoin * 0.00001 < 1 cent 
+            //0.000 000 01
+            //1 satoshi
+            invoice.btc.uid = Math.trunc(Math.random() * Math.pow(10, 3));
+            invoice.btc.amount = round(invoice.amount / rate, 5) + invoice.btc.uid / Math.pow(10, 8);
         }
 
         server.notes.invoices.insert([invoice], function(err, result){

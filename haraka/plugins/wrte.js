@@ -119,7 +119,7 @@ exports.wrte_user_exists = function (next, connection, params) {
     var plugin = this;
     var me = plugin.config.get('me');
 
-    server.notes.users.findOne({ username : rcpt.user }, { fields : { username : 1, "emails.address" : 1, "emails.verified" : 1, "services.stripe" : 1, active : 1, amount : 1, currency : 1 } } , function(err, user) {
+    server.notes.users.findOne({ username : rcpt.user }, { fields : { username : 1, "emails.address" : 1, "emails.verified" : 1, "services.stripe" : 1, "services.btc" : 1, active : 1, amount : 1, currency : 1 } } , function(err, user) {
         if(err) {
             plugin.lognotice("error looking up user " + JSON.stringify(err));
             return next(DENY, DSN.no_such_user())
@@ -134,7 +134,7 @@ exports.wrte_user_exists = function (next, connection, params) {
             if(!user.emails[0].verified) {
                 return next(DENY, "email is not verified");
             }
-            if( user.amount > 0 && (!user.services || !user.services.stripe)) {
+            if( user.amount > 0 && (!user.services || (!user.services.stripe && !user.services.btc) )) {
                 return next(DENY, "account is not properly set up");
             }
 

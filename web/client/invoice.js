@@ -33,31 +33,35 @@ var invoiceRoute = function () {
     if(!status){
         status = invoice.status;
     } 
+    if(data.btc){
+        data.btc.uri = "bitcoin:" + data.btc.address + "?amount=" + data.btc.amount;
+    }
     this.render('invoice_' + status, { data : data });
 
     if(status == "opened"){
-        console.log("keys", invoice.stripePublishableKey, stripePubKey);
-        stripeHandler = StripeCheckout.configure({
-            key: invoice.stripePublishableKey || stripePubKey,
-            token: function(token) {
-                Meteor.call('invoice_charge', invoiceId, token.id, function(err, result){
-                    if(err){
-                        lastError.set(err.error);
-                    }
-                    console.log("invoice_charge", err, result);
-                });
-            }
-        });
+        if(!invoice.btc) {
+            stripeHandler = StripeCheckout.configure({
+                key: invoice.stripePublishableKey || stripePubKey,
+                token: function(token) {
+                    Meteor.call('invoice_charge', invoiceId, token.id, function(err, result){
+                        if(err){
+                            lastError.set(err.error);
+                        }
+                        console.log("invoice_charge", err, result);
+                    });
+                }
+            });
 
-        //TODO: bitcoins
-        stripeHandler.open({
-            name: 'to ' + invoice.to,
-            description: invoice.subject,
-            currency: invoice.currency,
-            amount: invoice.amount * 100, 
-            bitcoin : true,
-            email : invoice.from,
-        });
+            //TODO: bitcoins
+            stripeHandler.open({
+                name: 'to ' + invoice.to,
+                description: invoice.subject,
+                currency: invoice.currency,
+                amount: invoice.amount * 100, 
+                bitcoin : true,
+                email : invoice.from,
+            });
+        }
     } else if(stripeHandler){
         stripeHandler.close();
     }
@@ -65,3 +69,14 @@ var invoiceRoute = function () {
 
 Router.route('/invoice/:_id', invoiceRoute);
 Router.route('/invoice/:_id/:status', invoiceRoute);
+
+Template.invoice_opened.rendered = function(){
+    if(!this.data.btc) {
+        return;
+    }
+    this.$("#qrcode").qrcode({
+        text: this.data.btc.uri,
+        width: 256,
+        height: 256,
+    });
+}

@@ -21,6 +21,8 @@
   "dependencies": {
     "address-rfc2822": "~0.0.2",
     "async": "~0.2.9",
+    "bitcore": "^0.11.7",
+    "bitcore-explorers": "^0.10.4",
     "bson-objectid": "^1.0.1",
     "daemon": "~1.1.0",
     "generic-pool": "~2.0.2",
@@ -32,6 +34,7 @@
     "mongodb": "~2.0",
     "nopt": "~2.1.2",
     "npid": "~0.4.0",
+    "request": "^2.55.0",
     "semver": "~2.2.1",
     "underscore": "^1.7.0",
     "url": "^0.10.2"

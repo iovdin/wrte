@@ -6,7 +6,8 @@
         "postmaster" : "iovdin@gmail.com",
         "open_invoice_timeout" : 7200,
         "pay_invoice_timeout" : 86400,
-        "check_time" : 10
+        "check_time" : 10,
+        "btc_rates_time" : 60
     },
     "debug" : {
         "delivery" : "delivery@test",
@@ -19,6 +20,7 @@
 
         "open_invoice_timeout" : 1,
         "pay_invoice_timeout" : 2,
-        "check_time" : 0.5
+        "check_time" : 0.5,
+        "btc_rates_time" : 60
     }
 }
