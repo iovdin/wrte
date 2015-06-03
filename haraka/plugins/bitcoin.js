@@ -5,6 +5,7 @@
 // Put your plugin code here
 // type: `haraka -h Plugins` for documentation on how to create a plugin
 //
+var BTCAddress  = require('bitcore').Address;
 var Address  = require('./address').Address;
 var outbound = require('./outbound');
 var DSN      = require('./dsn');
@@ -15,8 +16,10 @@ var request  = require("request");
 
 exports.hook_init_master = function(next) {
     this.invoices = {};
+    this.btcInvoices = [];
 
     setTimeout(this.on_check_payment.bind(this), server.notes.config.check_time * 1000);
+    setTimeout(this.on_check_bitcoin_payment.bind(this), server.notes.config.check_time * 1000);
     setTimeout(this.fetchBTCRates.bind(this), server.notes.config.btc_rates_time * 1000);
     this.fetchBTCRates(next);
 }
@@ -41,6 +44,61 @@ exports.fetchBTCRates = function(next){
         if(next) next();
     })
 }
+exports.on_check_bitcoin_payment = function (){
+    var plugin = this;
+    
+    var invoice = plugin.btcInvoices.pop();
+    var next = function(pushBack){
+        if(pushBack)
+            plugin.btcInvoices.push(invoice);
+        setTimeout(plugin.on_check_bitcoin_payment.bind(plugin), server.notes.config.check_time * 1000);
+    }
+    if(!invoice){
+        next();
+        return;
+    }
+    try{
+        var address = invoice.btc.address;
+        var btcAddress = new BTCAddress(address);
+        var url = (btcAddress.network.name == "livenet") ? "https://insight.bitpay.com" : "https://test-insight.bitpay.com"
+
+        url += "/api/addrs/" + address + "/txs";
+        plugin.loginfo("fetching url " + url);
+        request({
+            url:  url,
+            json: true
+        }, function (error, response, body) {
+            if(error) {
+                plugin.logerror("error fetching txs for " + address + " : " + error);
+                return;
+            } 
+            for(var i = 0, len = body.length; i < len; i++){
+                var tx = body[i];
+                if(!tx || !tx.vout) continue;
+                var received = 0;
+                for(var j = 0, jlen = tx.vout.length; j < jlen; j++){
+                    var vout = tx.vout[j];
+                    var value = parseFloat(vout.value);
+                    var key = vout.scriptPubKey;
+                    if(key && key.addresses && key.addresses.indexOf(address) >= 0) {
+                        received += value;
+                    }
+                }
+                if(Math.abs(received - invoice.btc.amount) < 0.00000001){
+                    plugin.loginfo("found tx", tx);
+                    //TODO: next(false);
+                    next(true);
+                    return;
+                }
+            }
+            next(true);
+        });
+    } catch (e) {
+        plugin.logwarn("error checking btc address " + address);
+        plugin.logerror(e);
+        next(true);
+    }
+}
 
 exports.on_check_payment = function(){
     var plugin = this;
@@ -57,7 +115,11 @@ exports.on_check_payment = function(){
         for(var i = 0; i < len; i++){
             var invoice = results[i];
             plugin.invoices[invoice._id] = invoice.status;
+            if(invoice.btc && invoice.status == "opened") {
+                plugin.btcInvoices.push(invoice);
+            }
         }
+        plugin.btcInvoices = _.uniq(plugin.btcInvoices, false, _.iteratee('_id'));
         //plugin.logdebug("invoices", JSON.stringify(plugin.invoices, null, "  "));
         setTimeout(plugin.on_check_payment.bind(plugin), server.notes.config.check_time * 1000);
     });
@@ -157,6 +219,7 @@ exports.hook_data_post = function(next, connection) {
     }
     next();
 }
+
 
 exports.delay = function(hmail){
     var plugin = this;

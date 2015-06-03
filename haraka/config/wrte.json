@@ -7,6 +7,7 @@
         "open_invoice_timeout" : 7200,
         "pay_invoice_timeout" : 86400,
         "check_time" : 10,
+        "bitcoin" : "live",
         "btc_rates_time" : 60
     },
     "debug" : {
@@ -18,8 +19,9 @@
         "test_mx" : "127.0.0.1:2500",
         "test_domain" : "test",
 
-        "open_invoice_timeout" : 1,
-        "pay_invoice_timeout" : 2,
+        "bitcoin" : "test",
+        "open_invoice_timeout" : 7200,
+        "pay_invoice_timeout" : 86400,
         "check_time" : 0.5,
         "btc_rates_time" : 60
     }
