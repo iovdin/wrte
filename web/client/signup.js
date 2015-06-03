@@ -134,6 +134,7 @@ Template.signup_sendmoney.events({
                 return;
             }
             if(!verified){
+                rtimeout.set(30);
                 Router.go('/signup/done-not-verified');
                 return;
             } 
@@ -152,11 +153,25 @@ Template.signup_sendmoney.events({
 Template.signup_done_not_verified.events({
     "click #resend" : function(e){
         e.preventDefault();
+        rtimeout.set(30);
         Meteor.call("send_verification", "signup/done", function(err, result){
             console.log("verification sent", err, result);
         });
     }
-})
+});
+var rtimeout = new ReactiveVar(0)
+Meteor.setInterval(function(){
+    var value = rtimeout.get();
+    if(value > 0) {
+        rtimeout.set(value - 1)
+    }
+}, 1000)
+Template.signup_done_not_verified.helpers({
+    timeout : function(){
+        return rtimeout.get();
+    }
+});
+
 
 loading = new ReactiveVar(false);
 Router.route('/signup', function(){

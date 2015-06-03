@@ -103,7 +103,13 @@
         <br><h3>You have registered <b>{{registredEmail}}</b></h3><br>
         <h2>You still need to verify you email</h2>
         <span style="display: block; height:30px"></span>
-        <h5><a href="" id="resend">Resend verification</a></h5>
+        <h5>
+            {{#if timeout}}
+            You can resend verification in {{timeout}} seconds
+            {{else}}
+            <a href="" id="resend">Resend verification</a>
+            {{/if}}
+        </h5>
     </div>
 </template>
 
