@@ -61,6 +61,13 @@ Template.login.events({
     }
 });
 
+Template.login_failed.events({
+    'click #retry' : function(e){
+        e.preventDefault();
+        goToHash("login");
+    }
+})
+
 Tracker.autorun(function(){
     if(popup.get() == "login_link_opened") {
         var router = Router.current();
@@ -72,6 +79,7 @@ Tracker.autorun(function(){
                 //TODO: error
                 console.log("error logging in", error);
                 lastError.set(error.error);
+                goToHash("login_failed");
                 return;
             }
             Meteor.call('user_state', function(error, result){

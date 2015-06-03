@@ -2,7 +2,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
     if( !loginRequest.emailToken ) {
         return;
     }
-    var user = Meteor.users.findOne({'services.email.token': loginRequest.emailToken});
+    var user = Meteor.users.findOne({ $or : [ {'services.email.tokens.token': { $in : [ loginRequest.emailToken ]}}, {'services.email.token': loginRequest.emailToken} ] });
 
     if(!user) {
         return;
@@ -85,11 +85,7 @@ Meteor.methods({
             //return;
         }
 
-        if(Meteor.user().active){
-            sendVerification(Meteor.user(), path, "Welcome to wrte.io", "verify_email");
-        } else {
-            sendVerification(Meteor.user(), path, "Welcome to wrte.io", "welcome_beta");
-        }
+        sendVerification(Meteor.user(), path, "Welcome to wrte.io", "verify_email");
     },
     'user_state' : function(){
         if(!Meteor.user())
