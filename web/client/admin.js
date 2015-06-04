@@ -13,7 +13,10 @@ Router.route("/admin/users", function(){
     this.render("admin_users", { data : {
         users : function(){
             return Meteor.users.find({}, {sort : {createdAt : -1}}).map(function(user){
-                return { _id : user._id, username : user.username, email : user.emails[0].address, active : user.active, verified : user.emails[0].verified, numSent : _.get(user, "services.email.numSent") || 0, date : user.createdAt.toDateString()};
+                var createdAt = "unknown";
+                if(user.createdAt)
+                    createdAt = user.createdAt.toDateString()
+                return { _id : user._id, username : user.username, email : user.emails[0].address, active : user.active, verified : user.emails[0].verified, numSent : _.get(user, "services.email.numSent") || 0, date : createdAt};
             });
         }
     }})
