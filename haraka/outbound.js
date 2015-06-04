@@ -744,9 +744,9 @@ HMailItem.prototype.send_email_respond = function (retval, delay) {
             temp_fail_queue.add(1000, handler);
         } else {
             this.logdebug("Delivery of this email delayed for " + delay + " seconds");
-            hmail.next_cb();
-            temp_fail_queue.add(delay_seconds * 1000, function () { delivery_queue.push(hmail); });
+            temp_fail_queue.add(delay * 1000, function () { delivery_queue.push(hmail); });
         }
+        hmail.next_cb();
     } else if(retval === constants.stop){
         this.logdebug("Delivery of this email stopped");
         hmail.discard();

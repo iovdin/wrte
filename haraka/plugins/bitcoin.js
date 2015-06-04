@@ -117,6 +117,9 @@ exports.delay = function(hmail){
     var invoiceStatus = plugin.invoices[notes.invoiceId];
     var openTimeout = server.notes.config.open_invoice_timeout;
     var payTimeout = server.notes.config.pay_invoice_timeout;
+
+    if(!invoiceStatus) return false;
+
     //this.logdebug("called delay " + invoiceStatus);
     var now = (new Date()).getTime();
     var qtime = hmail.todo.queue_time;
