@@ -87,7 +87,8 @@
         saving ...
         {{/if}}
         
-        <button> Save </button>
+        <button id="btn_save"> Save </button>
+        <button id="btn_remove" class="important_button"> Remove Account</button>
     </div>
 </template>
     
@@ -118,5 +119,31 @@
         <div class="align_center"><h3 class="comment">No messages have been received yet</h3></div>
         <span style="display: block; height:50px"></span>
         {{/if}}
+    </div>
+</template>
+
+<template name="remove_link_opened">
+    <div fit vertical center-justified layout center class="backing">
+        <a href="#" class="close"></a>
+        <h2>{{userRemovalStatus}}</h2>
+    </div>
+</template>
+
+<template name="dashboard_confirm_remove">
+    <div fit vertical center-justified layout center class="backing">
+        <a href="#" class="close"></a>
+        <h1>Remove Account?</h1>
+        <span horizontal center-justified layout center>
+        <button id="btn_yes" class="important_button">yes</button>
+        <button id="btn_no">no</button>
+        </span>
+    </div>
+</template>
+
+<template name="dashboard_removal_sent">
+    <div fit vertical center-justified layout center class="backing">
+        <a href="#" class="close"></a>
+        <h1>Confirmation sent to your email</h1>
+        <button>ok</button>
     </div>
 </template>

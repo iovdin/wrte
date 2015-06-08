@@ -316,6 +316,7 @@ button {
     box-shadow: 0px 1px 0px 0px rgba(0,0,0,0.20);
     border-radius: 40px;
 }
+
 button:hover {
     //box-shadow: 0px 12px 25px 0px rgba(0,0,0,0.18);
     @include animation(bg_to_black ease-in 1);
@@ -395,6 +396,10 @@ table {
         margin: 20px 0 10px 0;
         background-color: $blue;
         color: #fff;
+    }
+
+    .important_button{
+        background-color: $red;
     }
     
     .error {

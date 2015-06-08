@@ -55,11 +55,10 @@ Template.dashboard_settings.rendered = function(){
 
 Template.dashboard_settings.helpers({
     username : function() {
-        return Meteor.user().username;
+        return _.get(Meteor.user(),"username");
     },
     email : function() {
-        var user = Meteor.user();
-        return _.get(user, "emails.0.address"); 
+        return _.get(Meteor.user(), "emails.0.address"); 
     },
     cardFee : cardFee(getAmount),
     bitcoinFee : bitcoinFee(getAmount),
@@ -76,10 +75,10 @@ Template.dashboard_settings.helpers({
         return authCode.get();
     },
     active : function(){
-        return !!Meteor.user().active;
+        return !!_.get(Meteor.user(), "active");
     },
     notactive : function(){
-        return !Meteor.user().active;
+        return !_.get(Meteor.user(), "active");
     },
     notverified : function(){
         return !_.get(Meteor.user(), "emails.0.verified");
@@ -129,7 +128,7 @@ Template.dashboard_settings.events({
             authCode.set("");
         }
     },
-    'click button' : function(e){
+    'click #btn_save' : function(e){
         //save
         console.log("save");
         e.preventDefault();
@@ -156,11 +155,64 @@ Template.dashboard_settings.events({
             }
         });
     },
+    'click #btn_remove' : function(e){
+        e.preventDefault()
+        goToHash("dashboard_confirm_remove");
+
+    },
     'click #resend' : function(e){
         e.preventDefault();
         Meteor.call("send_verification", "dashboard/settings", function(err, result){
             console.log("verification sent", err, result);
         });
+    }
+});
+
+userRemovalStatus = new ReactiveVar("");
+Tracker.autorun(function(){
+    if(popup.get() == "remove_link_opened" && Meteor.user()) {
+        var router = Router.current();
+        if(!router) return;
+        var token = _.keys(Router.current().params.query)[0];
+        var username = Meteor.user().username;
+        userRemovalStatus.set("Removing account " + username + "@wrte.io");
+        Meteor.call("removeUser", {token : token}, function(err, result){
+            if(err){
+                var e = err.error;
+                lastError.set(e);
+                userRemovalStatus.set("Failed to remove account");
+                return;
+            }
+
+            userRemovalStatus.set("Account has been removed");
+        })
+    }})
+
+Template.dashboard_removal_sent.events({
+    'click button' : function(e){
+        e.preventDefault();
+        goToHash("");
+    }
+});
+
+Template.dashboard_confirm_remove.events({
+    'click #btn_yes': function(e){
+        e.preventDefault();
+        Meteor.call("removeUser", {}, function(err, result){
+            if(err){
+                var e = err.error;
+                lastError.set(e);
+                goToHash("");
+                return;
+            }
+            goToHash("dashboard_removal_sent");
+        });
+    },
+    'click #btn_no': function(e){
+        e.preventDefault();
+        goToHash("");
+
+
     }
 });
 
