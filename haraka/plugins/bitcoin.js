@@ -5,14 +5,14 @@
 // Put your plugin code here
 // type: `haraka -h Plugins` for documentation on how to create a plugin
 //
-var BTCAddress  = require('bitcore').Address;
-var Address  = require('./address').Address;
-var outbound = require('./outbound');
-var DSN      = require('./dsn');
-var _        = require('underscore');
-var url      = require('url');
-var mimelib  = require("mimelib");
-var request  = require("request");
+var BTCAddress = require('bitcore').Address;
+var Address    = require('./address').Address;
+var outbound   = require('./outbound');
+var DSN        = require('./dsn');
+var _          = require('underscore');
+var url        = require('url');
+var mimelib    = require("mimelib");
+var request    = require("request");
 
 exports.hook_init_master = function(next) {
     this.invoices = {};
@@ -47,11 +47,13 @@ exports.fetchBTCRates = function(next){
 exports.on_check_bitcoin_payment = function (){
     var plugin = this;
     
-    var invoice = plugin.btcInvoices.pop();
+    var invoice = plugin.btcInvoices[0];
     var next = function(pushBack){
-        if(pushBack)
-            plugin.btcInvoices.push(invoice);
-        setTimeout(plugin.on_check_bitcoin_payment.bind(plugin), server.notes.config.check_time * 1000);
+        invoice = plugin.btcInvoices.shift();
+        if(pushBack && invoices) 
+            plugin.btcInvoices.push(invoice); 
+
+        setTimeout(plugin.on_check_bitcoin_payment.bind(plugin), server.notes.config.check_time * 5000);
     }
     if(!invoice){
         next();
@@ -72,8 +74,10 @@ exports.on_check_bitcoin_payment = function (){
                 plugin.logerror("error fetching txs for " + address + " : " + error);
                 return;
             } 
-            for(var i = 0, len = body.length; i < len; i++){
-                var tx = body[i];
+            //TODO: paging
+            //plugin.loginfo("got transactions ", JSON.stringify(body, null, "  "));
+            for(var i = 0, len = body.items.length; i < len; i++){
+                var tx = body.items[i];
                 if(!tx || !tx.vout) continue;
                 var received = 0;
                 for(var j = 0, jlen = tx.vout.length; j < jlen; j++){
@@ -85,9 +89,12 @@ exports.on_check_bitcoin_payment = function (){
                     }
                 }
                 if(Math.abs(received - invoice.btc.amount) < 0.00000001){
+                    //TODO: check number of confirmations
                     plugin.loginfo("found tx", tx);
-                    //TODO: next(false);
-                    next(true);
+                    server.notes.invoices.update({_id : invoice._id}, {$set : {status: "paid"}}, 
+                                                 function(err, result){
+                                                     next();
+                                                 });
                     return;
                 }
             }
@@ -221,7 +228,7 @@ exports.hook_data_post = function(next, connection) {
 }
 
 
-exports.delay = function(hmail){
+exports.delay = function(hmail) {
     var plugin = this;
     var notes = hmail.todo.notes;
     var invoiceStatus = plugin.invoices[notes.invoiceId];
@@ -330,9 +337,9 @@ exports.send_invoice = function(from, to, notes) {
     var params = _.extend({email: email}, notes);
     var services = notes.user.services;
     var template = "invoice.template";
-    if(!services.stripe || !services.stripe.stripe_publishable_key) {
+    /*if(!services.stripe || !services.stripe.stripe_publishable_key ) {
         template = "invoice_charity.template";
-    }
+    }*/
     plugin.lognotice("send invoice to " + to + " with template " + template);
     this.send_email_template(from, to , template, params);
 }

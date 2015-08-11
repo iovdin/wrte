@@ -79,7 +79,7 @@
             <h3><input type="radio" id="radio_btc" name="sendto" value="btc" {{btcChecked}}>
                 <label for="radio_btc" class="radio"> </label>
 
-            <div class="input input-{{btcAddressValidateStatus}}" id="btcAddress" contenteditable="true" data-ph="bitconin address" spellcheck="false"></div>
+            <div class="input input-{{btcAddressValidateStatus}}" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false"></div>
             <div class="error error-{{btcAddressValidateStatus}}" id="btcError">
                 <img src="/img/icon_error.png" class="error_icon">
                 {{#case btcAddressValidateStatus='btc_address_invalid'}}
