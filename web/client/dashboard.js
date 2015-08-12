@@ -26,13 +26,6 @@ Router.route('/dashboard/settings', function(){
         authCode.set(code);
         Router.go("/dashboard/settings");
     }
-    if(!sendTo.get()){
-        if(authCode.get() || _.get(user, "services.stripe.stripe_publishable_key")){
-            sendTo.set("stripe");
-        } else {
-            sendTo.set("watsi");
-        }
-    }
     this.render("dashboard_settings");
 });
 var getAmount = function() {
@@ -45,8 +38,8 @@ var getAmount = function() {
 }
 
 var amount = new ReactiveVar();
-var sendTo = new ReactiveVar();
 var authCode = new ReactiveVar();
+var btcAddress = new ReactiveVar("");
 
 
 Template.dashboard_settings.rendered = function(){
@@ -61,17 +54,6 @@ Template.dashboard_settings.helpers({
         var user = Meteor.user();
         return _.get(user, "emails.0.address"); 
     },
-    cardFee : cardFee(getAmount),
-    bitcoinFee : bitcoinFee(getAmount),
-    watsiChecked : function(){
-        return (sendTo.get() == 'watsi') ? "checked" : "";
-    },
-    stripeChecked : function(){
-        return (sendTo.get() == 'stripe') ? "checked" : "";
-    },
-    stripeUrl : function(){
-        return stripeAuthUrl("dashboard/settings");
-    },
     authCode : function(){
         return authCode.get();
     },
@@ -83,6 +65,9 @@ Template.dashboard_settings.helpers({
     },
     notverified : function(){
         return !_.get(Meteor.user(), "emails.0.verified");
+    },
+    btcAddress : function(){
+        return _.get(Meteor.user(), "services.btc.address");
     }
 });
 
@@ -122,12 +107,10 @@ Template.dashboard_settings.events({
         console.log("change amount", value);
         amount.set(value);
     }),
-    'change input:radio[name=sendto]:checked' : function(e){
-        var value = e.currentTarget.value;
-        sendTo.set(value);
-        if(value == 'watsi') {
-            authCode.set("");
-        }
+    "input #btcAddress" : function(event){
+        btcAddress.set(event.currentTarget.textContent);
+        console.log("input change", btcAddress.get());
+        validateBtcAddress(btcAddress.get());
     },
     'click button' : function(e){
         //save
@@ -138,8 +121,8 @@ Template.dashboard_settings.events({
             console.log("amount changed");
             options.amount = amount.get();
         }
-        options.sendTo = sendTo.get();
         options.authCode = authCode.get();
+        options.btcAddress = btcAddress.get()
 
         loading.set(true);
         Meteor.call("changeUser", options, function(err, result){

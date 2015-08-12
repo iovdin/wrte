@@ -102,7 +102,7 @@ var getAmount = function() {
 var btcAddress = new ReactiveVar("");
 
 Template.signup_sendmoney.helpers({
-    watsiChecked : function(){
+    /*watsiChecked : function(){
         return (sendTo.get() == 'watsi') ? "checked" : "";
     },
     stripeChecked : function(){
@@ -115,7 +115,7 @@ Template.signup_sendmoney.helpers({
     bitcoinFee : bitcoinFee(getAmount),
     stripeUrl : function(){
         return stripeAuthUrl("signup/sendmoney");
-    },
+    },*/
     authCode : function(){
         return authCode.get();
     },
@@ -158,13 +158,13 @@ Template.signup_sendmoney.events({
             Router.go('/signup/done');
         });
     },
-    'change input:radio[name=sendto]:checked' : function(e){
+    /*'change input:radio[name=sendto]:checked' : function(e){
         var value = e.currentTarget.value;
         sendTo.set(value);
         if(value == 'watsi') {
             authCode.set("");
         }
-    },
+    },*/
     "input #btcAddress" : function(event){
         btcAddress.set(event.currentTarget.textContent);
         console.log("input change", btcAddress.get());

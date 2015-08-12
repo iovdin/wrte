@@ -1,6 +1,6 @@
-stripeTest = false;
+stripeTest = (Meteor.absoluteUrl().indexOf("http://localhost") == 0);
 //FIXME:
-btcTest = false; 
+btcTest = (Meteor.absoluteUrl().indexOf("http://localhost") == 0); 
 stripeUrl = "https://connect.stripe.com";
 
 invoices = new Mongo.Collection("Invoice");

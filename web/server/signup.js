@@ -112,14 +112,16 @@ Meteor.methods({
                 return amountCheckStatus;
             }
         }
-        if(options.sendTo == "btc") {
-            var btcCheckStatus = isBtcAddressValid(options.btcAddress);
-            if(btcCheckStatus != "btc_address_valid") {
-                throw new Meteor.Error(btcCheckStatus);
-                return btcCheckStatus;
-            }
+        /*if(options.sendTo == "btc") {
+        }*/
+        var btcCheckStatus = isBtcAddressValid(options.btcAddress);
+        if(btcCheckStatus != "btc_address_valid") {
+            throw new Meteor.Error(btcCheckStatus);
+            return btcCheckStatus;
         }
-        if(options.sendTo){
+
+        params["services.btc"] = { address : options.btcAddress };
+        /*if(options.sendTo){
             params["services.stripe"] = {};
             params["services.btc"] = {};
             switch(options.sendTo) {
@@ -139,7 +141,7 @@ Meteor.methods({
                 default:
                     throw new Meteor.Error("wrong_payment", "Payment method not specified");
             }
-        }
+        }*/
         Meteor.users.update({_id : Meteor.userId()}, {$set : params});
         return;
     },

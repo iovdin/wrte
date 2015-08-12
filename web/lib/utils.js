@@ -17,8 +17,8 @@ _.mixin({
 });
 
 
-minAmount = 0.99;
-maxAmount = 1000;
+minAmount = 0.02;
+maxAmount = 20;
 
 isAmountValid = function(price){
     if(!_.isNumber(price) || _.isNaN(price))

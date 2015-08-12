@@ -46,8 +46,8 @@
             </div>
         </h2>
         <br>
-        <div class="fee white">Fee <img src="/img/icon_card_white.png" style="width: 25px"> {{cardFee}} USD <img src="/img/icon_bitcoin_white.png"  style="width: 20px"> {{bitcoinFee}} USD</div>
-        <span style="display: block; height:30px"></span>
+        <!--<div class="fee white">Fee <img src="/img/icon_card_white.png" style="width: 25px"> {{cardFee}} USD <img src="/img/icon_bitcoin_white.png"  style="width: 20px"> {{bitcoinFee}} USD</div>-->
+        <!--<span style="display: block; height:30px"></span>-->
         <!--<div>{{errorMessage}}</div>-->
         <button>Create account</button>
     </div>
@@ -57,36 +57,16 @@
     <div style="line-height: 1.4" class="content align_center">
         <h1>Transfer money to</h1>
         <div style="margin: auto; width: 300px; line-height: 1.4" class="align_left">
-            <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe" {{stripeChecked}}><label for="radio_stripe" class="radio"> </label> your Stripe account</h3>
-            <div class="margin-left-24px">
-                <div class="fee white">Fee <img src="/img/icon_card_white.png" style="width: 25px"> {{cardFee}} USD <img src="/img/icon_bitcoin_white.png"  style="width: 24px"> {{bitcoinFee}} USD</div>
-                {{#if stripeChecked}}
-                    {{#if authCode}}
-                        <img src="/img/icon_done_20px_white.png" style="width:20px; margin: 10px 5px -6px 0px;"> Authorized
-                    {{else}}
-                        <a href="{{stripeUrl}}" class="stripe-connect light-blue" style="margin-top: 10px; margin-bottom: 10px; "><span>Connect with Stripe</span></a>
-                    {{/if}}
-                    {{#case lastError='empty_code'}}
-                    <div class="error visible">
-                        <img src="/img/icon_error.png" class="error_icon">
-                        please authorize access<br>to your stripe account
-                    </div>
+            <h3>
+                <div class="input input-{{btcAddressValidateStatus}}" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false"></div>
+                <div class="error error-{{btcAddressValidateStatus}}" id="btcError">
+                    <img src="/img/icon_error.png" class="error_icon">
+                    {{#case btcAddressValidateStatus='btc_address_invalid'}}
+                    Address is not valid
                     {{/case}}
-                {{/if}}
-                <br>
-            </div>
-            <h3><input type="radio" id="radio_watsi" name="sendto" value="watsi" {{watsiChecked}}><label for="radio_watsi" class="radio"> </label> <a href="http://watsi.org">Watsi</a> (Charity)</h3>
-            <h3><input type="radio" id="radio_btc" name="sendto" value="btc" {{btcChecked}}>
-                <label for="radio_btc" class="radio"> </label>
+                </div>
+            </h3>
 
-            <div class="input input-{{btcAddressValidateStatus}}" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false"></div>
-            <div class="error error-{{btcAddressValidateStatus}}" id="btcError">
-                <img src="/img/icon_error.png" class="error_icon">
-                {{#case btcAddressValidateStatus='btc_address_invalid'}}
-                Address is not valid
-                {{/case}}
-            </div>
-                </h3>
         </div>
         <br>
         {{#case lastError='not_authorized'}}

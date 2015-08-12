@@ -61,6 +61,16 @@
         </div>
         <br></h3><br>
         send money to<br>
+<h3>
+    <div class="input input-{{btcAddressValidateStatus}}" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false">{{btcAddress}}</div>
+                <div class="error error-{{btcAddressValidateStatus}}" id="btcError">
+                    <img src="/img/icon_error.png" class="error_icon">
+                    {{#case btcAddressValidateStatus='btc_address_invalid'}}
+                    Address is not valid
+                    {{/case}}
+                </div>
+            </h3>
+        <!--
         <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe" {{stripeChecked}}><label for="radio_stripe" class="radio"></label> your Stripe account</h3>
         <div class="margin-left-24px">
             <div class="fee">Fee <img src="/img/icon_card.png" style="width: 25px"> {{cardFee}} USD <img src="/img/icon_bitcoin.png"  style="width: 20px"> {{bitcoinFee}} USD</div>
@@ -82,7 +92,7 @@
         <h3>
             <input type="radio" id="radio_watsi" name="sendto" value="watsi" {{watsiChecked}}><label for="radio_watsi" class="radio"> </label> 
             <a href="http://watsi.org">Watsi</a> (Charity)
-        </h3>
+        </h3> -->
         {{#if loading}}
         saving ...
         {{/if}}
