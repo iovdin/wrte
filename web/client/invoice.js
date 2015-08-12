@@ -16,7 +16,7 @@ var invoiceRoute = function () {
     var invoice = null;
 
     if(invoiceId == 'test'){
-        invoice = { subject : "Hello World", status : "opened", to : "to@test.com", from : "from@test.com", "amount" : 1, currency : "usd" };
+        invoice = { subject : "Hello World", status : "opened", to : "to@test.com", from : "from@test.com", "amount" : 1, currency : "usd", btc : {address: "mt8iAU3pLCpfxzXDCfhY98Tqcc7KWVMKWC", amount : 0.01 } };
     }else {
         this.wait(Meteor.subscribe('invoice', invoiceId));
         if (!this.ready()) {
@@ -40,7 +40,7 @@ var invoiceRoute = function () {
 
     if(status == "opened"){
         if(!invoice.btc) {
-            stripeHandler = StripeCheckout.configure({
+            /*stripeHandler = StripeCheckout.configure({
                 key: invoice.stripePublishableKey || stripePubKey,
                 token: function(token) {
                     Meteor.call('invoice_charge', invoiceId, token.id, function(err, result){
@@ -60,7 +60,7 @@ var invoiceRoute = function () {
                 amount: invoice.amount * 100, 
                 bitcoin : true,
                 email : invoice.from,
-            });
+            });*/
         }
     } else if(stripeHandler){
         stripeHandler.close();
