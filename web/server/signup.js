@@ -136,7 +136,7 @@ Meteor.methods({
                     params["services.stripe"] = stripeGetToken(options.authCode);
                     break;
                 case "btc":
-                    params["services.btc"] = {address : options.btcAddress};
+                    params["services.btc"] = { address : options.btcAddress };
                     break;
                 default:
                     throw new Meteor.Error("wrong_payment", "Payment method not specified");
@@ -148,5 +148,41 @@ Meteor.methods({
     is_alias_taken : isAliasTaken,
     is_email_taken : isEmailTaken,
     is_amount_valid : isAmountValid,
-    is_btc_address_valid : isBtcAddressValid
+    is_btc_address_valid : isBtcAddressValid,
+    getWalletAddress : function(code, redirectUrl) {
+        var params = {
+            grant_type: "authorization_code",
+            code : code,
+            client_id: Meteor.settings.public.coinbase.clientId,
+            client_secret: Meteor.settings.coinbase.clientSecret,
+            redirect_uri: Meteor.absoluteUrl(redirectUrl, {secure : true})  
+        }
+        console.log("0");
+        var authData = HTTP.post("https://api.coinbase.com/oauth/token", { params: params });
+        var authHeaders = {
+            "Authorization": "Bearer " + authData.data.access_token, 
+            "CB-VERSION": "2015-08-15" 
+        };
+        console.log("1");
+        var result = HTTP.get("https://api.coinbase.com/v2/accounts", { headers : authHeaders });
+        var account;
+        for(var i = 0; i< result.data.data.length; i++){
+            var acc = result.data.data[i];
+            if(acc.primary && acc.currency == "BTC" && acc.type == "wallet") {
+                account = acc.id;
+                //console.log("get account", acc);
+                break;
+            }
+        }
+        if(!account) {
+            throw new Meteor.Error("account_notfound", "No account found");
+        }
+        var url = "https://api.coinbase.com/v2/accounts/" + account + "/addresses";
+        //console.log("address url", url);
+        console.log("2");
+        result = HTTP.post(url, { headers : authHeaders, params : { name : "wrte.io" }});
+
+        console.log("3");
+        return result.data.data.address;
+    }
 });

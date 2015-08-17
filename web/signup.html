@@ -58,7 +58,7 @@
         <h1>Transfer money to</h1>
         <div style="margin: auto; width: 300px; line-height: 1.4" class="align_left">
             <h3>
-                <div class="input input-{{btcAddressValidateStatus}}" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false"></div>
+                <div class="input input-{{btcAddressValidateStatus}}" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false">{{btcAddress}}</div>
                 <div class="error error-{{btcAddressValidateStatus}}" id="btcError">
                     <img src="/img/icon_error.png" class="error_icon">
                     {{#case btcAddressValidateStatus='btc_address_invalid'}}
@@ -66,6 +66,11 @@
                     {{/case}}
                 </div>
             </h3>
+            <button id="coinbase">
+                {{#if gettingAddress }}
+                <i class="fa fa-spinner fa-spin"></i>
+                {{/if}}
+                Coinbase</button>
 
         </div>
         <br>

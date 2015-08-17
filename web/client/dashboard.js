@@ -23,7 +23,16 @@ Router.route('/dashboard/settings', function(){
     var user = Meteor.user();
     var code = this.params.query.code;
     if(code) {
-        authCode.set(code);
+        gettingAddress.set(true);
+
+        Meteor.call("getWalletAddress", code, "dashboard/settings", function(err, result){
+            console.log("getWalletAddress", err, result);
+            gettingAddress.set(false);
+            if(result) {
+                btcAddress.set(result);
+                validateBtcAddress(result);
+            }
+        });
         Router.go("/dashboard/settings");
     }
     this.render("dashboard_settings");
@@ -40,6 +49,7 @@ var getAmount = function() {
 var amount = new ReactiveVar();
 var authCode = new ReactiveVar();
 var btcAddress = new ReactiveVar("");
+var gettingAddress = new ReactiveVar(false);
 
 
 Template.dashboard_settings.rendered = function(){
@@ -54,7 +64,7 @@ Template.dashboard_settings.helpers({
         var user = Meteor.user();
         return _.get(user, "emails.0.address"); 
     },
-    authCode : function(){
+    authCode : function() {
         return authCode.get();
     },
     active : function(){
@@ -66,8 +76,12 @@ Template.dashboard_settings.helpers({
     notverified : function(){
         return !_.get(Meteor.user(), "emails.0.verified");
     },
-    btcAddress : function(){
-        return _.get(Meteor.user(), "services.btc.address");
+    btcAddress : function() {
+        return _.get(Meteor.user(), "services.btc.address") || btcAddress.get();
+    },
+    gettingAddress : function(){
+        return gettingAddress.get();
+
     }
 });
 
@@ -112,7 +126,10 @@ Template.dashboard_settings.events({
         console.log("input change", btcAddress.get());
         validateBtcAddress(btcAddress.get());
     },
-    'click button' : function(e){
+    'click #coinbase' : function(e) {
+        location.href = coinbaseAuthUrl("dashboard/settings");
+    },
+    'click #save' : function(e){
         //save
         console.log("save");
         e.preventDefault();
@@ -121,7 +138,7 @@ Template.dashboard_settings.events({
             console.log("amount changed");
             options.amount = amount.get();
         }
-        options.authCode = authCode.get();
+        //options.authCode = authCode.get();
         options.btcAddress = btcAddress.get()
 
         loading.set(true);

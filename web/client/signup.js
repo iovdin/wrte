@@ -87,8 +87,6 @@ var amount = new ReactiveVar();
 var alias = new ReactiveVar("");
 var email = new ReactiveVar("");
 
-var sendTo = new ReactiveVar();
-var authCode = new ReactiveVar();
 
 var getAmount = function() {
     if(amount.get())
@@ -100,8 +98,16 @@ var getAmount = function() {
 }
 
 var btcAddress = new ReactiveVar("");
+var gettingAddress = new ReactiveVar(false);
 
 Template.signup_sendmoney.helpers({
+    btcAddress : function(){
+        return btcAddress.get();
+    },
+    gettingAddress : function(){
+        return gettingAddress.get();
+
+    }
     /*watsiChecked : function(){
         return (sendTo.get() == 'watsi') ? "checked" : "";
     },
@@ -115,18 +121,21 @@ Template.signup_sendmoney.helpers({
     bitcoinFee : bitcoinFee(getAmount),
     stripeUrl : function(){
         return stripeAuthUrl("signup/sendmoney");
-    },*/
+    },
     authCode : function(){
         return authCode.get();
-    },
+    },*/
 
 });
 
 Template.signup_sendmoney.events({
+    'click #coinbase' : function(e) {
+        location.href = coinbaseAuthUrl("signup/sendmoney");
+    },
     'click #btn_complete' : function(e){
         e.preventDefault();
         loading.set(true);
-        Meteor.call("changeUser", { sendTo : sendTo.get(), authCode : authCode.get(), btcAddress : btcAddress.get() }, function(err, result){
+        Meteor.call("changeUser", { btcAddress : btcAddress.get() }, function(err, result){
             loading.set(false);
             if (err){
                 var e = err.error;
@@ -136,8 +145,6 @@ Template.signup_sendmoney.events({
                 } 
                 return;
             }
-            authCode.set();
-            sendTo.set();
             if(err){
                 lastError.set(err.error);
                 return;
@@ -184,32 +191,46 @@ Template.signup_done_not_verified.events({
 loading = new ReactiveVar(false);
 Router.route('/signup', function(){
     this.render("signup");
-})
+});
+
 Router.route('/signup/done', function(){
     this.render("signup_done_loggedin");
 });
+
 Router.route('/signup/done-not-authorized', function(){
     this.render("signup_done_not_authorized");
 });
+
 Router.route('/signup/done-not-verified', function(){
     this.render("signup_done_not_verified");
 });
+
 Router.route('/signup/sendmoney', function(){
     this.wait(Meteor.subscribe('me'));
     if(this.ready()){
         var user = Meteor.user();
         var code = this.params.query.code;
         if(code) {
-            authCode.set(code);
+            gettingAddress.set(true);
+            //authCode.set(code);
             Router.go("/signup/sendmoney");
+
+            Meteor.call("getWalletAddress", code, "signup/sendmoney", function(err, result){
+                console.log("getWalletAddress", err, result);
+                gettingAddress.set(false);
+                if(result){
+                    btcAddress.set(result);
+                    validateBtcAddress(result);
+                }
+            });
         }
-        if(!sendTo.get()){
+        /*if(!sendTo.get()){
             if(authCode.get() || _.get(user, "services.stripe.stripe_publishable_key")){
                 sendTo.set("stripe");
             } else {
                 sendTo.set("watsi");
             }
-        }
+        }*/
     }
     this.render("signup_sendmoney");
 });

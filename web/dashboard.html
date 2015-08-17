@@ -69,6 +69,12 @@
                     Address is not valid
                     {{/case}}
                 </div>
+
+            <button id="coinbase">
+                {{#if gettingAddress }}
+                <i class="fa fa-spinner fa-spin"></i>
+                {{/if}}
+                Coinbase</button>
             </h3>
         <!--
         <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe" {{stripeChecked}}><label for="radio_stripe" class="radio"></label> your Stripe account</h3>
@@ -97,7 +103,7 @@
         saving ...
         {{/if}}
         
-        <button> Save </button>
+        <button id="save"> Save </button>
     </div>
 </template>
     
