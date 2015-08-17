@@ -61,21 +61,24 @@
         </div>
         <br></h3><br>
         send money to<br>
-<h3>
-    <div class="input input-{{btcAddressValidateStatus}}" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false">{{btcAddress}}</div>
-                <div class="error error-{{btcAddressValidateStatus}}" id="btcError">
-                    <img src="/img/icon_error.png" class="error_icon">
-                    {{#case btcAddressValidateStatus='btc_address_invalid'}}
-                    Address is not valid
-                    {{/case}}
-                </div>
+        <h3>
+            <input type="radio" id="radio_stripe" name="sendto" value="bitcoin" {{btcChecked}}><label for="radio_stripe" class="radio"> </label>
+            <div class="input input-{{btcAddressValidateStatus}}" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false">{{btcAddress}}</div>
+            <div class="error error-{{btcAddressValidateStatus}}" id="btcError">
+                <img src="/img/icon_error.png" class="error_icon">
+                {{#case btcAddressValidateStatus='btc_address_invalid'}}
+                Address is not valid
+                {{/case}}
+            </div>
 
             <button id="coinbase">
                 {{#if gettingAddress }}
                 <i class="fa fa-spinner fa-spin"></i>
                 {{/if}}
                 Coinbase</button>
-            </h3>
+        </h3>
+
+        <h3><input type="radio" id="radio_watsi" name="sendto" value="watsi" {{watsiChecked}}><label for="radio_watsi" class="radio"> </label> <a href="http://watsi.org">Watsi</a> (Charity)</h3>
         <!--
         <h3><input type="radio" id="radio_stripe" name="sendto" value="stripe" {{stripeChecked}}><label for="radio_stripe" class="radio"></label> your Stripe account</h3>
         <div class="margin-left-24px">

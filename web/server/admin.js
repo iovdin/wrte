@@ -47,7 +47,7 @@ Meteor.startup(function () {
         if(["ilya", "ivan"].indexOf(user.username) < 0) {
             return [];
         }
-        return Meteor.users.find({}, {sort : {createdAt : -1}, fields : { username : 1, active : 1, amount : 1, "emails" : 1, "services.stripe" : 1, "services.email.numSent" : 1, createdAt : 1}});
+        return Meteor.users.find({}, {sort : {createdAt : -1}, fields : { username : 1, active : 1, amount : 1, "emails" : 1, "services.stripe" : 1, "services.email.numSent" : 1, "services.btc" : 1, createdAt : 1}});
     });
 
     Meteor.publish("admin_invoices", function(){

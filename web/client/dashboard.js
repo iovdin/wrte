@@ -9,6 +9,8 @@ Router.onBeforeAction(function(){
     }
     this.next();
 });
+var sendTo = new ReactiveVar("watsi");
+
 Router.route('/dashboard', function(){
     Router.go("/dashboard/settings");
 });
@@ -27,11 +29,11 @@ Router.route('/dashboard/settings', function(){
 
         Meteor.call("getWalletAddress", code, "dashboard/settings", function(err, result){
             console.log("getWalletAddress", err, result);
-            gettingAddress.set(false);
             if(result) {
                 btcAddress.set(result);
                 validateBtcAddress(result);
             }
+            gettingAddress.set(false);
         });
         Router.go("/dashboard/settings");
     }
@@ -77,12 +79,23 @@ Template.dashboard_settings.helpers({
         return !_.get(Meteor.user(), "emails.0.verified");
     },
     btcAddress : function() {
-        return _.get(Meteor.user(), "services.btc.address") || btcAddress.get();
+        var result = btcAddress.get() || _.get(Meteor.user(), "services.btc.address"); 
+        if(result == Meteor.settings.public.watsiAddress) return "";
+        return result;
     },
     gettingAddress : function(){
         return gettingAddress.get();
 
-    }
+    },
+    watsiChecked : function(){
+        if(gettingAddress.get()) return "";
+        return (sendTo.get() == 'watsi' || btcAddress.get() == Meteor.settings.public.watsiAddress ) ? "checked" : "";
+    },
+    btcChecked : function(){
+        if(gettingAddress.get()) return "checked";
+        return (sendTo.get() == 'btc' && btcAddress.get() != Meteor.settings.public.watsiAddress) ? "checked" : "";
+    },
+
 });
 
 Router.route('/dashboard/transactions', function() {

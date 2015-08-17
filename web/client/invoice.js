@@ -38,7 +38,7 @@ var invoiceRoute = function () {
     }
     this.render('invoice_' + status, { data : data });
 
-    if(status == "opened"){
+    if(status == "opened") {
         if(!invoice.btc) {
             /*stripeHandler = StripeCheckout.configure({
                 key: invoice.stripePublishableKey || stripePubKey,

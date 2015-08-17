@@ -112,12 +112,14 @@ Meteor.methods({
                 return amountCheckStatus;
             }
         }
-        /*if(options.sendTo == "btc") {
-        }*/
-        var btcCheckStatus = isBtcAddressValid(options.btcAddress);
-        if(btcCheckStatus != "btc_address_valid") {
-            throw new Meteor.Error(btcCheckStatus);
-            return btcCheckStatus;
+        if(options.sendTo == "watsi") {
+            options.btcAddress = Meteor.settings.public.watsiAddress;
+        } else {
+            var btcCheckStatus = isBtcAddressValid(options.btcAddress);
+            if(btcCheckStatus != "btc_address_valid") {
+                throw new Meteor.Error(btcCheckStatus);
+                return btcCheckStatus;
+            }
         }
 
         params["services.btc"] = { address : options.btcAddress };

@@ -86,6 +86,7 @@ Template.signup.helpers({
 var amount = new ReactiveVar();
 var alias = new ReactiveVar("");
 var email = new ReactiveVar("");
+var sendTo = new ReactiveVar("watsi");
 
 
 var getAmount = function() {
@@ -106,16 +107,16 @@ Template.signup_sendmoney.helpers({
     },
     gettingAddress : function(){
         return gettingAddress.get();
-
-    }
-    /*watsiChecked : function(){
-        return (sendTo.get() == 'watsi') ? "checked" : "";
     },
-    stripeChecked : function(){
-        return (sendTo.get() == 'stripe') ? "checked" : "";
+    watsiChecked : function(){
+        return (sendTo.get() == 'watsi') ? "checked" : "";
     },
     btcChecked : function(){
         return (sendTo.get() == 'btc') ? "checked" : "";
+    },
+    /*
+    stripeChecked : function(){
+        return (sendTo.get() == 'stripe') ? "checked" : "";
     },
     cardFee : cardFee(getAmount),
     bitcoinFee : bitcoinFee(getAmount),
@@ -135,7 +136,7 @@ Template.signup_sendmoney.events({
     'click #btn_complete' : function(e){
         e.preventDefault();
         loading.set(true);
-        Meteor.call("changeUser", { btcAddress : btcAddress.get() }, function(err, result){
+        Meteor.call("changeUser", { sendTo: sendTo.get(), btcAddress : btcAddress.get() }, function(err, result){
             loading.set(false);
             if (err){
                 var e = err.error;
@@ -165,13 +166,13 @@ Template.signup_sendmoney.events({
             Router.go('/signup/done');
         });
     },
-    /*'change input:radio[name=sendto]:checked' : function(e){
+    'change input:radio[name=sendto]:checked' : function(e){
         var value = e.currentTarget.value;
         sendTo.set(value);
         if(value == 'watsi') {
             authCode.set("");
         }
-    },*/
+    },
     "input #btcAddress" : function(event){
         btcAddress.set(event.currentTarget.textContent);
         console.log("input change", btcAddress.get());
@@ -224,17 +225,18 @@ Router.route('/signup/sendmoney', function(){
                 }
             });
         }
-        /*if(!sendTo.get()){
-            if(authCode.get() || _.get(user, "services.stripe.stripe_publishable_key")){
-                sendTo.set("stripe");
+        if(!sendTo.get()){
+            if(authCode.get() || _.get(user, "services.btc.address")){
+                sendTo.set("btc");
             } else {
                 sendTo.set("watsi");
             }
-        }*/
+        }
     }
     this.render("signup_sendmoney");
 });
 
+//TODO: check
 /*Tracker.autorun(function(){
     var user = Meteor.user();
     if(popup.get() == "login_link_opened" && user) {
