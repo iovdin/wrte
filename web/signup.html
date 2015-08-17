@@ -56,22 +56,22 @@
 <template name="signup_sendmoney">
     <div style="line-height: 1.4" class="content align_center">
         <h1>Transfer money to</h1>
-        <div style="margin: auto; width: 300px; line-height: 1.4" class="align_left">
+        <div style="margin: auto; width: 450px; line-height: 1.4" class="align_left">
             <h3>
             <input type="radio" id="radio_stripe" name="sendto" value="bitcoin" {{btcChecked}}><label for="radio_stripe" class="radio"> </label>
-                <div class="input input-{{btcAddressValidateStatus}}" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false">{{btcAddress}}</div>
-                <div class="error error-{{btcAddressValidateStatus}}" id="btcError">
-                    <img src="/img/icon_error.png" class="error_icon">
-                    {{#case btcAddressValidateStatus='btc_address_invalid'}}
-                    Address is not valid
-                    {{/case}}
-                </div>
-
-            <button id="coinbase">
+            <div class="input input-{{btcAddressValidateStatus}} f20" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false">{{btcAddress}}</div>
+            <div class="error error-{{btcAddressValidateStatus}}" id="btcError">
+                <img src="/img/icon_error.png" class="error_icon">
+                {{#case btcAddressValidateStatus='btc_address_invalid'}}
+                Address is not valid
+                {{/case}}
+            </div>
+            <button id="coinbase" class="second">
                 {{#if gettingAddress }}
                 <i class="fa fa-spinner fa-spin"></i>
                 {{/if}}
-                get one from Coinbase</button>
+                Get one from Coinbase
+            </button>
             </h3>
 
             <h3><input type="radio" id="radio_watsi" name="sendto" value="watsi" {{watsiChecked}}><label for="radio_watsi" class="radio"> </label> <a href="http://watsi.org">Watsi</a> (Charity)</h3>
