@@ -64,8 +64,12 @@
 <template name='invoice_opened'>
     <!--TODO: this is shown while opening payment form, and when the form is submitted but now yet proceeded -->
     {{#if btc}}
-    Pay {{amount}} {{currency}} ({{btc.amount}} BTC) to send email "{{subject}}" to "{{to}}"
+    <h3 style="text-align: center">
+        Pay {{amount}} {{currency}} ({{btc.amount}} BTC) to send email<br> "{{subject}}" to "{{to}}"
+    </h3>
+    <br>
     <div id="qrcode"></div>
+    <br>
     <a href="{{btc.uri}}">{{btc.address}}</a>
     {{else}}
     <h3>loading...</h3>
