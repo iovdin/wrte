@@ -122,6 +122,7 @@ Meteor.methods({
             }
         }
 
+
         params["services.btc"] = { address : options.btcAddress };
         /*if(options.sendTo){
             params["services.stripe"] = {};
@@ -159,13 +160,11 @@ Meteor.methods({
             client_secret: Meteor.settings.coinbase.clientSecret,
             redirect_uri: Meteor.absoluteUrl(redirectUrl, {secure : true})  
         }
-        console.log("0");
         var authData = HTTP.post("https://api.coinbase.com/oauth/token", { params: params });
         var authHeaders = {
             "Authorization": "Bearer " + authData.data.access_token, 
             "CB-VERSION": "2015-08-15" 
         };
-        console.log("1");
         var result = HTTP.get("https://api.coinbase.com/v2/accounts", { headers : authHeaders });
         var account;
         for(var i = 0; i< result.data.data.length; i++){
@@ -181,10 +180,8 @@ Meteor.methods({
         }
         var url = "https://api.coinbase.com/v2/accounts/" + account + "/addresses";
         //console.log("address url", url);
-        console.log("2");
         result = HTTP.post(url, { headers : authHeaders, params : { name : "wrte.io" }});
 
-        console.log("3");
         return result.data.data.address;
     }
 });

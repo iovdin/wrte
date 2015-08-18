@@ -35,7 +35,7 @@ Template.signup.events({
     },
     "click button" : function(event, template){
         event.preventDefault();
-        console.log("signup", amount.get());
+        //console.log("signup", amount.get());
 
         Meteor.call("signup", alias.get(), email.get(), amount.get() || minAmount, function(error, token){
             if (error){
@@ -60,7 +60,7 @@ Template.signup.events({
                 Router.go("/signup/sendmoney")
             });
             registredEmail.set(alias.get()+"@wrte.io")
-                resetValidators();
+            resetValidators();
             //subscribeStatus.set("signup_done");
         });
     },
@@ -77,11 +77,11 @@ var getAmount1 = function() {
     return minAmount
 }
 
-Template.signup.helpers({
+/*Template.signup.helpers({
     cardFee : cardFee(getAmount1),
     bitcoinFee : bitcoinFee(getAmount1),
 
-});
+});*/
 
 var amount = new ReactiveVar();
 var alias = new ReactiveVar("");
@@ -101,11 +101,31 @@ var getAmount = function() {
 var btcAddress = new ReactiveVar("");
 var gettingAddress = new ReactiveVar(false);
 
+Template.signup_sendmoney.rendered = function(){
+    this.$("#btcAddress").text(btcAddress.get());
+    var self = this;
+    if(code) {
+        gettingAddress.set(true);
+        sendTo.set("btc");
+        Meteor.call("getWalletAddress", code, "signup/sendmoney", function(err, result){
+            console.log("getWalletAddress", err, result);
+            gettingAddress.set(false);
+            if(result){
+                btcAddress.set(result);
+                self.$("#btcAddress").text(btcAddress.get());
+                validateBtcAddress(result);
+            } else {
+                sendTo.set("watsi");
+            }
+            code = undefined;
+            Router.go("/signup/sendmoney");
+        });
+    }
+};
+
 Template.signup_sendmoney.helpers({
-    btcAddress : function(){
-        return btcAddress.get();
-    },
     gettingAddress : function(){
+        var rerender = btcAddress.get();
         return gettingAddress.get();
     },
     watsiChecked : function(){
@@ -155,6 +175,8 @@ Template.signup_sendmoney.events({
 
             var verified = _.get(user, "emails.0.verified");
             var active = user.active;
+            btcAddress.set("");
+            sendTo.set("watsi")
             if(!active) {
                 Router.go('/signup/done-not-authorized');
                 return;
@@ -206,25 +228,12 @@ Router.route('/signup/done-not-verified', function(){
     this.render("signup_done_not_verified");
 });
 
+var code;
 Router.route('/signup/sendmoney', function(){
     this.wait(Meteor.subscribe('me'));
+    code = code || this.params.query.code;
     if(this.ready()){
         var user = Meteor.user();
-        var code = this.params.query.code;
-        if(code) {
-            gettingAddress.set(true);
-            //authCode.set(code);
-            Router.go("/signup/sendmoney");
-
-            Meteor.call("getWalletAddress", code, "signup/sendmoney", function(err, result){
-                console.log("getWalletAddress", err, result);
-                gettingAddress.set(false);
-                if(result){
-                    btcAddress.set(result);
-                    validateBtcAddress(result);
-                }
-            });
-        }
         if(!sendTo.get()){
             if(authCode.get() || _.get(user, "services.btc.address")){
                 sendTo.set("btc");

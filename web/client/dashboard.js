@@ -15,28 +15,16 @@ Router.route('/dashboard', function(){
     Router.go("/dashboard/settings");
 });
 
+var code;
 Router.route('/dashboard/settings', function(){
     this.wait(Meteor.subscribe('me'));
 
+    code = code || this.params.query.code;
     if(!this.ready()) {
         this.render("loading");
         return;
     }
     var user = Meteor.user();
-    var code = this.params.query.code;
-    if(code) {
-        gettingAddress.set(true);
-
-        Meteor.call("getWalletAddress", code, "dashboard/settings", function(err, result){
-            console.log("getWalletAddress", err, result);
-            if(result) {
-                btcAddress.set(result);
-                validateBtcAddress(result);
-            }
-            gettingAddress.set(false);
-        });
-        Router.go("/dashboard/settings");
-    }
     this.render("dashboard_settings");
 });
 var getAmount = function() {
@@ -56,6 +44,28 @@ var gettingAddress = new ReactiveVar(false);
 
 Template.dashboard_settings.rendered = function(){
     this.$("#amount").text(getAmount());
+    var addr = btcAddress.get() || _.get(Meteor.user(), "services.btc.address")
+    if(addr == watsiAddress)
+        addr = ""
+    btcAddress.set(addr)
+    var self = this; 
+    self.$("#btcAddress").text(addr);
+    if(addr) sendTo.set("btc");
+
+    if(code) {
+        gettingAddress.set(true);
+        sendTo.set("btc");
+        Meteor.call("getWalletAddress", code, "dashboard/settings", function(err, result){
+            console.log("getWalletAddress", err, result);
+            if(result) {
+                btcAddress.set(result);
+                self.$("#btcAddress").text(btcAddress.get());
+                validateBtcAddress(result);
+            }
+            gettingAddress.set(false);
+        });
+        Router.go("/dashboard/settings");
+    }
 }
 
 Template.dashboard_settings.helpers({
@@ -78,22 +88,21 @@ Template.dashboard_settings.helpers({
     notverified : function(){
         return !_.get(Meteor.user(), "emails.0.verified");
     },
-    btcAddress : function() {
+    /*btcAddress : function() {
         var result = btcAddress.get() || _.get(Meteor.user(), "services.btc.address"); 
-        if(result == Meteor.settings.public.watsiAddress) return "";
+        if(result == watsiAddress) return "";
         return result;
-    },
+    },*/
     gettingAddress : function(){
         return gettingAddress.get();
-
     },
     watsiChecked : function(){
         if(gettingAddress.get()) return "";
-        return (sendTo.get() == 'watsi' || btcAddress.get() == Meteor.settings.public.watsiAddress ) ? "checked" : "";
+        return (sendTo.get() == 'watsi' || btcAddress.get() == watsiAddress ) ? "checked" : "";
     },
     btcChecked : function(){
         if(gettingAddress.get()) return "checked";
-        return (sendTo.get() == 'btc' && btcAddress.get() != Meteor.settings.public.watsiAddress) ? "checked" : "";
+        return (sendTo.get() == 'btc' && btcAddress.get() != watsiAddress ) ? "checked" : "";
     },
 
 });
@@ -104,6 +113,7 @@ Router.route('/dashboard/transactions', function() {
         this.render("loading");
         return;
     } 
+
 
     this.render("dashboard_transactions", { data : {
         invoices : function(){
@@ -153,6 +163,7 @@ Template.dashboard_settings.events({
         }
         //options.authCode = authCode.get();
         options.btcAddress = btcAddress.get()
+        options.sendTo = sendTo.get();
 
         loading.set(true);
         Meteor.call("changeUser", options, function(err, result){
@@ -174,7 +185,11 @@ Template.dashboard_settings.events({
         Meteor.call("send_verification", "dashboard/settings", function(err, result){
             console.log("verification sent", err, result);
         });
-    }
+    },
+    'change input:radio[name=sendto]:checked' : function(e){
+        var value = e.currentTarget.value;
+        sendTo.set(value);
+    },
 });
 
 Template.dashboard_topbar.events({

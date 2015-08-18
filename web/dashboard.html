@@ -63,7 +63,7 @@
         send money to this bitcoin address<br>
         <h3>
             <input type="radio" id="radio_stripe" name="sendto" value="bitcoin" {{btcChecked}}><label for="radio_stripe" class="radio"> </label>
-            <div class="input input-{{btcAddressValidateStatus}} f28" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false">{{btcAddress}}</div>
+            <div class="input input-{{btcAddressValidateStatus}} f28" id="btcAddress" contenteditable="true" data-ph="bitcoin address" spellcheck="false"></div>
             <div class="error error-{{btcAddressValidateStatus}}" id="btcError">
                 <img src="/img/icon_error.png" class="error_icon">
                 {{#case btcAddressValidateStatus='btc_address_invalid'}}
@@ -74,7 +74,7 @@
                 {{#if gettingAddress }}
                 <i class="fa fa-spinner fa-spin"></i>
                 {{/if}}
-                Coinbase
+                Get one from Coinbase
             </button>
         </h3>
 
